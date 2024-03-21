@@ -34,7 +34,7 @@ class Topics:
 
     def _populate_categories(self) -> None:
 
-        for topic in self._topics_list["topics"]:
+        for topic in self._topics_list:
             self._topic_types.append(topic["type"])
 
             for pattern in topic["patterns"]:
@@ -122,12 +122,20 @@ class Topics:
 
         return output_row
 
+    def get_topic(self, index: int) -> str:
+        return self._topic_types[index]
+
+    def get_topic_response(self, topic_name: str) -> str:
+        for topic in self._topics_list:
+            if topic["type"] == topic_name:
+                return topic["responses"][0]
+
 
 def _load_topic_list():
     with open("topics.json") as topics_document:
         topic_list = json.loads(topics_document.read())
 
-    return topic_list
+    return topic_list["topics"]
 
 
 if __name__ == "__main__":
