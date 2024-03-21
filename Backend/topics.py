@@ -4,7 +4,6 @@ import random
 from typing import Literal
 
 import nltk
-import numpy as np
 
 nltk.download("punkt")
 nltk.download("wordnet")
@@ -132,4 +131,4 @@ def _load_topic_list():
 
 
 if __name__ == "__main__":
-    print(Topics().processed_training_data()[0])
+    print(Topics().processed_training_data()[1])
