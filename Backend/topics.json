@@ -1,0 +1,25 @@
+
+{
+    "topics": [
+        {
+            "type": "saludo",
+            "patterns": ["hola", "buenos días", "buenos dias", "buenas tardes"],
+            "responses": ["Hola! Soy Skynet, el chatbot de ayuda de la Biblioteca."]
+        },
+        {
+            "type": "consulta_carnet",
+            "patterns": ["carnet", "sacar libros"],
+            "responses": ["Para sacar un carnet tenes que..."]
+        },
+        {
+            "type": "consulta_direccion",
+            "patterns": ["donde queda", "donde esta", "como llegar", "cómo llego", "direccion", "dirección"],
+            "responses": ["La biblioteca se encuentra en la calle Pepito al 1100."]
+        },
+        {
+            "type": "consulta_horarios",
+            "patterns": ["que días abre", "cuando atienden", "cuando abren"],
+            "responses": ["La biblioteca abre de lunes a viernes de 9:00 a 18:00."]
+        }
+    ]
+}

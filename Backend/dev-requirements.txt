@@ -2,6 +2,8 @@
 # Don't forget to pin your dependencies!
 # This list will have to be migrated if you wish to use another dependency manager.
 
+importlib-metadata==4.13.0
+
 # Base tools
 flake8~=4.0.1
 isort~=5.10.1
