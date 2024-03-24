@@ -1,14 +1,15 @@
 import numpy as np
 import tensorflow as tf
 
-from app.input_processor import InputProcessor
-from app.topics import Topics
+from app.ai.input_processor import InputProcessor
+from app.ai.topics import Topics
+from app.file_paths import MODEL_PATH
 
 
 class Skynet:
 
     def __init__(self, topics: Topics | None) -> None:
-        self._model = tf.keras.models.load_model("./app/skynet.h5")
+        self._model = tf.keras.models.load_model(MODEL_PATH)
         self._processor = InputProcessor()
 
         self._topics = topics

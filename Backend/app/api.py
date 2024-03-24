@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.chatbot import Skynet
-from app.topics import Topics
+from app.ai.chatbot import Skynet
+from app.ai.topics import Topics
 
 topics = Topics()
 skynet = Skynet(topics)

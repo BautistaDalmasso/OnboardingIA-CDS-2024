@@ -5,6 +5,8 @@ from typing import Literal
 
 import nltk
 
+from app.file_paths import TOPIC_TYPES_FILE, TOPICS_FILE, WORDS_FILE
+
 nltk.download("punkt")
 nltk.download("wordnet")
 nltk.download("omw-1.4")
@@ -57,10 +59,10 @@ class Topics:
         words = sorted(set(words))
 
     def save_words(self):
-        with open("topic_types.pkl", "wb") as types_file:
+        with open(TOPIC_TYPES_FILE, "wb") as types_file:
             pickle.dump(self._topic_types, types_file)
 
-        with open("words.pkl", "wb") as words_file:
+        with open(WORDS_FILE, "wb") as words_file:
             pickle.dump(self._words, words_file)
 
     def processed_training_data(
@@ -132,7 +134,7 @@ class Topics:
 
 
 def _load_topic_list():
-    with open("./app/topics.json") as topics_document:
+    with open(TOPICS_FILE) as topics_document:
         topic_list = json.loads(topics_document.read())
 
     return topic_list["topics"]
