@@ -21,6 +21,6 @@ app.add_middleware(
 )
 
 
-@app.post("/")
+@app.get("/")
 async def chatbot_question(question: str):
     return {"answer": skynet.answer(question)}
