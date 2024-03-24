@@ -1,7 +1,6 @@
+import input_processor
 import numpy as np
 import tensorflow as tf
-
-import input_processor
 from topics import Topics
 
 

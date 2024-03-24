@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-
 import topics
 
 topics_ = topics.Topics()
