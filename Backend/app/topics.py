@@ -132,7 +132,7 @@ class Topics:
 
 
 def _load_topic_list():
-    with open("topics.json") as topics_document:
+    with open("./app/topics.json") as topics_document:
         topic_list = json.loads(topics_document.read())
 
     return topic_list["topics"]

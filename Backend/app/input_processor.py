@@ -10,10 +10,10 @@ class InputProcessor:
     def __init__(self) -> None:
         self._lemmatizer = nltk.stem.WordNetLemmatizer()
 
-        with open("words.pkl", "rb") as words_file:
+        with open("./app/words.pkl", "rb") as words_file:
             self._words = pickle.load(words_file)
 
-        with open("topic_types.pkl", "rb") as topics_file:
+        with open("./app/topic_types.pkl", "rb") as topics_file:
             self._topic_types = pickle.load(topics_file)
 
     def process_natural_input(
