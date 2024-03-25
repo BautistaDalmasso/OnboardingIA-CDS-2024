@@ -1,20 +1,30 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { Login } from "./src/components/Login";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Login from "./src/components/Login";
+import Chat from "./src/components/Chat";
+import { Routes } from "./src/common/enums/routes";
+import ChatHeader from "./src/components/ChatHeader";
 
-export default function App() {
+const Stack = createStackNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Login />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName={Routes.Home}>
+        <Stack.Screen
+          name={Routes.Home}
+          component={Login}
+          options={{ header: () => null }}
+        />
+        <Stack.Screen
+          name={Routes.Chat}
+          component={Chat}
+          options={{ header: (props) => <ChatHeader {...props} /> }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+export default App;
