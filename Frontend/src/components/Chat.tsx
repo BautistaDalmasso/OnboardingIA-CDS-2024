@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import Message from "./Message";
 import { IMessage } from "../common/interfaces/Message";
 import { MessageType } from "../common/enums/messageType";
+import { ServerAdress } from "../common/consts/serverAdress";
 import ChatTextInput from "./ChatTextInput";
 
 const Chat = () => {
@@ -21,7 +22,7 @@ const Chat = () => {
 
     let answer = "ERROR AL CONECTARSE CON SKYNET."
 
-    const answer_request = fetch("http://192.168.1.41:8080/", {
+    const answer_request = fetch(ServerAdress, {
     method: "POST",
       headers: {
           "Content-Type": "application/json"
