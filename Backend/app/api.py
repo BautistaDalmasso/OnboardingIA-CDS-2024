@@ -1,9 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from app.ai.chatbot import Skynet
 from app.ai.topics import Topics
 from app.server_config import ServerConfig
+
+
+class QuestionRequest(BaseModel):
+    question: str
+
 
 server_config = ServerConfig()
 topics = Topics()
@@ -21,6 +27,8 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-async def chatbot_question(question: str):
+@app.post("/")
+async def chatbot_question(question_request: QuestionRequest):
+    question = question_request.question
+
     return {"answer": skynet.answer(question)}

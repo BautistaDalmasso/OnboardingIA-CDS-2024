@@ -1,3 +1,5 @@
 {
-    "request_origins": ["http://localhost:8081"]
+    "request_origins": ["*"],
+    "server_ip": "0.0.0.0",
+    "server_port": 8080
 }
