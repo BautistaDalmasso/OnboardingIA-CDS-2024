@@ -19,10 +19,25 @@ const Chat = () => {
       { text: inputText, type: MessageType.User },
     ]);
 
+    let answer = "ERROR AL CONECTARSE CON SKYNET."
+
+    const answer_request = fetch("http://192.168.1.41:8080/", {
+    method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ "question": inputText })
+    })
+    .then(response => response.json())
+    .then(data => {
+        answer = data.answer
+    })
+    .catch(error => console.error(error))
+
     setTimeout(() => {
       setMessages((messages) => [
         ...messages,
-        { text: "Restpuesta del bot", type: MessageType.Bot },
+        { text: answer, type: MessageType.Bot },
       ]);
       setLoading(false);
     }, 1000);
