@@ -34,5 +34,5 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# Secret adresses
-serverAdress.ts
+# Secret addresses
+serverAddress.ts
