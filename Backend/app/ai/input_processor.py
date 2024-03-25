@@ -4,16 +4,18 @@ from typing import Literal
 import nltk
 import numpy as np
 
+from app.file_paths import TOPIC_TYPES_FILE, WORDS_FILE
+
 
 class InputProcessor:
 
     def __init__(self) -> None:
         self._lemmatizer = nltk.stem.WordNetLemmatizer()
 
-        with open("words.pkl", "rb") as words_file:
+        with open(WORDS_FILE, "rb") as words_file:
             self._words = pickle.load(words_file)
 
-        with open("topic_types.pkl", "rb") as topics_file:
+        with open(TOPIC_TYPES_FILE, "rb") as topics_file:
             self._topic_types = pickle.load(topics_file)
 
     def process_natural_input(
