@@ -1,5 +1,5 @@
 import React from "react";
-import { StatusBar, StyleSheet, SafeAreaView, TouchableOpacity, Button, Text } from "react-native";
+import { StyleSheet, SafeAreaView, TouchableOpacity, Text } from "react-native";
 import useBiometrics from "../hooks/useBiometrics";
 
 
@@ -8,26 +8,32 @@ interface LoginProps {
 }
 
 export const Login = ( props: LoginProps) => {
-  const { authenticate, desauthenticate, isAuthenticated } = useBiometrics();
-
+  const { authenticate, isAuthenticated} = useBiometrics();
+  const mostrar_Alerta = () => {    
+  };
+  
+  
   return (
     <SafeAreaView  style={styles.container}>
-      <Button
-        title="Registrarse"
-        onPress={()=>props.navigation.navigate('Formulario')}
-        color={"blue"}
-      />
-      <TouchableOpacity onPress={authenticate}>
+      <Text style={styles.titulo}>
+        ¡Bienvenido!
+      </Text> 
+      <Text style={styles.text}>
+        a la App de Biblioteca Skynet
+      </Text> 
+    <TouchableOpacity style={styles.button}  onPress={()=>props.navigation.navigate('Registro')}>
+        <Text style={styles.buttonText}>REGISTRARSE</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={authenticate}>
         {isAuthenticated ? (
-          <>
-            <Text style={{ textAlign: "center", margin: 10 }}>
-              Sesión iniciada
-            </Text>
-            <Button title="Cerrar sesión" onPress={desauthenticate} color={"red"}></Button>
-          </>
+          props.navigation.navigate('Home')
         ) : (
-          <Button title="Iniciar sesión" onPress={authenticate}></Button>
+          mostrar_Alerta()
         )}
+        <Text style={styles.buttonText}>INICIAR SESIÓN</Text>
+              
+          
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -39,8 +45,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+     alignItems: "center",
+     alignContent:"center",
+    
+     
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 20,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 13,
     
   },
+  logo: {
+    alignSelf: 'center',
+   height: 200,
+   width: 250,
+ },
+
+ titulo: {
+  margin: 24,
+  fontSize: 30,
+  fontWeight: 'bold',
+  alignSelf: 'center',
+},
+
+text: {
+  margin: 24,
+  fontSize: 15,
+  fontWeight: 'bold',
+  alignSelf: 'center',
+},
+alerta: {
+  margin: 24,
+  fontSize: 15,
+  color:"red",
+  fontWeight: 'bold',
+  alignSelf: 'center',
+},
+
 });

@@ -1,11 +1,16 @@
-import React,{useState, useEffect} from 'react';
-import { Button ,SafeAreaView, StyleSheet, Text,TextInput, StatusBar } from 'react-native';
+import React,{useState } from 'react';
+import {Button ,SafeAreaView, StyleSheet, Text,TextInput, StatusBar } from 'react-native';
 
-export const Formulario = ( ) => {
+interface FormularioProps {
+  navigation: any;
+}
+
+export const Formulario = (props: FormularioProps ) => {
 
 const [nombre, set_nombre]= useState("")
 const [apellido, set_apellido]= useState("")
 const [email, set_email]= useState("")
+//const [se_registro, set_se_registro] = useState(false);
 
 return (
   
@@ -15,7 +20,8 @@ return (
 <TextInput style={styles.input} value={apellido} onChangeText={set_apellido} placeholder='Ingrese su apellido ...'/>  
 <TextInput style={styles.input} value={email} onChangeText={set_email} placeholder='Ingrese su email ...'/>   
 
-<Button  title="Enviar"   />
+<Button title="Enviar" onPress={()=>props.navigation.navigate('Home')}  />
+
 
 </SafeAreaView>
 
@@ -40,7 +46,12 @@ input:{
 titulo: {
 fontSize:22,
 padding:10,
-}
-
+},
+  mensaje: {
+  fontSize:22,
+  padding:10,
+  justifyContent: 'center',
+  textAlign: 'center',
+},
 
 });
