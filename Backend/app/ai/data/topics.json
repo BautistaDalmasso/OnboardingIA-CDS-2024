@@ -20,6 +20,32 @@
             "type": "consulta_horarios",
             "patterns": ["que días abre", "cuando atienden", "cuando abren"],
             "responses": ["La biblioteca abre de lunes a viernes de 9:00 a 18:00."]
+        },
+        {
+            "type": "consulta_libro",
+            "patterns": ["libro", "busco libro", "dame un libro","necesito informacion de un libro"],
+            "responses": ["Para poder ayudarte a encontrar lo que necesitas, necesito que me des autor y nombre del libro que buscas."]
+        }
+        ,
+        {
+            "type": "consulta_libro_a1",
+            "patterns": ["PENSANDO LA COMPUTACIÓN COMO UN CIENTÍFICO", "Allen B. Downey", "Downey", "PENSANDO LA COMPUTACIÓN"],
+            "responses": [" Es un libro de la editorial Universidad Nacional de General Sarmiento que contiene 350 páginas, dedicado a la tecnología informática y fue publicado en abril de 2012. ¿Necesitas alguna otra información?."]
+        }
+        ,
+        { "type": "consulta_libro_a2",
+        "patterns": ["PENSANDO LA COMPUTACIÓN COMO UN CIENTÍFICO", "Resumen"],
+        "responses": [" Este libro presenta una introducción al diseño y desarrollo de software utilizando el lenguaje Java. Destinado a personas sin experiencia en rogramación, comienza desde los conceptos más básicos y poco a poco va incorporando nuevas herramientas de desarrollo. El libro se centra en el proceso de la programación, haciendo énfasis en el testing y la depuración de los programas desarrollados, pero sin dejar de lado conceptos fundamentales tales como abstracción y encapsulamiento. Además, incluye una amplia gama de ejercicios para que los lectores puedan practicar cada nuevo concepto adquirido. Escrito con un estilo informal y de fácil lectura, los conceptos presentados resultan accesibles a casi cualquier persona, haciendo de este libro un muy buen punto de partida para quien desee iniciarse en el proceso de desarrollo de software. ¿Necesitas alguna otra información?."]
+        }
+        ,
+        { "type": "consulta_libro_a2",
+        "patterns": ["PENSANDO LA COMPUTACIÓN COMO UN CIENTÍFICO", "pdf","necesito libro"],
+        "responses": [" Aqui te presento un enlace del libro: https://ediciones.ungs.edu.ar/wp-content/uploads/2020/03/9789876301176-completo.pdf."]
+        }
+        ,{
+            "type": "consulta_libro_x",
+            "patterns": ["Necesito informacion del libro","cuya editorial es"],
+            "responses": ["Lamentablemente no tengo informacion de ese libro. ¿Te puedo ayudar con otra cosa?."]
         }
     ]
 }
