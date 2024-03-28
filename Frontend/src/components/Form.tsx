@@ -1,5 +1,5 @@
 import React,{useState } from 'react';
-import {Button ,SafeAreaView, StyleSheet, Text,TextInput, StatusBar } from 'react-native';
+import {TouchableOpacity ,SafeAreaView, StyleSheet, Text,TextInput, StatusBar } from 'react-native';
 
 export const  Form = ( ) => {
 
@@ -11,26 +11,23 @@ const [email, set_email]= useState("")
 return (
   
 <SafeAreaView style={ styles.container}>
-<Text style={styles.titulo}>  Form de Registro  </Text>
+<Text style={styles.titulo}>  Formulario  </Text>
 <TextInput style={styles.input} value={nombre} onChangeText={set_nombre} placeholder='Ingrese su nombre ...'/> 
 <TextInput style={styles.input} value={apellido} onChangeText={set_apellido} placeholder='Ingrese su apellido ...'/>  
 <TextInput style={styles.input} value={email} onChangeText={set_email} placeholder='Ingrese su email ...'/>   
-
-<Button title="Enviar"   />
-
-
+<TouchableOpacity style={styles.button} >
+        <Text style={styles.buttonText}>Enviar</Text>
+</TouchableOpacity>
 </SafeAreaView>
 
 );
 }
 
-
+//
 const styles = StyleSheet.create({
 container:{    
-    flex: 1,
-    backgroundColor: '#ecf0f1',
-    top:50,
-    paddingTop:StatusBar.currentHeight
+  backgroundColor: '#ecf0f1',
+  top:50,
 },
 input:{
   height:40,
@@ -42,6 +39,8 @@ input:{
 titulo: {
 fontSize:22,
 padding:10,
+justifyContent: 'center',
+  textAlign: 'center',
 },
   mensaje: {
   fontSize:22,
@@ -49,7 +48,20 @@ padding:10,
   justifyContent: 'center',
   textAlign: 'center',
 },
-
+button: {
+ 
+  backgroundColor: "#3369FF",
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 100,
+  width: "30%",
+  
+},
+buttonText: {
+  color: "#ffffff",
+  fontSize: 16,
+  fontWeight: "bold",
+},
 });
 
 

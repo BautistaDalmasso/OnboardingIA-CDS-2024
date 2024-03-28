@@ -3,7 +3,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./src/components/Login";
 import Chat from "./src/components/Chat";
+import Perfil from "./src/components/Perfil";
 import Form from "./src/components/Form";
+
 import { Routes } from "./src/common/enums/routes";
 import ChatHeader from "./src/components/ChatHeader";
 
@@ -23,11 +25,16 @@ const App = () => {
     <Drawer.Navigator  >
     <Drawer.Screen name={Routes.Home} component={Login}  />
   
-       <Drawer.Screen name="Formulario" component={Form} />
+       <Drawer.Screen name="Perfil" component={Perfil} />
        <Stack.Screen 
           name={Routes.Chat}
           component={Chat}
           options={{ header: (props) => <ChatHeader {...props} /> }}
+        />
+         <Stack.Screen 
+          name={"Registrarse"}
+          component={Form}
+          
         />
        </Drawer.Navigator>
     </NavigationContainer>
@@ -36,12 +43,4 @@ const App = () => {
   );
 };
  
-const FormNavigator = () => {
-  return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Formulario" component={Form} />
-    </Drawer.Navigator>
-  );
-};
-
 export default App;
