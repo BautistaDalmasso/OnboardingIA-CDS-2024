@@ -30,5 +30,8 @@ app.add_middleware(
 @app.post("/")
 async def chatbot_question(question_request: QuestionRequest):
     question = question_request.question
+    print(f"Usuario: {question}")
+    answer = skynet.answer(question)
+    print(f"Chatbot: {answer}")
 
-    return {"answer": skynet.answer(question)}
+    return {"answer": answer}

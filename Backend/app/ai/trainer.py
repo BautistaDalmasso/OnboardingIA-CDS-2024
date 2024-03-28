@@ -1,15 +1,14 @@
 import numpy as np
 import tensorflow as tf
 
-from app.ai.topics import Topics
+from app.ai.training_data import TrainingData
 from app.file_paths import MODEL_PATH
 
 
 def train():
-    topics_ = Topics()
-    topics_.save_words()
+    training_data = TrainingData()
 
-    training_x, training_y = topics_.processed_training_data()
+    training_x, training_y = training_data.processed_training_data()
 
     model = tf.keras.models.Sequential()
     # Input layer.
