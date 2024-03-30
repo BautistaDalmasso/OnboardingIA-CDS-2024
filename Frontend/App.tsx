@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./src/components/Login";
 import Chat from "./src/components/Chat";
-import Perfil from "./src/components/Perfil";
+import Profile from "./src/components/Profile";
 import Form from "./src/components/Form";
 
 import { Routes } from "./src/common/enums/routes";
@@ -25,14 +25,14 @@ const App = () => {
     <Drawer.Navigator  >
     <Drawer.Screen name={Routes.Home} component={Login}  />
   
-       <Drawer.Screen name="Perfil" component={Perfil} />
+       <Drawer.Screen name={Routes.Profile} component={Profile} />
        <Stack.Screen 
           name={Routes.Chat}
           component={Chat}
           options={{ header: (props) => <ChatHeader {...props} /> }}
         />
          <Stack.Screen 
-          name={"Registrarse"}
+          name={Routes.SignIn}
           component={Form}
           
         />

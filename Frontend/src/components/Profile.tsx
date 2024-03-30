@@ -1,15 +1,17 @@
-
 import React from "react";
+import { Routes } from "../common/enums/routes";
+
 import { StyleSheet, SafeAreaView, TouchableOpacity, Text } from "react-native";
+
 
 interface Props {
   navigation: any;
 }
 
-export const Perfil = ({ navigation }: Props ) => {
+export const Profile = ({ navigation }: Props ) => {
   const handleSignUp = () => {
     
-    navigation.navigate("Registrarse");
+    navigation.navigate(Routes.SignIn);
   };
   return (
     <SafeAreaView  style={styles.container}>
@@ -66,4 +68,4 @@ text: {
 },
 
 });
-export default Perfil;
+export default Profile;

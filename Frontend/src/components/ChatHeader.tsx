@@ -6,7 +6,7 @@ import { Routes } from "../common/enums/routes";
 const ChatHeader = ({ navigation }: StackHeaderProps) => {
   return (
     <View style={styles.container} >
-      <TouchableOpacity onPress={() =>  navigation.navigate("Home")}>
+      <TouchableOpacity onPress={() =>  navigation.navigate(Routes.Home)}>
         <Image
           source={require("../assets/arrow-left.png")}
           style={styles.backButton}
