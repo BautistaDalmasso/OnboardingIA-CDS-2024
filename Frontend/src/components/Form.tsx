@@ -1,26 +1,59 @@
 import React,{useState } from 'react';
-import {TouchableOpacity ,SafeAreaView, StyleSheet, Text,TextInput} from 'react-native';
+import { Keyboard,TouchableOpacity ,SafeAreaView, StyleSheet, Text,TextInput} from 'react-native';
+import { initializeApp } from 'firebase/app';
 
+import { firebaseConfig } from '../../firebase';
+
+import {getFirestore, addDoc, collection}from 'firebase/firestore';
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export const  Form = ( ) => {
+  const initialState = {
+    name: '',
+    lastName: '',
+    email: '',
+  };
 
-  const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  
-return (
-<SafeAreaView style={ styles.container}>
-<Text style={styles.titulo}>  Formulario  </Text>
-<TextInput style={styles.input} value={name} onChangeText={setName} placeholder='Ingrese su nombre ...'/> 
-<TextInput style={styles.input} value={lastName} onChangeText={setLastName} placeholder='Ingrese su apellido ...'/>  
-<TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder='Ingrese su email ...'/>   
-<TouchableOpacity style={styles.button} >
-        <Text style={styles.buttonText}>Enviar</Text>
-</TouchableOpacity>
-</SafeAreaView>
+  const [state, setState] = useState(initialState);
 
-);
+  const handleChangeText = (value: string, name: string) => {
+   
+    setState({ ...state, [name]: value });
+  };
+
+ const saveUser = async () =>{
+
+try{
+  await addDoc (collection(db,'users'),{ ...state})
+  alert("Usted a sido registrado.")
+
+}catch{
+
+console.error(console.error);
+
 }
+
+ 
+ } 
+
+ return (
+  <SafeAreaView style={ styles.container}>
+  <Text style={styles.titulo}>  Formulario  </Text>
+  <TextInput style={styles.input} value={state.name}  placeholder='Ingrese su nombre ...' onChangeText={(value) => handleChangeText(value, 'name')}/> 
+  <TextInput style={styles.input} value={state.lastName}  placeholder='Ingrese su apellido ...' onChangeText={(value) => handleChangeText(value, 'lastName')}/>  
+  <TextInput style={styles.input} value={state.email} placeholder='Ingrese su email ...' onChangeText={(value) => handleChangeText(value, 'email')}/>   
+  <TouchableOpacity style={styles.button} >
+  <Text style={styles.buttonText} onPress={saveUser}>Enviar</Text>
+  </TouchableOpacity>
+  </SafeAreaView>
+  
+
+ )
+;
+}
+
 
 const styles = StyleSheet.create({
 container:{    
