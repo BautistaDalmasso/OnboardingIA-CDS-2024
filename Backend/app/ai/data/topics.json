@@ -3,48 +3,39 @@
     "topics": [
         {
             "type": "saludo",
-            "patterns": ["hola", "buenos días", "buenos dias", "buenas tardes", "hello", "good morning", "good afternoon"],
-            "responses": ["Hola! Soy Skynet, el chatbot de ayuda de la Biblioteca."]
+            "patterns": ["Hola", "Buenos días", "Buenas tardes", "¿Qué tal?", "Saludos", "¿Cómo va todo?", "Hey", "¿Cómo estás?", "¿Qué hay de nuevo?", "¿Cómo te encuentras?"]
         },
         {
             "type": "consulta_carnet",
-            "patterns": ["carnet", "sacar libros", "obtener carnet", "registro de usuario", "registro de biblioteca", "afiliación a la biblioteca"],
-            "responses": ["Para sacar un carnet tenes que..."]
+            "patterns": ["carnet", "sacar libros", "obtener carnet", "registro de usuario", "registro de biblioteca", "afiliación a la biblioteca"]
         },
         {
             "type": "consulta_direccion",
-            "patterns": ["donde queda", "donde esta", "como llegar", "cómo llego", "direccion", "dirección", "ubicación", "localización", "mapa"],
-            "responses": ["La biblioteca se encuentra en la calle Pepito al 1100."]
+            "patterns": ["donde queda", "donde esta", "como llegar", "cómo llego", "direccion", "dirección", "ubicación", "localización", "mapa"]
         },
         {
             "type": "consulta_horarios",
-            "patterns": ["que días abre", "cuando atienden", "cuando abren", "horarios de apertura", "horarios de atención", "horarios de la biblioteca", "horario de funcionamiento", "días de funcionamiento"],
-            "responses": ["La biblioteca abre de lunes a viernes de 9:00 a 18:00."]
+            "patterns": ["que días abre", "cuando atienden", "cuando abren", "horarios de apertura", "horarios de atención", "horarios de la biblioteca", "horario de funcionamiento", "días de funcionamiento"]
         },
         {
             "type": "consulta_servicios",
-            "patterns": ["¿Qué servicios ofrecen?", "¿Qué puedo hacer en la biblioteca?", "¿Hay salas de estudio?", "servicios de la biblioteca", "¿Qué actividades realizan?", "ofertas de la biblioteca", "servicios disponibles", "servicios adicionales"],
-            "responses": ["Ofrecemos una variedad de servicios, incluyendo préstamo de libros, acceso a computadoras, salas de estudio y más."]
+            "patterns": ["¿Qué servicios ofrecen?", "¿Qué puedo hacer en la biblioteca?", "¿Hay salas de estudio?", "servicios de la biblioteca", "¿Qué actividades realizan?", "ofertas de la biblioteca", "servicios disponibles", "servicios adicionales"]
         },
         {
             "type": "consulta_recursos",
-            "patterns": ["¿Qué tipo de libros tienen?", "¿Tienen libros electrónicos?", "¿Ofrecen acceso a revistas científicas?", "¿Hay películas disponibles para préstamo?", "materiales disponibles", "inventario de libros", "catálogo de libros", "recursos de la biblioteca"],
-            "responses": ["Tenemos una amplia selección de libros de diferentes géneros, así como recursos electrónicos como libros electrónicos y bases de datos de revistas."]
+            "patterns": ["¿Qué tipo de libros tienen?", "¿Tienen libros electrónicos?", "¿Ofrecen acceso a revistas científicas?", "¿Hay películas disponibles para préstamo?", "materiales disponibles", "inventario de libros", "catálogo de libros", "recursos de la biblioteca"]
         },
         {
             "type": "consulta_prestamos",
-            "patterns": ["¿Cuántos libros puedo sacar a la vez?", "¿Cuánto tiempo puedo tener prestados los libros?", "¿Cómo puedo renovar un préstamo?", "¿Cuál es la política de multas por retraso?", "información de préstamos", "políticas de préstamo", "condiciones de préstamo", "reglas de préstamo"],
-            "responses": ["Puedes sacar hasta 2 libros a la vez por un período de 7 días. Puedes renovar tus préstamos en línea o visitando la biblioteca, y las multas por retraso son de 250$ por día."]
+            "patterns": ["¿Cuántos libros puedo sacar a la vez?", "¿Cuánto tiempo puedo tener prestados los libros?", "¿Cómo puedo renovar un préstamo?", "¿Cuál es la política de multas por retraso?", "información de préstamos", "políticas de préstamo", "condiciones de préstamo", "reglas de préstamo"]
         },
         {
             "type": "consulta_eventos",
-            "patterns": ["¿Tienen algún evento próximamente?", "¿Organizan clubes de lectura?", "¿Hay talleres o charlas programadas?", "¿Cómo puedo enterarme de los eventos?", "próximos eventos", "actividades próximas", "calendario de eventos", "eventos de la biblioteca"],
-            "responses": ["Sí, tenemos una variedad de eventos que incluyen charlas de autores, talleres temáticos y clubes de lectura. Puedes consultar nuestro calendario de eventos en nuestro sitio web o seguirnos en redes sociales para mantenerte informado."]
+            "patterns": ["¿Tienen algún evento próximamente?", "¿Organizan clubes de lectura?", "¿Hay talleres o charlas programadas?", "¿Cómo puedo enterarme de los eventos?", "próximos eventos", "actividades próximas", "calendario de eventos", "eventos de la biblioteca"]
         },
         {
             "type": "consulta_accesibilidad",
-            "patterns": ["¿La biblioteca es accesible para personas con discapacidad?", "¿Ofrecen servicios de asistencia para personas con necesidades especiales?", "¿Tienen libros en formatos accesibles?", "accesibilidad de la biblioteca", "servicios para personas con discapacidad", "adaptaciones para discapacitados", "instalaciones accesibles"],
-            "responses": ["Nuestra biblioteca se esfuerza por ser accesible para todos. Ofrecemos servicios de asistencia y contamos con una colección de libros en formatos accesibles, como audiolibros y libros en braille."]
+            "patterns": ["¿La biblioteca es accesible para personas con discapacidad?", "¿Ofrecen servicios de asistencia para personas con necesidades especiales?", "¿Tienen libros en formatos accesibles?", "accesibilidad de la biblioteca", "servicios para personas con discapacidad", "adaptaciones para discapacitados", "instalaciones accesibles"]
         }
     ]
 }

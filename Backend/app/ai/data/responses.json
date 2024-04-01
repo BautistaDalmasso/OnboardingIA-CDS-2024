@@ -1,0 +1,15 @@
+
+{
+    "responses": {
+        "saludo": "Hola! Soy Skynet, el chatbot de ayuda de la Biblioteca.",
+        "consulta_carnet": "Para sacar un carnet tenes que...",
+        "consulta_direccion": "La biblioteca se encuentra en la calle Pepito al 1100.",
+        "consulta_horarios": "La biblioteca abre de lunes a viernes de 9:00 a 18:00.",
+        "consulta_servicios": "Ofrecemos una variedad de servicios, incluyendo préstamo de libros, acceso a computadoras, salas de estudio y más.",
+        "consulta_recursos": "Tenemos una amplia selección de libros de diferentes géneros, así como recursos electrónicos como libros electrónicos y bases de datos de revistas.",
+        "consulta_prestamos": "Puedes sacar hasta 2 libros a la vez por un período de 7 días. Puedes renovar tus préstamos en línea o visitando la biblioteca, y las multas por retraso son de 250$ por día.",
+        "consulta_eventos": "Sí, tenemos una variedad de eventos que incluyen charlas de autores, talleres temáticos y clubes de lectura. Puedes consultar nuestro calendario de eventos en nuestro sitio web o seguirnos en redes sociales para mantenerte informado.",
+        "consulta_accesibilidad": "Nuestra biblioteca se esfuerza por ser accesible para todos. Ofrecemos servicios de asistencia y contamos con una colección de libros en formatos accesibles, como audiolibros y libros en braille.",
+        "desconocido": "Disculpame, no pude entender lo que me quisiste decir. Solo puedo responder a consultas relacionadas con la biblioteca."
+    }
+}
