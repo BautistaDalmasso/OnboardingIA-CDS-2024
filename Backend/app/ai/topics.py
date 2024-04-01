@@ -2,7 +2,7 @@ import json
 import pickle
 
 from app.ai.input_cleaner import InputCleaner
-from app.file_paths import TOPICS_FILE
+from app.file_paths import RESPONSES_FILE, TOPICS_FILE
 
 training_pair = tuple[list[str], str]
 
@@ -11,6 +11,7 @@ class Topics:
 
     def __init__(self) -> None:
         self._topics_list = _load_topic_list()
+        self._responses = _load_responses()
 
         self._input_cleaner = InputCleaner()
 
@@ -46,9 +47,7 @@ class Topics:
         return self._topic_types[index]
 
     def get_topic_response(self, topic_name: str) -> str:
-        for topic in self._topics_list:
-            if topic["type"] == topic_name:
-                return topic["responses"][0]
+        return self._responses[topic_name]
 
     def get_topic_types(self):
         return self._topic_types
@@ -65,3 +64,10 @@ def _load_topic_list():
         topic_list = json.loads(topics_document.read())
 
     return topic_list["topics"]
+
+
+def _load_responses():
+    with open(RESPONSES_FILE, encoding="utf-8") as responses_document:
+        responses = json.loads(responses_document.read())
+
+    return responses["responses"]
