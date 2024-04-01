@@ -32,7 +32,7 @@ const App = () => {
           options={{ header: (props) => <ChatHeader {...props} /> }}
         />
          <Stack.Screen 
-          name={Routes.SignIn}
+          name={Routes.SignUp}
           component={Form}
           
         />
