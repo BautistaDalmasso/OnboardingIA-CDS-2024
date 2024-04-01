@@ -13,17 +13,9 @@ class TrainingData:
     def __init__(self) -> None:
         self._topics = Topics()
         self._input_cleaner = InputCleaner()
+        self._processed_training_data = self._populate_training_data()
 
-    def processed_training_data(
-        self,
-    ) -> tuple[
-        list[list[Literal[0] | Literal[1]]], list[list[Literal[0] | Literal[1]]]
-    ]:
-        """
-        Returns a tuple of input and output data.
-        For each element of the input data, its corresponding expected output will be on the other list at the same index.
-        """
-
+    def _populate_training_data(self):
         training = []
 
         for training_pair in self._topics.get_training_pairs():
@@ -36,6 +28,18 @@ class TrainingData:
         inputs_list, outputs_list = (list(column) for column in zip(*training))
 
         return inputs_list, outputs_list
+
+    def processed_training_data(
+        self,
+    ) -> tuple[
+        list[list[Literal[0] | Literal[1]]], list[list[Literal[0] | Literal[1]]]
+    ]:
+        """
+        Returns a tuple of input and output data.
+        For each element of the input data, its corresponding expected output will be on the other list at the same index.
+        """
+
+        return self._processed_training_data
 
     def _create_word_occurrence_list(
         self, word_patterns: list[str]
