@@ -3,8 +3,8 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import Message from "./Message";
 import { IMessage } from "../common/interfaces/Message";
 import { MessageType } from "../common/enums/messageType";
-import { ServerAddress } from "../common/consts/serverAddress";
-import ChatTextInput from "./ChatTextInput";
+import ChatTextInput from "./ChatTextInput"
+import { BotService } from "../services/botService";
 
 const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([
@@ -13,27 +13,14 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef<any>();
 
-  const sendMessage = (inputText: string) => {
+  const sendMessage = async (inputText: string) => {
     setLoading(true);
     setMessages((messages) => [
       ...messages,
       { text: inputText, type: MessageType.User },
     ]);
 
-    let answer = "ERROR AL CONECTARSE CON SKYNET."
-
-    const answer_request = fetch(ServerAddress, {
-    method: "POST",
-      headers: {
-          "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ "question": inputText })
-    })
-    .then(response => response.json())
-    .then(data => {
-        answer = data.answer
-    })
-    .catch(error => console.error(error))
+    let answer = await BotService.fetchChatbotResponse(inputText);
 
     setTimeout(() => {
       setMessages((messages) => [
