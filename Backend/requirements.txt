@@ -6,5 +6,3 @@ uvicorn~=0.29.0
 passlib~=1.7.4
 PyJWT~=2.8.0
 bcrypt~=4.1.2
-rsa~=4.9
-cryptography~=42.0.5
