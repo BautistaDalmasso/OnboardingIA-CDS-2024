@@ -2,5 +2,5 @@ export enum Routes {
   Home = "Home",
   Chat = "Chat",
   Profile="Profile",
-  SignIn="SignIn",
+  SignUp="SignUp",
 }
