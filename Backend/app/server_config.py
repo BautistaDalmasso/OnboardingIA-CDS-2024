@@ -17,6 +17,9 @@ class ServerConfig:
     def get_server_port(self) -> int:
         return self._configs["server_port"]
 
+    def get_jwt_secret(self) -> int:
+        return self._configs["jwt_secret"]
+
 
 def _load_config():
     with open(CONFIG_FILE) as config_file:

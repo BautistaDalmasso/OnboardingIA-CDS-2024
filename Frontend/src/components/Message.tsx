@@ -5,7 +5,6 @@ import { MessageType } from "../common/enums/messageType";
 
 interface Props {
   message: IMessage;
-  type: MessageType;
 }
 
 const Message = ({ message }: Props) => {

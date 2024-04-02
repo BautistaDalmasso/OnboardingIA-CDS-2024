@@ -1,27 +1,27 @@
 import { ServerAddress } from "../common/consts/serverAddress";
+import { baseFetch } from "./fetch";
 
 export class BotService {
-    constructor() {}
+  private static baseRoute: string = `${ServerAddress}chatbot`;
 
-    static async fetchChatbotResponse(question: string): Promise<string> {
-        let answer = "ERROR AL CONECTARSE CON SKYNET."
+  constructor() {}
 
-        console.log("Q: " + question)
-        await fetch(ServerAddress, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ "question": question })
-            })
-            .then(response => response.json())
-            .then(data => {
-                answer = data.answer
-            })
-            .catch(error => console.error(error))
+  static async fetchChatbotResponse(question: string): Promise<string> {
+    let answer = "ERROR AL CONECTARSE CON SKYNET.";
 
-        console.log("A: " + answer)
-
-        return answer
+    try {
+      const response = await baseFetch<unknown, any>({
+        url: this.baseRoute,
+        method: "POST",
+        data: { question },
+      });
+      answer = response.answer;
+    } catch (error) {
+      console.log(error);
     }
+
+    console.log("A: " + answer);
+
+    return answer;
+  }
 }

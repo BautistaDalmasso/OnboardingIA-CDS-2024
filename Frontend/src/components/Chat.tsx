@@ -1,34 +1,68 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import Message from "./Message";
-import { IMessage } from "../common/interfaces/Message";
 import { MessageType } from "../common/enums/messageType";
-import ChatTextInput from "./ChatTextInput"
+import ChatTextInput from "./ChatTextInput";
 import { BotService } from "../services/botService";
+import { useContextState } from "../ContexState";
 
 const Chat = () => {
-  const [messages, setMessages] = useState<IMessage[]>([
-    { text: "¡Hola usuario! ¿Con qué puedo ayudarte?", type: MessageType.Bot },
-  ]);
+  const { contextState, setContextState } = useContextState();
   const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef<any>();
 
+  useEffect(() => {
+    if (!contextState.messages?.length)
+      setContextState((state) => ({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
+            text: `¡Hola${
+              state.user ? ` ${state.user.firstName}` : ""
+            }! ¿Con qué puedo ayudarte?`,
+            type: MessageType.Bot,
+          },
+        ],
+      }));
+  }, [contextState.messages]);
+
+  const formatAnswer = (text: string) => {
+    text = text.replace(
+      /{user}/g,
+      contextState.user ? ` ${contextState.user.firstName}` : ""
+    );
+
+    text = text.replace(
+      /{carnetInstructions}/g,
+      contextState.user
+        ? 'dirigirte a la sección "Mi carnet"'
+        : 'iniciar sesión y dirigirte a la sección "Mi carnet"'
+    );
+
+    return text;
+  };
+
   const sendMessage = async (inputText: string) => {
     setLoading(true);
-    setMessages((messages) => [
-      ...messages,
-      { text: inputText, type: MessageType.User },
-    ]);
+    setContextState((state) => ({
+      ...state,
+      messages: [
+        ...state.messages,
+        { text: inputText, type: MessageType.User },
+      ],
+    }));
 
     let answer = await BotService.fetchChatbotResponse(inputText);
 
-    setTimeout(() => {
-      setMessages((messages) => [
-        ...messages,
-        { text: answer, type: MessageType.Bot },
-      ]);
-      setLoading(false);
-    }, 1000);
+    setContextState((state) => ({
+      ...state,
+      messages: [
+        ...state.messages,
+        { text: formatAnswer(answer), type: MessageType.Bot },
+      ],
+    }));
+    setLoading(false);
   };
 
   return (
@@ -40,7 +74,7 @@ const Chat = () => {
           scrollViewRef.current.scrollToEnd({ animated: true })
         }
       >
-        {messages.map((message, index) => (
+        {contextState.messages?.map((message, index) => (
           <Message message={message} key={index} />
         ))}
         {loading && (
