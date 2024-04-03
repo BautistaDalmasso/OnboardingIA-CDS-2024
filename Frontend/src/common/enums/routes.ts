@@ -1,6 +1,8 @@
 export enum Routes {
-  Home = "Home",
+  Home = "Inicio",
   Chat = "Chat",
-  Profile="Profile",
-  SignUp="SignUp",
+  Login = "Iniciar Sesión",
+  Signup = "Registrarse",
+  Logout = "Cerrar Sesión",
+  Licence = "Mi carnet",
 }

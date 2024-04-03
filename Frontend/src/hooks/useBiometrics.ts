@@ -29,7 +29,7 @@ const useBiometrics = () => {
   const authenticate = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Authenticate using biometrics",
+        promptMessage: "Coloca tu huella",
       });
 
       if (result.success) {
