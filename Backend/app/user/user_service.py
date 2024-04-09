@@ -10,6 +10,7 @@ from passlib.context import CryptContext
 from ..database import DATABASE_PATH
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
+from .user_dtos import UpdateUserDniDTO
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -48,12 +49,14 @@ def authenticate_user(email: str, password: str):
             lastName=user_data[2],
             email=user_data[3],
             password=user_data[4],
+            dni=user_data[7],
         )
         if pwd_context.verify(password, user.password):
             return {
                 "email": user.email,
                 "firstName": user.firstName,
                 "lastName": user.lastName,
+                "dni": user.dni,
             }
 
 
@@ -80,6 +83,7 @@ def get_user_by_email(email: str):
             password=user_data[4],
             publicRSA=user_data[5],
             challengeKey=user_data[6],
+            dni=user_data[7],
         )
         return user
 
@@ -131,3 +135,22 @@ def verify_challenge(user: User, encrypted_text: list[int]):
 def generate_random_challenge(length: int):
     letters_and_digits = string.ascii_letters + string.digits
     return "".join((random.choice(letters_and_digits) for i in range(length)))
+
+
+def update_user(user: UpdateUserDniDTO, email: str):
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    try:
+        c.execute(
+            """UPDATE users SET dni = ?
+                        WHERE email = ?""",
+            (user.dni, email),
+        )
+        conn.commit()
+        return {
+            "dni": user.dni,
+        }
+    except sqlite3.IntegrityError:
+        return {"error": "No se pudo actualizar el usuario"}
+    finally:
+        conn.close()
