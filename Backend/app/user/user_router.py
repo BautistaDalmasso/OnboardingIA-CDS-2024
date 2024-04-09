@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
+from app.user import user_service
+
 from ..middlewares import verify_token
 from .user_dtos import (
     CheckChallengeDTO, CreateUserDTO, LoginDTO, UpdateRSADTO, UpdateUserDniDTO
 )
-from .user_service import user_service
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
