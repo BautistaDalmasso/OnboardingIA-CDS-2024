@@ -20,3 +20,7 @@ class CheckChallengeDTO(BaseModel):
 
 class UpdateRSADTO(BaseModel):
     publicRSA: str
+
+
+class UpdateUserDniDTO(BaseModel):
+    dni: str

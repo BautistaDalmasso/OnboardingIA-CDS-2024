@@ -9,6 +9,7 @@ export interface IUser {
   firstName: string;
   lastName: string;
   email: string;
+  dni?: string;
 }
 
 export interface ILoginResponse {
@@ -34,4 +35,8 @@ export interface IChallenge {
 export interface IVerifyChallenge {
   email: string;
   challenge: number[];
+}
+
+export interface IUpdateUserDNI {
+  dni: string;
 }

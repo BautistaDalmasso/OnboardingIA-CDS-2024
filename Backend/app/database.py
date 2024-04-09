@@ -18,7 +18,8 @@ def initialize_database():
                   email TEXT UNIQUE,
                   password TEXT,
                   publicRSA TEXT,
-                  challengeKey TEXT)"""
+                  challengeKey TEXT,
+                  dni TEXT)"""
     )
     conn.commit()
     conn.close()

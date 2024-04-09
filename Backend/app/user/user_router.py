@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
-from app.user import user_service
-
 from ..middlewares import verify_token
-from .user_dtos import CheckChallengeDTO, CreateUserDTO, LoginDTO, UpdateRSADTO
+from .user_dtos import (
+    CheckChallengeDTO, CreateUserDTO, LoginDTO, UpdateRSADTO, UpdateUserDniDTO
+)
+from .user_service import user_service
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -75,5 +76,18 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
             "email": user.email,
             "firstName": user.firstName,
             "lastName": user.lastName,
+            "dni": user.dni,
         },
     }
+
+
+@router.patch("/dni")
+async def create_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
+    user_email: str = await verify_token(token.credentials)
+
+    result = user_service.update_user(user, user_email)
+
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    return result

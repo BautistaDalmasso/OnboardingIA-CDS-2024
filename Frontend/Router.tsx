@@ -10,7 +10,7 @@ import { Routes } from "./src/common/enums/routes";
 import ChatHeader from "./src/components/ChatHeader";
 import { useContextState } from "./src/ContexState";
 import Logout from "./src/components/Logout";
-import Licence from "./src/components/Licence";
+import Profile from "./src/components/Profile";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -40,7 +40,7 @@ const Router = () => {
         )}
         {contextState.user !== null && (
           <>
-            <Stack.Screen name={Routes.Licence} component={Licence} />
+            <Stack.Screen name={Routes.Licence} component={Profile} />
             <Stack.Screen name={Routes.Logout} component={Logout} />
           </>
         )}

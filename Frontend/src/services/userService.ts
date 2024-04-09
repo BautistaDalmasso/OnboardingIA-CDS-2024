@@ -5,6 +5,8 @@ import {
   ILogin,
   ILoginResponse,
   IUpdateKey,
+  IUpdateUserDNI,
+  IUser,
   IVerifyChallenge,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
@@ -57,6 +59,15 @@ export class UserService {
       url: `${this.baseRoute}/verify_challenge`,
       method: "POST",
       data: { email, challenge },
+    });
+  }
+
+  static async updateDNI(dni: string, token: string): Promise<IUser> {
+    return baseFetch<IUpdateUserDNI, IUser>({
+      url: `${this.baseRoute}/dni`,
+      method: "PATCH",
+      data: { dni },
+      token,
     });
   }
 }
