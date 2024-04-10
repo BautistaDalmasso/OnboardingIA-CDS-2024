@@ -33,13 +33,14 @@ export class UserService {
   }
 
   static async updatePublicKey(
-    publicKey: string,
+    publicRSA: string,
     token: string
   ): Promise<void> {
+
     return baseFetch<IUpdateKey, void>({
       url: `${this.baseRoute}/rsa`,
       method: "POST",
-      data: { publicRSA: publicKey },
+      data: { publicRSA },
       token,
     });
   }

@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from typing import Any
 
 DATABASE_PATH = "sqlite.db"
 
@@ -23,3 +24,24 @@ def initialize_database():
     )
     conn.commit()
     conn.close()
+
+
+def query_database(query: str, args: tuple[Any]) -> list[Any]:
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+        c = conn.cursor()
+        c.execute(query, args)
+        data = c.fetchone()
+        return data
+    finally:
+        conn.close()
+
+
+def execute_in_database(command: str, args: tuple[Any]) -> None:
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+
+        with conn:
+            conn.execute(command, args)
+    finally:
+        conn.close
