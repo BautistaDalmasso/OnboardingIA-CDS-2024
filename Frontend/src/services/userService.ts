@@ -1,3 +1,5 @@
+import { getUniqueId } from "react-native-device-info";
+
 import { ServerAddress } from "../common/consts/serverAddress";
 import {
   IChallenge,
@@ -36,10 +38,12 @@ export class UserService {
     publicKey: string,
     token: string
   ): Promise<void> {
+    const deviceUID = await getUniqueId();
+
     return baseFetch<IUpdateKey, void>({
       url: `${this.baseRoute}/rsa`,
       method: "POST",
-      data: { publicRSA: publicKey },
+      data: { publicRSA: publicKey, deviceUID: deviceUID },
       token,
     });
   }
@@ -55,10 +59,12 @@ export class UserService {
     email: string,
     challenge: number[]
   ): Promise<ILoginResponse> {
+    const deviceUID = await getUniqueId();
+
     return baseFetch<IVerifyChallenge, ILoginResponse>({
       url: `${this.baseRoute}/verify_challenge`,
       method: "POST",
-      data: { email, challenge },
+      data: { email, deviceUID, challenge },
     });
   }
 

@@ -15,11 +15,13 @@ class LoginDTO(BaseModel):
 
 class CheckChallengeDTO(BaseModel):
     email: str
+    deviceUID: str
     challenge: list[int]
 
 
 class UpdateRSADTO(BaseModel):
     publicRSA: str
+    deviceUID: str
 
 
 class UpdateUserDniDTO(BaseModel):

@@ -88,15 +88,62 @@ def get_user_by_email(email: str):
         return user
 
 
-def update_public_rsa(user_email: str, public_rsa: str):
+def update_public_rsa(user_email: str, public_rsa: str, device_uid: str):
+    if device_rsa_exists(user_email, device_uid):
+        update_existing_public_rsa(user_email, public_rsa, device_uid)
+    else:
+        create_new_public_rsa(user_email, public_rsa, device_uid)
+
+
+def device_rsa_exists(user_email: str, device_uid: str) -> bool:
     conn = sqlite3.connect(DATABASE_PATH)
     c = conn.cursor()
     c.execute(
-        """UPDATE users SET publicRSA = ? WHERE email = ?""",
-        (public_rsa, user_email),
+        """SELECT deviceRSAS WHERE email = ? AND deviceUID = ?""",
+        (user_email, device_uid),
+    )
+    deviceRSA = c.fetchone()
+    conn.commit()
+    conn.close()
+
+    return bool(deviceRSA)
+
+
+def update_existing_public_rsa(user_email: str, public_rsa: str, device_uid: str):
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute(
+        """UPDATE deviceRSAS SET publicRSA = ? WHERE email = ? AND deviceUID = ?""",
+        (public_rsa, user_email, device_uid),
     )
     conn.commit()
     conn.close()
+
+
+def create_new_public_rsa(user_email: str, public_rsa: str, device_uid: str):
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute(
+        """INSERT INTO deviceRSAS (email, deviceUID, publicRSA)
+                        VALUES (?, ?, ?, ?)""",
+        (user_email, device_uid, public_rsa),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_public_rsa(user_email: str, device_uid: str):
+    conn = sqlite3.connect(DATABASE_PATH)
+    c = conn.cursor()
+    c.execute(
+        """SELECT deviceRSAS WHERE email = ? AND deviceUID = ?""",
+        (user_email, device_uid),
+    )
+    deviceRSA = c.fetchone()
+    conn.commit()
+    conn.close()
+
+    return deviceRSA[3]
 
 
 def create_challenge(email: str):
@@ -119,11 +166,10 @@ def delete_challenge(email: str):
     conn.close()
 
 
-def verify_challenge(user: User, encrypted_text: list[int]):
-    if not user.publicRSA:
-        return False
+def verify_challenge(user: User, device_uid: str, encrypted_text: list[int]):
+    user_rsa = get_public_rsa(user.email, device_uid)
 
-    public_key = json.loads(user.publicRSA)
+    public_key = json.loads(user_rsa)
 
     e, n = public_key["e"], public_key["n"]
     decrypted_text = [chr((char**e) % n) for char in encrypted_text]

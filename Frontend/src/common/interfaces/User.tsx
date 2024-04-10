@@ -25,6 +25,7 @@ export interface ILogin {
 
 export interface IUpdateKey {
   publicRSA: string;
+  deviceUID: string;
 }
 
 export interface IChallenge {
@@ -34,6 +35,7 @@ export interface IChallenge {
 
 export interface IVerifyChallenge {
   email: string;
+  deviceUID: string;
   challenge: number[];
 }
 

@@ -42,7 +42,9 @@ async def login_for_access_token(loginData: LoginDTO):
 async def update_rsa(updateRSADTO: UpdateRSADTO, token=Depends(HTTPBearer())):
     user_email: str = await verify_token(token.credentials)
 
-    user_service.update_public_rsa(user_email, updateRSADTO.publicRSA)
+    user_service.update_public_rsa(
+        user_email, updateRSADTO.publicRSA, updateRSADTO.deviceUID
+    )
 
 
 @router.get("/challenge")
@@ -63,7 +65,9 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
     if not user:
         raise HTTPException(status_code=401, detail="El dispositivo no esta autorizado")
 
-    valid_challenge = user_service.verify_challenge(user, challengeDTO.challenge)
+    valid_challenge = user_service.verify_challenge(
+        user, challengeDTO.deviceUID, challengeDTO.challenge
+    )
 
     if not valid_challenge:
         raise HTTPException(status_code=401, detail="El dispositivo no esta autorizado")
