@@ -91,11 +91,20 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 
 @router.patch("/dni")
 async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
-    user_email: str = await verify_token(token.credentials)
+    user_email = await verify_token(token.credentials)
 
     result = user_service.update_user(user, user_email)
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
+
+    return result
+
+
+@router.get("/deviceUID")
+async def generate_device_UID(user_email: str):
+    result = user_service.generate_new_uid(user_email)
+
+    print(f"UID: {result}")
 
     return result

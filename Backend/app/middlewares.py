@@ -4,7 +4,7 @@ from jwt import PyJWTError, decode
 from .jwt_config import ALGORITHM, SECRET_KEY
 
 
-async def verify_token(token: str):
+async def verify_token(token: str) -> str:
     if not token:
         raise HTTPException(status_code=401, detail="Invalid token")
 

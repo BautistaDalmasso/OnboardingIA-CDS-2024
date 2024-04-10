@@ -72,7 +72,8 @@ const Signup = ({ navigation }: Props) => {
 
           await UserService.updatePublicKey(
             JSON.stringify(publicKey),
-            response.access_token
+            response.access_token,
+            email
           );
 
           await SecureStore.setItemAsync(

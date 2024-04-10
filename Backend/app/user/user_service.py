@@ -112,6 +112,20 @@ def get_public_rsa(user_email: str, device_uid: str):
     return deviceRSA[3]
 
 
+def generate_new_uid(user_email: str):
+    result = {"deviceUID": 0}
+
+    latest_user_device = query_database(
+        """SELECT MAX(deviceUID) FROM deviceRSAS WHERE email = ?""", (user_email,)
+    )
+
+    print(latest_user_device)
+    if latest_user_device[0] is not None:
+        result["deviceUID"] = latest_user_device[0] + 1
+
+    return result
+
+
 def create_challenge(email: str):
     challenge = generate_random_challenge(20)
 

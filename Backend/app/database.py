@@ -25,7 +25,7 @@ def initialize_database():
         """CREATE TABLE IF NOT EXISTS deviceRSAS
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   email TEXT UNIQUE,
-                  deviceUID TEXT,
+                  deviceUID INTEGER,
                   publicRSA TEXT)"""
     )
     conn.commit()
