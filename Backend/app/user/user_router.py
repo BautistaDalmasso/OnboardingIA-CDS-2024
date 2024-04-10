@@ -90,7 +90,7 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 
 
 @router.patch("/dni")
-async def create_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
+async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
     user_email: str = await verify_token(token.credentials)
 
     result = user_service.update_user(user, user_email)

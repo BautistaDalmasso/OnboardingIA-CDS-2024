@@ -33,7 +33,7 @@ def create_user(user: User):
         return {"error": "El email ya está registrado"}
 
 
-def authenticate_user(email: str, password: str):
+def authenticate_user(email: str, password: str) -> User | None:
     user = get_user_by_email(email)
 
     if user:
