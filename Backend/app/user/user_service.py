@@ -64,9 +64,8 @@ def get_user_by_email(email: str) -> User:
             lastName=user_data[2],
             email=user_data[3],
             password=user_data[4],
-            publicRSA=user_data[5],
-            challengeKey=user_data[6],
-            dni=user_data[7],
+            challengeKey=user_data[5],
+            dni=user_data[6],
         )
         return user
 
@@ -80,7 +79,7 @@ def update_public_rsa(user_email: str, public_rsa: str, device_uid: str):
 
 def device_rsa_exists(user_email: str, device_uid: str) -> bool:
     device_rsa = query_database(
-        """SELECT deviceRSAS WHERE email = ? AND deviceUID = ?""",
+        """SELECT * FROM deviceRSAS WHERE email = ? AND deviceUID = ?""",
         (user_email, device_uid),
     )
 
@@ -99,14 +98,14 @@ def create_new_public_rsa(user_email: str, public_rsa: str, device_uid: str):
 
     execute_in_database(
         """INSERT INTO deviceRSAS (email, deviceUID, publicRSA)
-                        VALUES (?, ?, ?, ?)""",
+                        VALUES (?, ?, ?)""",
         (user_email, device_uid, public_rsa),
     )
 
 
 def get_public_rsa(user_email: str, device_uid: str):
     deviceRSA = query_database(
-        """SELECT deviceRSAS WHERE email = ? AND deviceUID = ?""",
+        """SELECT * FROM deviceRSAS WHERE email = ? AND deviceUID = ?""",
         (user_email, device_uid),
     )
 
