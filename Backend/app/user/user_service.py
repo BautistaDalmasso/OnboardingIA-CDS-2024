@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import jwt
 from passlib.context import CryptContext
 
-from ..database import DATABASE_PATH
+from ..database import execute_in_database, query_database
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
 from .user_dtos import UpdateUserDniDTO
@@ -17,15 +17,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_user(user: User):
     hashed_password = pwd_context.hash(user.password)
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
+
     try:
-        c.execute(
+        execute_in_database(
             """INSERT INTO users (firstName, lastName, email, password)
                         VALUES (?, ?, ?, ?)""",
             (user.firstName, user.lastName, user.email, hashed_password),
         )
-        conn.commit()
         return {
             "email": user.email,
             "firstName": user.firstName,
@@ -33,24 +31,12 @@ def create_user(user: User):
         }
     except sqlite3.IntegrityError:
         return {"error": "El email ya está registrado"}
-    finally:
-        conn.close()
 
 
 def authenticate_user(email: str, password: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute("""SELECT * FROM users WHERE email = ?""", (email,))
-    user_data = c.fetchone()
-    conn.close()
-    if user_data:
-        user = User(
-            firstName=user_data[1],
-            lastName=user_data[2],
-            email=user_data[3],
-            password=user_data[4],
-            dni=user_data[7],
-        )
+    user = get_user_by_email(email)
+
+    if user:
         if pwd_context.verify(password, user.password):
             return {
                 "email": user.email,
@@ -69,12 +55,9 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 
-def get_user_by_email(email: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute("""SELECT * FROM users WHERE email = ?""", (email,))
-    user_data = c.fetchone()
-    conn.close()
+def get_user_by_email(email: str) -> User:
+    user_data = query_database("""SELECT * FROM users WHERE email = ?""", (email,))
+
     if user_data:
         user = User(
             firstName=user_data[1],
@@ -96,74 +79,54 @@ def update_public_rsa(user_email: str, public_rsa: str, device_uid: str):
 
 
 def device_rsa_exists(user_email: str, device_uid: str) -> bool:
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute(
+    device_rsa = query_database(
         """SELECT deviceRSAS WHERE email = ? AND deviceUID = ?""",
         (user_email, device_uid),
     )
-    deviceRSA = c.fetchone()
-    conn.commit()
-    conn.close()
 
-    return bool(deviceRSA)
+    return bool(device_rsa)
 
 
 def update_existing_public_rsa(user_email: str, public_rsa: str, device_uid: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute(
+
+    execute_in_database(
         """UPDATE deviceRSAS SET publicRSA = ? WHERE email = ? AND deviceUID = ?""",
         (public_rsa, user_email, device_uid),
     )
-    conn.commit()
-    conn.close()
 
 
 def create_new_public_rsa(user_email: str, public_rsa: str, device_uid: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute(
+
+    execute_in_database(
         """INSERT INTO deviceRSAS (email, deviceUID, publicRSA)
                         VALUES (?, ?, ?, ?)""",
         (user_email, device_uid, public_rsa),
     )
-    conn.commit()
-    conn.close()
 
 
 def get_public_rsa(user_email: str, device_uid: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute(
+    deviceRSA = query_database(
         """SELECT deviceRSAS WHERE email = ? AND deviceUID = ?""",
         (user_email, device_uid),
     )
-    deviceRSA = c.fetchone()
-    conn.commit()
-    conn.close()
 
     return deviceRSA[3]
 
 
 def create_challenge(email: str):
     challenge = generate_random_challenge(20)
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute(
+
+    execute_in_database(
         """UPDATE users SET challengeKey = ? WHERE email = ?""", (challenge, email)
     )
-    conn.commit()
-    conn.close()
+
     return challenge
 
 
 def delete_challenge(email: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
-    c.execute("""UPDATE users SET challengeKey = ? WHERE email = ?""", (None, email))
-    conn.commit()
-    conn.close()
+    execute_in_database(
+        """UPDATE users SET challengeKey = ? WHERE email = ?""", (None, email)
+    )
 
 
 def verify_challenge(user: User, device_uid: str, encrypted_text: list[int]):
@@ -184,19 +147,15 @@ def generate_random_challenge(length: int):
 
 
 def update_user(user: UpdateUserDniDTO, email: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.cursor()
+
     try:
-        c.execute(
+        execute_in_database(
             """UPDATE users SET dni = ?
                         WHERE email = ?""",
             (user.dni, email),
         )
-        conn.commit()
         return {
             "dni": user.dni,
         }
     except sqlite3.IntegrityError:
         return {"error": "No se pudo actualizar el usuario"}
-    finally:
-        conn.close()

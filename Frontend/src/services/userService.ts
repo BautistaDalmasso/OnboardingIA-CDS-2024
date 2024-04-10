@@ -35,7 +35,7 @@ export class UserService {
   }
 
   static async updatePublicKey(
-    publicKey: string,
+    publicRSA: string,
     token: string
   ): Promise<void> {
     const deviceUID = await getUniqueId();
@@ -43,7 +43,7 @@ export class UserService {
     return baseFetch<IUpdateKey, void>({
       url: `${this.baseRoute}/rsa`,
       method: "POST",
-      data: { publicRSA: publicKey, deviceUID: deviceUID },
+      data: { publicRSA, deviceUID },
       token,
     });
   }

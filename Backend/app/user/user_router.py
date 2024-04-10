@@ -6,7 +6,11 @@ from app.user import user_service
 
 from ..middlewares import verify_token
 from .user_dtos import (
-    CheckChallengeDTO, CreateUserDTO, LoginDTO, UpdateRSADTO, UpdateUserDniDTO
+    CheckChallengeDTO,
+    CreateUserDTO,
+    LoginDTO,
+    UpdateRSADTO,
+    UpdateUserDniDTO,
 )
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -49,9 +53,8 @@ async def update_rsa(updateRSADTO: UpdateRSADTO, token=Depends(HTTPBearer())):
 
 @router.get("/challenge")
 async def generate_challenge(user_email: str):
-    print(user_email)
     user = user_service.get_user_by_email(user_email)
-    print(user)
+
     if not user:
         raise HTTPException(status_code=401, detail="El dispositivo no esta autorizado")
 
