@@ -62,16 +62,19 @@ const Signup = ({ navigation }: Props) => {
         lastName,
       });
 
+
       if (response.access_token) {
         if (isBiometricAvailable) {
           const autenticated = await authenticate();
           if (!autenticated) return;
 
           const { privateKey, publicKey } = generateKeyPair();
+
           await UserService.updatePublicKey(
             JSON.stringify(publicKey),
             response.access_token
           );
+
           await SecureStore.setItemAsync(
             "privateKey",
             JSON.stringify(privateKey)
