@@ -9,5 +9,4 @@ class User(BaseModel):
     email: str
     password: str
     dni: Optional[str] = None
-    publicRSA: Optional[str] = None
     challengeKey: Optional[str] = None

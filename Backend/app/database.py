@@ -18,9 +18,15 @@ def initialize_database():
                   lastName TEXT,
                   email TEXT UNIQUE,
                   password TEXT,
-                  publicRSA TEXT,
                   challengeKey TEXT,
                   dni TEXT)"""
+    )
+    c.execute(
+        """CREATE TABLE IF NOT EXISTS deviceRSAS
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  email TEXT UNIQUE,
+                  deviceUID INTEGER,
+                  publicRSA TEXT)"""
     )
     conn.commit()
     conn.close()

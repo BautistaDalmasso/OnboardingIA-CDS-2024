@@ -1,3 +1,5 @@
+import * as SecureStore from "expo-secure-store";
+
 import { ServerAddress } from "../common/consts/serverAddress";
 import {
   IChallenge,
@@ -8,8 +10,10 @@ import {
   IUpdateUserDNI,
   IUser,
   IVerifyChallenge,
+  IDeviceUIDResponse,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
+
 
 export class UserService {
   private static baseRoute: string = `${ServerAddress}users`;
@@ -34,13 +38,20 @@ export class UserService {
 
   static async updatePublicKey(
     publicRSA: string,
-    token: string
+    token: string,
+    email: string
   ): Promise<void> {
+    const deviceUID = (await this.getUniqueId(email)).deviceUID;
+
+    await SecureStore.setItemAsync(
+        `deviceUID-${email.replace("@", "_")}`,
+        deviceUID.toString()
+    );
 
     return baseFetch<IUpdateKey, void>({
       url: `${this.baseRoute}/rsa`,
       method: "POST",
-      data: { publicRSA },
+      data: { publicRSA, deviceUID },
       token,
     });
   }
@@ -56,10 +67,12 @@ export class UserService {
     email: string,
     challenge: number[]
   ): Promise<ILoginResponse> {
+    const deviceUID = (await this.getUniqueId(email)).deviceUID;
+
     return baseFetch<IVerifyChallenge, ILoginResponse>({
       url: `${this.baseRoute}/verify_challenge`,
       method: "POST",
-      data: { email, challenge },
+      data: { email, deviceUID, challenge },
     });
   }
 
@@ -71,4 +84,17 @@ export class UserService {
       token,
     });
   }
+
+  static async getUniqueId(email: string): Promise<IDeviceUIDResponse> {
+    const storedDeviceUID = await SecureStore.getItemAsync(`deviceUID-${email.replace("@", "_")}`)
+
+    console.log(`UID: ${storedDeviceUID}`)
+    if (storedDeviceUID) {
+        return { deviceUID : parseInt(storedDeviceUID) }
+    }
+    return baseFetch<void, IDeviceUIDResponse>({
+        url: `${this.baseRoute}/deviceUID?user_email=${email}`,
+        method: "GET",
+    });
+  };
 }

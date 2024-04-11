@@ -46,7 +46,9 @@ async def login_for_access_token(loginData: LoginDTO):
 async def update_rsa(updateRSADTO: UpdateRSADTO, token=Depends(HTTPBearer())):
     user_email: str = await verify_token(token.credentials)
 
-    user_service.update_public_rsa(user_email, updateRSADTO.publicRSA)
+    user_service.update_public_rsa(
+        user_email, updateRSADTO.publicRSA, updateRSADTO.deviceUID
+    )
 
 
 @router.get("/challenge")
@@ -66,7 +68,9 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
     if not user:
         raise HTTPException(status_code=401, detail="El dispositivo no esta autorizado")
 
-    valid_challenge = user_service.verify_challenge(user, challengeDTO.challenge)
+    valid_challenge = user_service.verify_challenge(
+        user, challengeDTO.deviceUID, challengeDTO.challenge
+    )
 
     if not valid_challenge:
         raise HTTPException(status_code=401, detail="El dispositivo no esta autorizado")
@@ -86,12 +90,19 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 
 
 @router.patch("/dni")
-async def create_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
-    user_email: str = await verify_token(token.credentials)
+async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
+    user_email = await verify_token(token.credentials)
 
     result = user_service.update_user(user, user_email)
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
+
+    return result
+
+
+@router.get("/deviceUID")
+async def generate_device_UID(user_email: str):
+    result = user_service.generate_new_uid(user_email)
 
     return result
