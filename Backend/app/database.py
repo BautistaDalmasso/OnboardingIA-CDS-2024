@@ -26,7 +26,8 @@ def initialize_database():
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   email TEXT,
                   deviceUID INTEGER,
-                  publicRSA TEXT)"""
+                  publicRSA TEXT,
+                  UNIQUE(email, deviceUID))"""
     )
     conn.commit()
     conn.close()
