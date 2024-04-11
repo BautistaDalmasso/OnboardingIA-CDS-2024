@@ -24,7 +24,7 @@ def initialize_database():
     c.execute(
         """CREATE TABLE IF NOT EXISTS deviceRSAS
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  email TEXT UNIQUE,
+                  email TEXT,
                   deviceUID INTEGER,
                   publicRSA TEXT)"""
     )
