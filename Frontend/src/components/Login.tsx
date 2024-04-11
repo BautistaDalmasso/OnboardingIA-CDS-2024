@@ -25,7 +25,7 @@ const Login = ({ navigation }: Props) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { contextState, setContextState } = useContextState();
+  const { setContextState } = useContextState();
   const { authenticate } = useBiometrics();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,7 +39,7 @@ const Login = ({ navigation }: Props) => {
           "Por favor",
           "Ingrese un correo valido y una contraseña de más de 6 caracteres."
         );
-        return;
+        return null;
       }
 
       const response = await UserService.login(email, password);
@@ -55,13 +55,17 @@ const Login = ({ navigation }: Props) => {
 
         setEmail("");
         setPassword("");
+        return response.access_token;
       }
 
       if (response.detail) {
         Alert.alert("Error", response.detail);
       }
+
+      return null;
     } catch (error) {
       console.error("Error logging in:", error);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -136,9 +140,9 @@ const Login = ({ navigation }: Props) => {
   };
 
   const handleFingerprintRegistration = async () => {
-    await handleLogin();
+    const accessToken = await handlePasswordLogin();
 
-    if (!contextState.accessToken) {
+    if (accessToken === null) {
         return;
     }
 
@@ -152,7 +156,7 @@ const Login = ({ navigation }: Props) => {
 
     await UserService.updatePublicKey(
       JSON.stringify(publicKey),
-      contextState.accessToken as string,
+      accessToken,
       email
     );
 
