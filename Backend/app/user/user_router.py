@@ -105,6 +105,4 @@ async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
 async def generate_device_UID(user_email: str):
     result = user_service.generate_new_uid(user_email)
 
-    print(f"UID: {result}")
-
     return result

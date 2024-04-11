@@ -44,7 +44,7 @@ export class UserService {
     const deviceUID = (await this.getUniqueId(email)).deviceUID;
 
     await SecureStore.setItemAsync(
-        `deviceUID-${email}`,
+        `deviceUID-${email.replace("@", "_")}`,
         deviceUID.toString()
     );
 
@@ -86,9 +86,9 @@ export class UserService {
   }
 
   static async getUniqueId(email: string): Promise<IDeviceUIDResponse> {
-    const storedDeviceUID = await SecureStore.getItemAsync(`deviceUID-${email}`)
+    const storedDeviceUID = await SecureStore.getItemAsync(`deviceUID-${email.replace("@", "_")}`)
 
-    console.log(storedDeviceUID)
+    console.log(`UID: ${storedDeviceUID}`)
     if (storedDeviceUID) {
         return { deviceUID : parseInt(storedDeviceUID) }
     }

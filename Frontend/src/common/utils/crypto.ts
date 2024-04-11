@@ -14,8 +14,9 @@ export interface IKeyPair {
 }
 
 const generatePrimeNumber = (): number => {
-  const num = Math.floor(Math.random() * 100) + 50;
+  const num = Math.floor(Math.random() * 50) + 50;
   if (isPrime(num)) {
+    console.log(`Prime: ${num}`)
     return num;
   } else {
     return generatePrimeNumber();
@@ -50,6 +51,8 @@ export const generateKeyPair = (): IKeyPair => {
       break;
     }
   }
+
+  console.log(`Public Key: ${e}, ${n}`)
 
   return {
     publicKey: { e, n },

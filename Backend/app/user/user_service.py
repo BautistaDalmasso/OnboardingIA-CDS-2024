@@ -71,6 +71,7 @@ def get_user_by_email(email: str) -> User:
 
 
 def update_public_rsa(user_email: str, public_rsa: str, device_uid: str):
+
     if device_rsa_exists(user_email, device_uid):
         update_existing_public_rsa(user_email, public_rsa, device_uid)
     else:
@@ -119,7 +120,6 @@ def generate_new_uid(user_email: str):
         """SELECT MAX(deviceUID) FROM deviceRSAS WHERE email = ?""", (user_email,)
     )
 
-    print(latest_user_device)
     if latest_user_device[0] is not None:
         result["deviceUID"] = latest_user_device[0] + 1
 
