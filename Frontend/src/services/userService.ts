@@ -88,7 +88,6 @@ export class UserService {
   static async getUniqueId(email: string): Promise<IDeviceUIDResponse> {
     const storedDeviceUID = await SecureStore.getItemAsync(`deviceUID-${email.replace("@", "_")}`)
 
-    console.log(`UID: ${storedDeviceUID}`)
     if (storedDeviceUID) {
         return { deviceUID : parseInt(storedDeviceUID) }
     }

@@ -19,7 +19,7 @@ const ChatHeader = ({ navigation }: StackHeaderProps) => {
         resizeMode="contain"
       />
       <View>
-        <Text style={styles.botName}>Skynet V0.2</Text>
+        <Text style={styles.botName}>Skynet V1.0</Text>
         <View style={styles.statusContainer}>
           <View style={styles.statusIndicator} />
           <Text style={styles.status}>Online</Text>

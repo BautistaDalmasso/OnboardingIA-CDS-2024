@@ -104,13 +104,15 @@ def create_new_public_rsa(user_email: str, public_rsa: str, device_uid: str):
     )
 
 
-def get_public_rsa(user_email: str, device_uid: str):
+def get_public_rsa(user_email: str, device_uid: str) -> str | None:
     deviceRSA = query_database(
         """SELECT * FROM deviceRSAS WHERE email = ? AND deviceUID = ?""",
         (user_email, device_uid),
     )
 
-    return deviceRSA[3]
+    if deviceRSA is not None:
+        return deviceRSA[3]
+    return None
 
 
 def generate_new_uid(user_email: str):
@@ -144,6 +146,9 @@ def delete_challenge(email: str):
 
 def verify_challenge(user: User, device_uid: str, encrypted_text: list[int]):
     user_rsa = get_public_rsa(user.email, device_uid)
+
+    if user_rsa is None:
+        return False
 
     public_key = json.loads(user_rsa)
 

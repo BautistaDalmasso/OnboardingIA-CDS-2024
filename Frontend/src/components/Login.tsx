@@ -13,7 +13,7 @@ import * as SecureStore from "expo-secure-store";
 import { Routes } from "../../src/common/enums/routes";
 import { UserService } from "../services/userService";
 import { useContextState } from "../ContexState";
-import { encryptWithPrivateKey } from "../common/utils/crypto";
+import { encryptWithPrivateKey, generateKeyPair } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
 
 interface Props {
@@ -39,7 +39,7 @@ const Login = ({ navigation }: Props) => {
           "Por favor",
           "Ingrese un correo valido y una contraseña de más de 6 caracteres."
         );
-        return;
+        return null;
       }
 
       const response = await UserService.login(email, password);
@@ -55,13 +55,17 @@ const Login = ({ navigation }: Props) => {
 
         setEmail("");
         setPassword("");
+        return response.access_token;
       }
 
       if (response.detail) {
         Alert.alert("Error", response.detail);
       }
+
+      return null;
     } catch (error) {
       console.error("Error logging in:", error);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -135,6 +139,33 @@ const Login = ({ navigation }: Props) => {
     }
   };
 
+  const handleFingerprintRegistration = async () => {
+    const accessToken = await handlePasswordLogin();
+
+    if (accessToken === null) {
+        return;
+    }
+
+    const successBiometric = await authenticate();
+    if (!successBiometric) {
+      Alert.alert("Error", "Autenticación fallida");
+      return;
+    }
+
+    const { privateKey, publicKey } = generateKeyPair();
+
+    await UserService.updatePublicKey(
+      JSON.stringify(publicKey),
+      accessToken,
+      email
+    );
+
+    await SecureStore.setItemAsync(
+      "privateKey",
+      JSON.stringify(privateKey)
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Ingresa a tu cuenta</Text>
@@ -167,6 +198,20 @@ const Login = ({ navigation }: Props) => {
           />
         )}
       </TouchableOpacity>
+      {showPassword && (
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleFingerprintRegistration}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>Registrar Huella</Text>
+        <Image
+          source={require("../assets/fingerprint.png")}
+          style={styles.fingerprintIcon}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+      )}
       <Text
         style={styles.linkText}
         onPress={() => setShowPassword(!showPassword)}
