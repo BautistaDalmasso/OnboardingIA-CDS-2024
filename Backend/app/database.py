@@ -51,4 +51,4 @@ def execute_in_database(command: str, args: tuple[Any]) -> None:
         with conn:
             conn.execute(command, args)
     finally:
-        conn.close
+        conn.close()
