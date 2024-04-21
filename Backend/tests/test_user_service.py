@@ -5,6 +5,8 @@ from app import database
 from app.user import user_service
 from app.file_paths import TEST_DB_PATH
 
+from tests.common_fixtures import db_path
+
 
 # IMPORTANT: the `db_path` fixture handles initializing and then deleting the test db.
 # Make sure to use it in your tests that rely on a database even if you won't use the `db_path` path itself.
@@ -100,18 +102,6 @@ def test_generate_new_uid_with_a_previous_uid(
     user_service.update_public_rsa(user_1.email, public_key_1, 0)
 
     assert user_service.generate_new_uid(user_1.email) == {"deviceUID": 1}
-
-
-@pytest.fixture
-def db_path():
-    """Initializes a test database and deletes it after the test is finished."""
-    database.initialize_database(TEST_DB_PATH)
-    try:
-        database.default_database = TEST_DB_PATH
-
-        yield TEST_DB_PATH
-    finally:
-        TEST_DB_PATH.unlink()
 
 
 @pytest.fixture
