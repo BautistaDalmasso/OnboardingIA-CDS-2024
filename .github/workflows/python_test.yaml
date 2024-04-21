@@ -27,6 +27,9 @@ jobs:
         run: |
           echo '{"request_origins": ["*"], "server_ip": "0.0.0.0", "server_port": 8080, "using_chatbot": false, "jwt_secret": "testing"}' > Backend/app/server_config.json
 
+      - name: Display cache directory contents (before)
+        run: ls -R ~/.cache/pip
+
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
@@ -34,6 +37,9 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('Backend/**/*requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+
+      - name: Display cache directory contents (after)
+        run: ls -R ~/.cache/pip
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v3
@@ -45,6 +51,9 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f Backend/dev-requirements.txt ]; then pip install -r Backend/dev-requirements.txt; fi
           if [ -f Backend/requirements.txt ]; then pip install -r Backend/requirements.txt; fi
+
+      - name: Display cache directory contents (last)
+        run: ls -R ~/.cache/pip
 
       - name: Test with pytest
         run: |
