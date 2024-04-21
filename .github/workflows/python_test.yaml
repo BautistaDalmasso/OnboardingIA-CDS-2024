@@ -23,6 +23,16 @@ jobs:
       - name: Checks out repository
         uses: actions/checkout@v3
 
+      - name: Create config file
+        run: |
+          echo '{
+              "request_origins": ["*"],
+              "server_ip": "0.0.0.0",
+              "server_port": 8080,
+              "using_chatbot": false,
+              "jwt_secret": "testing"
+          }' > Backend/app/server_config.json
+
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
