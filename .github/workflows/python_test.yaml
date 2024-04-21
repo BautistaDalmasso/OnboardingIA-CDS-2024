@@ -25,13 +25,7 @@ jobs:
 
       - name: Create config file
         run: |
-          echo '{
-              "request_origins": ["*"],
-              "server_ip": "0.0.0.0",
-              "server_port": 8080,
-              "using_chatbot": false,
-              "jwt_secret": "testing"
-          }' > Backend/app/server_config.json
+          echo '{"request_origins": ["*"], "server_ip": "0.0.0.0", "server_port": 8080, "using_chatbot": false, "jwt_secret": "testing"}' > Backend/app/server_config.json
 
       - name: Cache dependencies
         uses: actions/cache@v2
@@ -39,7 +33,7 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('Backend/**/*requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-pip-${{ hashFiles('Backend/**/*requirements.txt') }}
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v3
@@ -54,4 +48,5 @@ jobs:
 
       - name: Test with pytest
         run: |
-          pytest Backend/tests/
+          cd Backend
+          pytest tests/
