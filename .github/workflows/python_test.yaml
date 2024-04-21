@@ -27,9 +27,6 @@ jobs:
         run: |
           echo '{"request_origins": ["*"], "server_ip": "0.0.0.0", "server_port": 8080, "using_chatbot": false, "jwt_secret": "testing"}' > Backend/app/server_config.json
 
-      - name: Display cache directory contents (before)
-        run: ls -R ~/.cache/pip
-
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
