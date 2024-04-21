@@ -1,15 +1,15 @@
-import os
+from pathlib import Path
 import sqlite3
 from typing import Any
 
-DATABASE_PATH = "sqlite.db"
+from app.file_paths import DATABASE_PATH
 
 
-def initialize_database():
-    if not os.path.exists(DATABASE_PATH):
-        open(DATABASE_PATH, "a").close()
+def initialize_database(db_path: Path) -> None:
+    if not db_path.exists():
+        open(db_path, "a").close()
 
-    conn = sqlite3.connect(DATABASE_PATH)
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute(
         """CREATE TABLE IF NOT EXISTS users
@@ -33,9 +33,11 @@ def initialize_database():
     conn.close()
 
 
-def query_database(query: str, args: tuple[Any]) -> list[Any]:
+def query_database(
+    query: str, args: tuple[Any], db_path: Path = DATABASE_PATH
+) -> list[Any]:
     try:
-        conn = sqlite3.connect(DATABASE_PATH)
+        conn = sqlite3.connect(db_path)
         c = conn.cursor()
         c.execute(query, args)
         data = c.fetchone()
@@ -44,9 +46,11 @@ def query_database(query: str, args: tuple[Any]) -> list[Any]:
         conn.close()
 
 
-def execute_in_database(command: str, args: tuple[Any]) -> None:
+def execute_in_database(
+    command: str, args: tuple[Any], db_path: Path = DATABASE_PATH
+) -> None:
     try:
-        conn = sqlite3.connect(DATABASE_PATH)
+        conn = sqlite3.connect(db_path)
 
         with conn:
             conn.execute(command, args)

@@ -6,6 +6,7 @@ from app.ai.chatbot_router import router as chatbot_router
 from app.database import initialize_database
 from app.server_config import ServerConfig
 from app.user.user_router import router as user_router
+from app.file_paths import DATABASE_PATH
 
 
 class QuestionRequest(BaseModel):
@@ -28,4 +29,4 @@ app.add_middleware(
 app.include_router(chatbot_router)
 app.include_router(user_router)
 
-initialize_database()
+initialize_database(DATABASE_PATH)
