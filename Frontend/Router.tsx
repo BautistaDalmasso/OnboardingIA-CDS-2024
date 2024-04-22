@@ -11,6 +11,7 @@ import ChatHeader from "./src/components/ChatHeader";
 import { useContextState } from "./src/ContexState";
 import Logout from "./src/components/Logout";
 import Profile from "./src/components/Profile";
+import LoginFingerPrint from "./src/components/LoginFingerprint";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -36,17 +37,22 @@ const Router = () => {
           <>
             <Drawer.Screen name={Routes.Login} component={Login} />
             <Stack.Screen name={Routes.Signup} component={Signup} />
+            <Stack.Screen name={Routes.LoginFingerprint} component={LoginFingerPrint} />
+           
           </>
         )}
         {contextState.user !== null && (
           <>
             <Stack.Screen name={Routes.Licence} component={Profile} />
-            <Stack.Screen name={Routes.Logout} component={Logout} />
+            <Stack.Screen name={Routes.Logout} component={Logout} /> 
+            <Stack.Screen name={Routes.Licence} component={Profile} />
           </>
         )}
       </Drawer.Navigator>
+      
     </NavigationContainer>
   );
 };
 
 export default Router;
+
