@@ -24,17 +24,15 @@ const Router = () => {
         screenOptions={{ headerTitle: "", headerTransparent: true }}
       >
         <Drawer.Screen name={Routes.Home} component={Home} />
-        <Stack.Screen
-          name={Routes.Chat}
-          component={Chat}
+         <Stack.Screen name={Routes.Login} component={Login}
           options={{
             header: (props) => <ChatHeader {...props} />,
             headerTransparent: false,
           }}
-        />
+         />
         {contextState.user === null && (
           <>
-            <Drawer.Screen name={Routes.Login} component={Login} />
+            
             <Stack.Screen name={Routes.Signup} component={Signup} />
           </>
         )}
