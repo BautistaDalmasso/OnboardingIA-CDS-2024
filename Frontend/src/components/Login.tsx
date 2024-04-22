@@ -1,3 +1,4 @@
+import { NavigationProp } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
   View,
@@ -7,13 +8,18 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+import { UserService } from "../services/userService";
+import { useContextState } from "../ContexState";
+import { Routes } from "../../src/common/enums/routes";
 
+interface Props {
+  navigation: NavigationProp<any, any>;
+}
 
-
-const Login = () => {
+const Login = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
- 
+  const { setContextState } = useContextState();
   const [loading, setLoading] = useState(false);
   
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
