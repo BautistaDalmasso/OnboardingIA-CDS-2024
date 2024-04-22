@@ -1,0 +1,7 @@
+{
+    "request_origins": ["*"],
+    "server_ip": "0.0.0.0",
+    "server_port": 8080,
+    "mongodb_uri": "",
+    "mongodb_database": "facial_recognition"
+}
