@@ -17,6 +17,9 @@ class ServerConfig:
     def get_server_port(self) -> int:
         return self._configs["server_port"]
 
+    def is_using_chatbot(self) -> bool:
+        return self._configs["using_chatbot"]
+
     def get_jwt_secret(self) -> int:
         return self._configs["jwt_secret"]
 

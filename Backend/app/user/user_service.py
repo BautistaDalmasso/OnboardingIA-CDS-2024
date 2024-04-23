@@ -70,7 +70,7 @@ def get_user_by_email(email: str) -> User:
         return user
 
 
-def update_public_rsa(user_email: str, public_rsa: str, device_uid: str):
+def update_public_rsa(user_email: str, public_rsa: str, device_uid: int):
 
     if device_rsa_exists(user_email, device_uid):
         update_existing_public_rsa(user_email, public_rsa, device_uid)
@@ -78,7 +78,7 @@ def update_public_rsa(user_email: str, public_rsa: str, device_uid: str):
         create_new_public_rsa(user_email, public_rsa, device_uid)
 
 
-def device_rsa_exists(user_email: str, device_uid: str) -> bool:
+def device_rsa_exists(user_email: str, device_uid: int) -> bool:
     device_rsa = query_database(
         """SELECT * FROM deviceRSAS WHERE email = ? AND deviceUID = ?""",
         (user_email, device_uid),
@@ -87,7 +87,7 @@ def device_rsa_exists(user_email: str, device_uid: str) -> bool:
     return bool(device_rsa)
 
 
-def update_existing_public_rsa(user_email: str, public_rsa: str, device_uid: str):
+def update_existing_public_rsa(user_email: str, public_rsa: str, device_uid: int):
 
     execute_in_database(
         """UPDATE deviceRSAS SET publicRSA = ? WHERE email = ? AND deviceUID = ?""",
@@ -95,7 +95,7 @@ def update_existing_public_rsa(user_email: str, public_rsa: str, device_uid: str
     )
 
 
-def create_new_public_rsa(user_email: str, public_rsa: str, device_uid: str):
+def create_new_public_rsa(user_email: str, public_rsa: str, device_uid: int):
 
     execute_in_database(
         """INSERT INTO deviceRSAS (email, deviceUID, publicRSA)
@@ -104,7 +104,7 @@ def create_new_public_rsa(user_email: str, public_rsa: str, device_uid: str):
     )
 
 
-def get_public_rsa(user_email: str, device_uid: str) -> str | None:
+def get_public_rsa(user_email: str, device_uid: int) -> str | None:
     deviceRSA = query_database(
         """SELECT * FROM deviceRSAS WHERE email = ? AND deviceUID = ?""",
         (user_email, device_uid),
@@ -125,6 +125,7 @@ def generate_new_uid(user_email: str):
     if latest_user_device[0] is not None:
         result["deviceUID"] = latest_user_device[0] + 1
 
+    print(result)
     return result
 
 
@@ -144,7 +145,7 @@ def delete_challenge(email: str):
     )
 
 
-def verify_challenge(user: User, device_uid: str, encrypted_text: list[int]):
+def verify_challenge(user: User, device_uid: int, encrypted_text: list[int]):
     user_rsa = get_public_rsa(user.email, device_uid)
 
     if user_rsa is None:

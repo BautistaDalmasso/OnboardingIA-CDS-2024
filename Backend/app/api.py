@@ -2,12 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from app.ai.chatbot import Skynet
 from app.ai.chatbot_router import router as chatbot_router
-from app.ai.topics import Topics
 from app.database import initialize_database
 from app.server_config import ServerConfig
 from app.user.user_router import router as user_router
+from app.file_paths import DATABASE_PATH
 
 
 class QuestionRequest(BaseModel):
@@ -15,8 +14,6 @@ class QuestionRequest(BaseModel):
 
 
 server_config = ServerConfig()
-topics = Topics()
-skynet = Skynet(topics)
 
 app = FastAPI()
 
@@ -32,4 +29,4 @@ app.add_middleware(
 app.include_router(chatbot_router)
 app.include_router(user_router)
 
-initialize_database()
+initialize_database(DATABASE_PATH)
