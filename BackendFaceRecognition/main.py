@@ -3,7 +3,6 @@ import uvicorn
 from app.server_config import ServerConfig
 
 if __name__ == "__main__":
-
     server_config = ServerConfig()
 
     uvicorn.run(

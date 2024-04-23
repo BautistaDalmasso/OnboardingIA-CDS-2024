@@ -1,16 +1,21 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from app.ai.chatbot import Skynet
-from app.ai.topics import Topics
+from app.server_config import ServerConfig
 
 
 class QuestionRequest(BaseModel):
     question: str
 
 
-topics = Topics()
-skynet = Skynet(topics)
+config = ServerConfig()
+
+if config.is_using_chatbot():
+    from app.ai.chatbot import Skynet
+    from app.ai.topics import Topics
+
+    topics = Topics()
+    skynet = Skynet(topics)
 
 router = APIRouter(prefix="/chatbot", tags=["Chatbot"])
 
@@ -19,7 +24,11 @@ router = APIRouter(prefix="/chatbot", tags=["Chatbot"])
 async def chatbot_question(question_request: QuestionRequest):
     question = question_request.question
     print(f"Usuario: {question}")
-    answer = skynet.answer(question)
-    print(f"Chatbot: {answer}")
+
+    if config.is_using_chatbot():
+        answer = skynet.answer(question)
+        print(f"Chatbot: {answer}")
+    else:
+        answer = "Chatbot deshabilitado durante desarrollo."
 
     return {"answer": answer}

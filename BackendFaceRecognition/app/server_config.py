@@ -9,7 +9,7 @@ class ServerConfig:
         self._configs = _load_config()
 
     def get_origins(self) -> list[str]:
-        return self._configs["request_origins"][0]
+        return self._configs["request_origins"]
 
     def get_server_ip(self) -> str:
         return self._configs["server_ip"]
@@ -17,11 +17,11 @@ class ServerConfig:
     def get_server_port(self) -> int:
         return self._configs["server_port"]
 
-    def is_using_chatbot(self) -> bool:
-        return self._configs["using_chatbot"]
+    def get_mongodb_uri(self) -> str:
+        return self._configs["mongodb_uri"]
 
-    def get_jwt_secret(self) -> int:
-        return self._configs["jwt_secret"]
+    def get_mongodb_database(self) -> str:
+        return self._configs["mongodb_database"]
 
 
 def _load_config():

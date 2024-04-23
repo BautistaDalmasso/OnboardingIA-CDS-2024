@@ -2,6 +2,9 @@ from pathlib import Path
 
 APP_DIR = Path(".") / "app"
 
+DATABASE_PATH = Path(".") / "sqlite.db"
+TEST_DB_PATH = Path(".") / "testing.db"
+
 CONFIG_FILE = APP_DIR / "server_config.json"
 
 DATA_DIR = APP_DIR / "ai" / "data"
