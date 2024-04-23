@@ -29,4 +29,10 @@ app.add_middleware(
 app.include_router(chatbot_router)
 app.include_router(user_router)
 
+
+@app.get("/ping")
+async def ping():
+    return {"ping": "pong"}
+
+
 initialize_database(DATABASE_PATH)

@@ -15,6 +15,7 @@ import { UserService } from "../services/userService";
 import { useContextState } from "../ContexState";
 import { encryptWithPrivateKey, generateKeyPair } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
+import { ConnectionType } from "../common/enums/connectionType";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -48,6 +49,7 @@ const Login = ({ navigation }: Props) => {
         setContextState((state) => ({
           ...state,
           user: response.user,
+          connectionType: ConnectionType.ONLINE,
           accessToken: response.access_token,
           messages: [],
         }));
@@ -71,72 +73,8 @@ const Login = ({ navigation }: Props) => {
     }
   };
 
-  const handleFingerprintLogin = async () => {
-    try {
-      setLoading(true);
-
-      if (!emailRegex.test(email)) {
-        Alert.alert("Por favor", "Ingrese un correo valido");
-        return;
-      }
-
-      const privateKey = await SecureStore.getItemAsync("privateKey");
-      if (!privateKey) {
-        Alert.alert("Error", "Este dispositivo no tiene una cuenta vinculada.");
-        return;
-      }
-
-      const successBiometric = await authenticate();
-      if (!successBiometric) {
-        Alert.alert("Error", "Autenticación fallida");
-        return;
-      }
-
-      const challengeResponse = await UserService.getChallenge(email);
-      if (challengeResponse.detail) {
-        Alert.alert("Error", challengeResponse.detail);
-        return;
-      }
-
-      const challengeResult = encryptWithPrivateKey(
-        challengeResponse.challenge,
-        JSON.parse(privateKey as unknown as string)
-      );
-
-      const response = await UserService.verifyChallenge(
-        email,
-        challengeResult
-      );
-
-      if (response.access_token) {
-        setContextState((state) => ({
-          ...state,
-          user: response.user,
-          accessToken: response.access_token,
-          messages: [],
-        }));
-        navigation.navigate(Routes.Home);
-
-        setEmail("");
-        setPassword("");
-      }
-
-      if (response.detail) {
-        Alert.alert("Error", response.detail);
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleLogin = async () => {
-    if (showPassword) {
-      await handlePasswordLogin();
-    } else {
-      await handleFingerprintLogin();
-    }
+    await handlePasswordLogin();
   };
 
   const handleFingerprintRegistration = async () => {
@@ -212,14 +150,6 @@ const Login = ({ navigation }: Props) => {
         />
       </TouchableOpacity>
       )}
-      <Text
-        style={styles.linkText}
-        onPress={() => setShowPassword(!showPassword)}
-      >
-        {showPassword
-          ? "Iniciar sesión con huella"
-          : "Iniciar sesión con contraseña"}
-      </Text>
     </View>
   );
 };

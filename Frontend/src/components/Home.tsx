@@ -1,72 +1,216 @@
 import { NavigationProp } from "@react-navigation/native";
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Routes } from "../common/enums/routes";
 import { useContextState } from "../ContexState";
+import { ConnectionService } from "../services/connectionService";
+import useBiometrics from "../hooks/useBiometrics";
+import { ConnectionType } from "../common/enums/connectionType";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const Home = ({ navigation }: Props) => {
-  const { contextState } = useContextState();
+  const { contextState, setContextState } = useContextState();
+  const { authenticate } = useBiometrics();
+  const [showSignup, setShowSignup] = useState(true);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleContinue = () => {
-    navigation.navigate(Routes.Chat);
+  const setConnection = async () => {
+    try {
+        const response = await ConnectionService.isConnected();
+
+        setContextState((state) => ({
+            ...state,
+            isConnected: response,
+        }));
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
+  }
+
+  useEffect(() => {
+
+    setConnection();
+    setLoading(false)
+
+    return () => {
+    };
+  }, []);
+
+  const handleLoginFinger = async () => {
+    navigation.navigate(Routes.LoginFingerprint);
+    await handleShowButtons();
   };
 
-  const handleLogin = () => {
+  const handleLoginPassword = async () => {
     navigation.navigate(Routes.Login);
+    await handleShowButtons();
   };
 
-  const handleSignup = () => {
-    navigation.navigate(Routes.Signup);
+  const handleLoginFace = async () => {
+    // TODO: navigate to face login page
   };
+
+  const handleSignup = async () => {
+    navigation.navigate(Routes.Signup);
+    await handleShowButtons();
+  };
+
+
+  const handleShowButtons = async () => {
+    setShowUnlock(!showUnlock);
+    setShowSignup(!showSignup);
+  };
+
+  const handleReconnect = async () => {
+    setLoading(true)
+    await setConnection();
+    if (!contextState.isConnected) {
+        Alert.alert("Reconexión fallida.");
+    }
+    setLoading(false)
+  }
+
+  const handleOfflineAuth = async () => {
+    setLoading(true);
+
+    const successBiometric = await authenticate();
+
+    if (successBiometric){
+        setContextState((state) => ({
+            ...state,
+            connectionType: ConnectionType.OFFLINE,
+        }));
+    }
+
+    setLoading(false);
+    navigation.navigate(Routes.Home);
+}
+
 
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.title}>¡Bienvenido al Chatbot!</Text>
+        <Text style={styles.title}>¡Bienvenido!</Text>
+
+        <Image
+          source={require("../assets/logo-skynet.png")}
+          style={styles.image}
+          resizeMode="contain"
+        />
         <Text style={styles.subtitle}>
-          {contextState.user ? `Hola ${contextState.user.firstName}. ` : ""}
-          Pregúntale a Skynet cualquier duda sobre la biblioteca
+          La mejor app para gestionar los libros de tu biblioteca
         </Text>
       </View>
-      <Image
-        source={require("../assets/login-image.png")}
-        style={styles.image}
-        resizeMode="contain"
-      />
+
+      {contextState.isConnected &&
       <View style={styles.buttonsContainer}>
-        {contextState.accessToken === null ? (
+        {contextState.accessToken === null && (
           <>
             <View style={styles.loginButtonsContainer}>
-              <TouchableOpacity
-                style={styles.loginButton}
-                onPress={handleLogin}
-              >
-                <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
-              </TouchableOpacity>
+              {showSignup && (
+                <TouchableOpacity
+                  style={styles.loginButton}
+                  onPress={handleShowButtons}
+                  disabled={loading}
+                >
+                  <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+                </TouchableOpacity>
+              )}
+
+              {showUnlock && (
+                <>
+                  <Text style={styles.instruction}>Elija una opción para Ingresar:</Text>
+                  <View style={styles.unlockButtonsContainer}>
+                    <TouchableOpacity
+                      style={styles.fingerButton}
+                      onPress={handleLoginFinger}
+                      disabled={loading}
+                    >
+                      <Image
+                        source={require("../assets/fingerprint.png")}
+                        style={styles.fingerprintIcon}
+                        resizeMode="contain"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.fingerButton}
+                      onPress={handleLoginFace}
+                      disabled={loading}
+                    >
+                      <Image
+                        source={require("../assets/face.png")}
+                        style={styles.fingerprintIcon}
+                        resizeMode="contain"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.fingerButton}
+                      onPress={handleLoginPassword}
+                      disabled={loading}
+                    >
+                      <Image
+                        source={require("../assets/password.png")}
+                        style={styles.fingerprintIcon}
+                        resizeMode="contain"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
+
               <TouchableOpacity
                 style={styles.signupButton}
                 onPress={handleSignup}
+                disabled={loading}
               >
                 <Text style={styles.signupButtonText}>Registrarse</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.continueLink} onPress={handleContinue}>
-              {"Continuar sin iniciar sesión >>"}
-            </Text>
           </>
-        ) : (
-          <TouchableOpacity
-            style={styles.continueButton}
-            onPress={handleContinue}
-          >
-            <Text style={styles.loginButtonText}>Ir al Chat</Text>
-          </TouchableOpacity>
         )}
+      </View>}
+      {!contextState.isConnected &&
+      <View>
+        <View style={styles.noConnContainer}>
+        <Text style={styles.noConnTitle}>¡U! no tienes conexion a Internet :'(</Text>
+        <Text >Por favor verifica tu conexion a Internet.</Text>
+        <Text style={styles.noConnSubtitle}> Igual puedes Ingresar a SKYNET :D</Text>
+
+        <TouchableOpacity
+            style={styles.noConnButton}
+            onPress={handleOfflineAuth}
+            disabled={loading}
+        >
+            <Text style={styles.noConnButtonText}>Ingresar sin conexion</Text>
+            <Image
+                source={require("../assets/fingerprint.png")}
+                style={styles.fingerprintIconLogin}
+                resizeMode="contain"
+            />
+        </TouchableOpacity>
+        <TouchableOpacity
+            style={styles.noConnButton}
+            onPress={handleReconnect}
+            disabled={loading}
+        >
+            <Text style={styles.noConnButtonText}>Reconectar</Text>
+        </TouchableOpacity>
+        </View>
+
       </View>
+      }
     </View>
   );
 };
@@ -79,52 +223,69 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   title: {
-    fontSize: 24,
+    marginTop: 200,
+    fontSize: 40,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#48bce4",
     textAlign: "center",
-    color: "#3369FF",
+    bottom: 15,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 10,
     textAlign: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 60,
+    bottom: 40,
+    color: "#646464",
   },
   image: {
-    height: 280,
+    height: 150,
+    bottom: 10,
+    width: 250,
+    alignSelf: "center",
   },
+
   buttonsContainer: {
+    marginTop: 200,
     flexDirection: "column",
     alignItems: "center",
-    width: "100%",
+    width: "80%",
+    bottom: 100,
   },
   loginButtonsContainer: {
-    flexDirection: "row",
     justifyContent: "center",
     width: "85%",
   },
   loginButton: {
-    backgroundColor: "#3369FF",
+    backgroundColor: "#48bce4",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginRight: 10,
+    marginBottom: 40,
     borderRadius: 100,
     borderWidth: 1,
-    borderColor: "#3369FF",
+    borderColor: "#48bce4",
+  },
+  fingerButton: {
+    backgroundColor: "#48bce4",
+    borderRadius: 100,
+    borderWidth: 10,
+    borderColor: "#48bce4",
+    margin: 10,
   },
   signupButton: {
+    marginBottom: 150,
     backgroundColor: "#ffffff",
-    borderColor: "#3369FF",
+    borderColor: "#48bce4",
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 100,
   },
   continueLink: {
-    color: "#3369FF",
-    marginTop: 25,
+    color: "#48bce4",
+    marginTop: 50,
     textAlign: "center",
   },
+
   loginButtonText: {
     color: "#ffffff",
     fontSize: 16,
@@ -132,21 +293,94 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signupButtonText: {
-    color: "#3369FF",
+    color: "#48bce4",
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
   },
-  continueButton: {
-    backgroundColor: "#3369FF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginRight: 10,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: "#3369FF",
+  fingerprintIcon: {
+    width: 30,
+    height: 30,
+    alignSelf: "center",
+  },
+  unlockButtonsContainer: {
+    marginBottom: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignSelf: "center",
     width: "85%",
   },
+  instruction: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#48bce4",
+  },
+  button: {
+    backgroundColor: "#48bce4",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  noConnContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+  },
+  noConnTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    margin: 20,
+    textAlign: "center",
+    color: "red",
+  },
+
+  noConnSubtitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    margin: 40,
+    textAlign: "center",
+    color: "#48bce4",
+  },
+
+  noConnButton: {
+    backgroundColor: "#48bce4",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noConnButtonText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  noConnLinkText: {
+    color: "#48bce4",
+    marginTop: 25,
+    textAlign: "center",
+  },
+  fingerprintIconLogin: {
+    width: 20,
+    height: 20,
+    marginLeft: 5,
+},
 });
 
 export default Home;

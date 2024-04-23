@@ -5,4 +5,5 @@ export enum Routes {
   Signup = "Registrarse",
   Logout = "Cerrar Sesión",
   Licence = "Mi carnet",
+  LoginFingerprint = "Iniciar Sesión con Huella",
 }

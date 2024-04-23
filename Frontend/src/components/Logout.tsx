@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Routes } from "../../src/common/enums/routes";
 import { NavigationProp } from "@react-navigation/native";
 import { useContextState } from "../ContexState";
+import { ConnectionType } from "../common/enums/connectionType";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -14,6 +15,7 @@ const Logout = ({ navigation }: Props) => {
     setContextState((state) => ({
       ...state,
       user: null,
+      connectionType: ConnectionType.NONE,
       accessToken: null,
       messages: [],
     }));
