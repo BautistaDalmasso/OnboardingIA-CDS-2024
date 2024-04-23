@@ -12,6 +12,7 @@ import { Routes } from "../common/enums/routes";
 import { useContextState } from "../ContexState";
 import { ConnectionService } from "../services/connectionService";
 import useBiometrics from "../hooks/useBiometrics";
+import { ConnectionType } from "../common/enums/connectionType";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -89,7 +90,7 @@ const Home = ({ navigation }: Props) => {
     if (successBiometric){
         setContextState((state) => ({
             ...state,
-            connectionType: "OFFLINE",
+            connectionType: ConnectionType.OFFLINE,
         }));
     }
 

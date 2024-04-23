@@ -15,6 +15,7 @@ import { UserService } from "../services/userService";
 import { useContextState } from "../ContexState";
 import { encryptWithPrivateKey, generateKeyPair } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
+import { ConnectionType } from "../common/enums/connectionType";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -48,7 +49,7 @@ const Login = ({ navigation }: Props) => {
         setContextState((state) => ({
           ...state,
           user: response.user,
-          connectionType: "ONLINE",
+          connectionType: ConnectionType.ONLINE,
           accessToken: response.access_token,
           messages: [],
         }));

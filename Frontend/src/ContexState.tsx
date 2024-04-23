@@ -1,9 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { IUser } from "./common/interfaces/User";
 import { IMessage } from "./common/interfaces/Message";
-
-
-type ConnectionType = "NONE" | "ONLINE" | "OFFLINE";
+import { ConnectionType } from "./common/enums/connectionType";
 
 interface State {
   user: IUser | null;
@@ -15,7 +13,7 @@ interface State {
 
 const defaultState: State = {
   user: null,
-  connectionType: "NONE",
+  connectionType: ConnectionType.NONE,
   accessToken: null,
   messages: [],
   isConnected: false,
