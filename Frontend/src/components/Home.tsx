@@ -1,14 +1,16 @@
 import { NavigationProp } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Routes } from "../common/enums/routes";
 import { useContextState } from "../ContexState";
+import { ConnectionService } from "../services/connectionService";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -18,6 +20,22 @@ const Home = ({ navigation }: Props) => {
   const { contextState } = useContextState();
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
+  const [isConnected, setConnected] = useState(false)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setConnected(await ConnectionService.isConnected());
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+    };
+  }, []);
 
   const handleLoginFinger = async () => {
     navigation.navigate(Routes.LoginFingerprint);
@@ -43,6 +61,20 @@ const Home = ({ navigation }: Props) => {
     setShowSignup(!showSignup);
   };
 
+  const handleReconnect = async () => {
+    if (!await tryReconnect()) {
+        Alert.alert("Reconexión fallida.");
+    }
+  }
+
+  const tryReconnect = async () => {
+    const result = await ConnectionService.isConnected();
+
+    setConnected(result);
+
+    return result
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -58,7 +90,7 @@ const Home = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      <View style={styles.buttonsContainer}>
+      {isConnected && <View style={styles.buttonsContainer}>
         {contextState.accessToken === null && (
           <>
             <View style={styles.loginButtonsContainer}>
@@ -118,7 +150,15 @@ const Home = ({ navigation }: Props) => {
             </View>
           </>
         )}
-      </View>
+      </View>}
+      {!isConnected &&
+        <TouchableOpacity
+        style={styles.signupButton}
+        onPress={handleReconnect}
+      >
+        <Text style={styles.signupButtonText}>Reconectar</Text>
+      </TouchableOpacity>
+      }
     </View>
   );
 };

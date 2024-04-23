@@ -33,3 +33,8 @@ app.include_router(chatbot_router)
 app.include_router(user_router)
 
 initialize_database()
+
+
+@app.get("/ping")
+async def ping():
+    return {"ping": "pong"}
