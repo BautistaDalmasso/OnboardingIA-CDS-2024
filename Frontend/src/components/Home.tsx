@@ -20,7 +20,7 @@ const Home = ({ navigation }: Props) => {
   const { contextState } = useContextState();
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
-  const [isConnected, setConnected] = useState(false)
+  const [isConnected, setConnected] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,7 +90,8 @@ const Home = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      {isConnected && <View style={styles.buttonsContainer}>
+      {isConnected &&
+      <View style={styles.buttonsContainer}>
         {contextState.accessToken === null && (
           <>
             <View style={styles.loginButtonsContainer}>
@@ -152,12 +153,26 @@ const Home = ({ navigation }: Props) => {
         )}
       </View>}
       {!isConnected &&
+      <View>
+        <View style={styles.noConnContainer}>
+        <Text style={styles.noConnTitle}>¡U! no tienes conexion a Internet :'(</Text>
+        <Text >Por favor verifica tu conexion a Internet.</Text>
+        <Text style={styles.noConnSubtitle}> Igual puedes Ingresar a SKYNET :D</Text>
+
         <TouchableOpacity
-        style={styles.signupButton}
-        onPress={handleReconnect}
-      >
-        <Text style={styles.signupButtonText}>Reconectar</Text>
-      </TouchableOpacity>
+            style={styles.noConnButton}
+        >
+            <Text style={styles.noConnButtonText}>Ingresar sin conexion</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+            style={styles.noConnButton}
+            onPress={handleReconnect}
+        >
+            <Text style={styles.noConnButtonText}>Reconectar</Text>
+        </TouchableOpacity>
+        </View>
+
+      </View>
       }
     </View>
   );
@@ -264,6 +279,65 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
     color: "#48bce4",
+  },
+  button: {
+    backgroundColor: "#48bce4",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  noConnContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+  },
+  noConnTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    margin: 20,
+    textAlign: "center",
+    color: "red",
+  },
+
+  noConnSubtitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    margin: 40,
+    textAlign: "center",
+    color: "#48bce4",
+  },
+
+  noConnButton: {
+    backgroundColor: "#48bce4",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noConnButtonText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  noConnLinkText: {
+    color: "#48bce4",
+    marginTop: 25,
+    textAlign: "center",
   },
 });
 
