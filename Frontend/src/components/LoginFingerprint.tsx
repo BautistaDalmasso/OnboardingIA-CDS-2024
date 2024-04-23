@@ -34,51 +34,52 @@ const LoginFingerprint = ({ navigation }: Props) => {
 
       try {
         setLoading(true);
-  
+
         if (!emailRegex.test(email)) {
           Alert.alert("Por favor", "Ingrese un correo valido");
           return;
         }
-  
+
         const privateKey = await SecureStore.getItemAsync("privateKey");
         if (!privateKey) {
           Alert.alert("Error", "Este dispositivo no tiene una cuenta vinculada.");
           return;
         }
-  
+
         const successBiometric = await authenticate();
         if (!successBiometric) {
           Alert.alert("Error", "Autenticación fallida");
           return;
         }
-  
+
         const challengeResponse = await UserService.getChallenge(email);
         if (challengeResponse.detail) {
           Alert.alert("Error", challengeResponse.detail);
           return;
         }
-  
+
         const challengeResult = encryptWithPrivateKey(
           challengeResponse.challenge,
           JSON.parse(privateKey as unknown as string)
         );
-  
+
         const response = await UserService.verifyChallenge(
           email,
           challengeResult
         );
-  
+
         if (response.access_token) {
           setContextState((state) => ({
             ...state,
             user: response.user,
+            connectionType: "OFFLINE",
             accessToken: response.access_token,
             messages: [],
           }));
-          navigation.navigate(Routes.Home);  
+          navigation.navigate(Routes.Home);
           setEmail("");
         }
-  
+
         if (response.detail) {
           Alert.alert("Error", response.detail);
         }
@@ -114,9 +115,9 @@ const LoginFingerprint = ({ navigation }: Props) => {
       </TouchableOpacity>
       <Text
         style={styles.linkText}
-        
+
       >
-        
+
       </Text>
     </View>
   );
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     textAlign: "center",
   },
-  
+
   fingerprintIcon: {
     width: 20,
     height: 20,

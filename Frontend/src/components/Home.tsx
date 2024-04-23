@@ -11,27 +11,37 @@ import {
 import { Routes } from "../common/enums/routes";
 import { useContextState } from "../ContexState";
 import { ConnectionService } from "../services/connectionService";
+import useBiometrics from "../hooks/useBiometrics";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const Home = ({ navigation }: Props) => {
-  const { contextState } = useContextState();
+  const { contextState, setContextState } = useContextState();
+  const { authenticate } = useBiometrics();
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
-  const [isConnected, setConnected] = useState(true)
+  const [loading, setLoading] = useState(true);
+
+  const setConnection = async () => {
+    try {
+        const response = await ConnectionService.isConnected();
+
+        setContextState((state) => ({
+            ...state,
+            isConnected: response,
+        }));
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setConnected(await ConnectionService.isConnected());
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
 
-    fetchData();
+    setConnection();
+    setLoading(false)
 
     return () => {
     };
@@ -56,24 +66,37 @@ const Home = ({ navigation }: Props) => {
     await handleShowButtons();
   };
 
+
   const handleShowButtons = async () => {
     setShowUnlock(!showUnlock);
     setShowSignup(!showSignup);
   };
 
   const handleReconnect = async () => {
-    if (!await tryReconnect()) {
+    setLoading(true)
+    await setConnection();
+    if (!contextState.isConnected) {
         Alert.alert("Reconexión fallida.");
     }
+    setLoading(false)
   }
 
-  const tryReconnect = async () => {
-    const result = await ConnectionService.isConnected();
+  const handleOfflineAuth = async () => {
+    setLoading(true);
 
-    setConnected(result);
+    const successBiometric = await authenticate();
 
-    return result
-  }
+    if (successBiometric){
+        setContextState((state) => ({
+            ...state,
+            connectionType: "OFFLINE",
+        }));
+    }
+
+    setLoading(false);
+    navigation.navigate(Routes.Home);
+}
+
 
   return (
     <View style={styles.container}>
@@ -90,7 +113,7 @@ const Home = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      {isConnected &&
+      {contextState.isConnected &&
       <View style={styles.buttonsContainer}>
         {contextState.accessToken === null && (
           <>
@@ -99,6 +122,7 @@ const Home = ({ navigation }: Props) => {
                 <TouchableOpacity
                   style={styles.loginButton}
                   onPress={handleShowButtons}
+                  disabled={loading}
                 >
                   <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
                 </TouchableOpacity>
@@ -111,6 +135,7 @@ const Home = ({ navigation }: Props) => {
                     <TouchableOpacity
                       style={styles.fingerButton}
                       onPress={handleLoginFinger}
+                      disabled={loading}
                     >
                       <Image
                         source={require("../assets/fingerprint.png")}
@@ -121,6 +146,7 @@ const Home = ({ navigation }: Props) => {
                     <TouchableOpacity
                       style={styles.fingerButton}
                       onPress={handleLoginFace}
+                      disabled={loading}
                     >
                       <Image
                         source={require("../assets/face.png")}
@@ -131,6 +157,7 @@ const Home = ({ navigation }: Props) => {
                     <TouchableOpacity
                       style={styles.fingerButton}
                       onPress={handleLoginPassword}
+                      disabled={loading}
                     >
                       <Image
                         source={require("../assets/password.png")}
@@ -145,6 +172,7 @@ const Home = ({ navigation }: Props) => {
               <TouchableOpacity
                 style={styles.signupButton}
                 onPress={handleSignup}
+                disabled={loading}
               >
                 <Text style={styles.signupButtonText}>Registrarse</Text>
               </TouchableOpacity>
@@ -152,7 +180,7 @@ const Home = ({ navigation }: Props) => {
           </>
         )}
       </View>}
-      {!isConnected &&
+      {!contextState.isConnected &&
       <View>
         <View style={styles.noConnContainer}>
         <Text style={styles.noConnTitle}>¡U! no tienes conexion a Internet :'(</Text>
@@ -161,12 +189,20 @@ const Home = ({ navigation }: Props) => {
 
         <TouchableOpacity
             style={styles.noConnButton}
+            onPress={handleOfflineAuth}
+            disabled={loading}
         >
             <Text style={styles.noConnButtonText}>Ingresar sin conexion</Text>
+            <Image
+                source={require("../assets/fingerprint.png")}
+                style={styles.fingerprintIconLogin}
+                resizeMode="contain"
+            />
         </TouchableOpacity>
         <TouchableOpacity
             style={styles.noConnButton}
             onPress={handleReconnect}
+            disabled={loading}
         >
             <Text style={styles.noConnButtonText}>Reconectar</Text>
         </TouchableOpacity>
@@ -339,6 +375,11 @@ const styles = StyleSheet.create({
     marginTop: 25,
     textAlign: "center",
   },
+  fingerprintIconLogin: {
+    width: 20,
+    height: 20,
+    marginLeft: 5,
+},
 });
 
 export default Home;

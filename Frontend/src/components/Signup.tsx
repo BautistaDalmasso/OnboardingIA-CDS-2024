@@ -85,6 +85,7 @@ const Signup = ({ navigation }: Props) => {
         setContextState((state) => ({
           ...state,
           user: response.user,
+          connectionType: "ONLINE",
           accessToken: response.access_token,
           messages: [],
         }));

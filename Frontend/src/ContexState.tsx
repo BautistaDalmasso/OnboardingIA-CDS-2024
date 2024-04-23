@@ -2,16 +2,23 @@ import React, { createContext, useContext, useState } from "react";
 import { IUser } from "./common/interfaces/User";
 import { IMessage } from "./common/interfaces/Message";
 
+
+type ConnectionType = "NONE" | "ONLINE" | "OFFLINE";
+
 interface State {
   user: IUser | null;
+  connectionType: ConnectionType;
   accessToken: string | null;
   messages: IMessage[];
+  isConnected: boolean;
 }
 
 const defaultState: State = {
   user: null,
+  connectionType: "NONE",
   accessToken: null,
   messages: [],
+  isConnected: false,
 };
 
 const ContextState = createContext({});

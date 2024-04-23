@@ -14,6 +14,7 @@ const Logout = ({ navigation }: Props) => {
     setContextState((state) => ({
       ...state,
       user: null,
+      connectionType: "NONE",
       accessToken: null,
       messages: [],
     }));
