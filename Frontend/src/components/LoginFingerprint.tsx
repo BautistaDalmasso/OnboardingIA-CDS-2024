@@ -20,10 +20,10 @@ interface Props {
   navigation: NavigationProp<any, any>;
 }
 
-const Login = ({ navigation }: Props) => {
+const LoginFingerprint = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { setContextState } = useContextState();
   const { authenticate } = useBiometrics();
@@ -271,4 +271,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default LoginFingerprint;

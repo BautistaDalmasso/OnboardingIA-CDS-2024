@@ -20,7 +20,7 @@ const Home = ({ navigation }: Props) => {
   const [showUnlock, setShowUnlock] = useState(false);
 
   const handleLoginFinger = () => {
-    navigation.navigate(Routes.Login);
+    navigation.navigate(Routes.LoginFingerprint);
   };
 
   const handleLoginPassword = () => {
