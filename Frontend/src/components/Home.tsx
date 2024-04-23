@@ -19,25 +19,28 @@ const Home = ({ navigation }: Props) => {
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
 
-  const handleLoginFinger = () => {
+  const handleLoginFinger = async () => {
     navigation.navigate(Routes.LoginFingerprint);
+    await handleShowButtons();
   };
 
-  const handleLoginPassword = () => {
+  const handleLoginPassword = async () => {
     navigation.navigate(Routes.Login);
+    await handleShowButtons();
   };
 
-  const handleLoginFace = () => {
+  const handleLoginFace = async () => {
     // TODO: navigate to face login page
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     navigation.navigate(Routes.Signup);
+    await handleShowButtons();
   };
 
   const handleShowButtons = async () => {
-    setShowUnlock(true);
-    setShowSignup(false);
+    setShowUnlock(!showUnlock);
+    setShowSignup(!showSignup);
   };
 
   return (
@@ -56,7 +59,7 @@ const Home = ({ navigation }: Props) => {
       </View>
 
       <View style={styles.buttonsContainer}>
-        {contextState.accessToken === null ? (
+        {contextState.accessToken === null && (
           <>
             <View style={styles.loginButtonsContainer}>
               {showSignup && (
@@ -70,7 +73,7 @@ const Home = ({ navigation }: Props) => {
 
               {showUnlock && (
                 <>
-                  <Text style={styles.instruction}>Elija una opción:</Text>
+                  <Text style={styles.instruction}>Elija una opción para Ingresar:</Text>
                   <View style={styles.unlockButtonsContainer}>
                     <TouchableOpacity
                       style={styles.fingerButton}
@@ -113,17 +116,7 @@ const Home = ({ navigation }: Props) => {
                 <Text style={styles.signupButtonText}>Registrarse</Text>
               </TouchableOpacity>
             </View>
-
-            <Text style={styles.continueLink} onPress={handleLoginFinger}>
-              {"Ingresar sin conexión >>"}
-            </Text>
           </>
-        ) : (
-          <TouchableOpacity
-            style={styles.continueButton}
-            onPress={handleLoginFinger}>
-            <Text style={styles.loginButtonText}>Ir al Chat</Text>
-          </TouchableOpacity>
         )}
       </View>
     </View>
@@ -187,7 +180,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   signupButton: {
-    marginBottom: 80,
+    marginBottom: 150,
     backgroundColor: "#ffffff",
     borderColor: "#48bce4",
     borderWidth: 1,
@@ -207,22 +200,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-
   signupButtonText: {
     color: "#48bce4",
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  continueButton: {
-    backgroundColor: "#48bce4",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginRight: 10,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: "#48bce4",
-    width: "85%",
   },
   fingerprintIcon: {
     width: 30,
@@ -230,7 +212,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   unlockButtonsContainer: {
-    marginBottom: 40,
+    marginBottom: 20,
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "center",
@@ -239,7 +221,7 @@ const styles = StyleSheet.create({
   instruction: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 40,
+    marginBottom: 10,
     textAlign: "center",
     color: "#48bce4",
   },

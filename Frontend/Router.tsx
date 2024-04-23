@@ -21,11 +21,7 @@ const Router = () => {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        screenOptions={{ headerTitle: "", headerTransparent: true }
-        }  
-      
-      >
+      <Drawer.Navigator screenOptions={{ headerTitle: "", headerTransparent: true }}  >     
         <Drawer.Screen name={Routes.Home} component={Home} />
         <Stack.Screen
           name={Routes.Chat}
