@@ -183,7 +183,7 @@ const Home = ({ navigation }: Props) => {
           </>
         )}
       </View>}
-      {!isConnected &&
+      {(!isConnected || !contextState.isConnected) &&
       <View>
         <View style={styles.noConnContainer}>
         <Text style={styles.noConnTitle}>¡U! no tienes conexion a Internet :'(</Text>
