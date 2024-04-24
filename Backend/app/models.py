@@ -10,3 +10,4 @@ class User(BaseModel):
     password: str
     dni: Optional[str] = None
     challengeKey: Optional[str] = None
+    faceId: Optional[str] = None

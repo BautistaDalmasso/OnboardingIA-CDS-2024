@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
+from app.user.facial_recognition_service import upload_facial_profile
 from app.user import user_service
 
 from ..middlewares import verify_token
@@ -106,3 +107,16 @@ async def generate_device_UID(user_email: str):
     result = user_service.generate_new_uid(user_email)
 
     return result
+
+
+# TODO: dumb endpoint for testing, should be moded to a facial recognition router and improved to actually
+# be useful to our frontend.
+@router.post("/face")
+async def face(user_email: str, face: UploadFile):
+    face_file = await face.read()
+
+    await upload_facial_profile(user_email, face_file)
+
+
+# TODO: for compare facial profile the endpoint should be able to generate and send an access token to the user
+# if successful.

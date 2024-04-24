@@ -66,6 +66,7 @@ def get_user_by_email(email: str) -> User:
             password=user_data[4],
             challengeKey=user_data[5],
             dni=user_data[6],
+            faceId=user_data[7],
         )
         return user
 

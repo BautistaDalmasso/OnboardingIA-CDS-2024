@@ -6,3 +6,5 @@ uvicorn~=0.29.0
 passlib~=1.7.4
 PyJWT~=2.8.0
 bcrypt~=4.1.2
+requests~=2.31.0
+python-multipart~=0.0.9
