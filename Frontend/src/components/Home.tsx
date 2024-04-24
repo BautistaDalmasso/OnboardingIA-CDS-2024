@@ -13,6 +13,7 @@ import { useContextState } from "../ContexState";
 import { ConnectionService } from "../services/connectionService";
 import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
+import NetInfo from "@react-native-community/netinfo";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -24,6 +25,7 @@ const Home = ({ navigation }: Props) => {
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
   const [loading, setLoading] = useState(true);
+  const {isConnected}= NetInfo.useNetInfo();
 
   const setConnection = async () => {
     try {
@@ -114,7 +116,7 @@ const Home = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      {contextState.isConnected &&
+      {contextState.isConnected && isConnected &&
       <View style={styles.buttonsContainer}>
         {contextState.accessToken === null && (
           <>
@@ -181,7 +183,7 @@ const Home = ({ navigation }: Props) => {
           </>
         )}
       </View>}
-      {!contextState.isConnected &&
+      {!isConnected &&
       <View>
         <View style={styles.noConnContainer}>
         <Text style={styles.noConnTitle}>¡U! no tienes conexion a Internet :'(</Text>
