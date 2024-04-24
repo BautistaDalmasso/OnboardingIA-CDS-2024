@@ -1,9 +1,7 @@
 import pytest
 
 from app.user.user_dtos import CreateUserDTO
-from app import database
 from app.user import user_service
-from app.file_paths import TEST_DB_PATH
 
 from tests.common_fixtures import db_path
 
