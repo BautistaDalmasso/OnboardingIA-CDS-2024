@@ -14,8 +14,8 @@ import * as SecureStore from "expo-secure-store";
 import { Routes } from "../../src/common/enums/routes";
 import { UserService } from "../services/userService";
 import { useContextState } from "../ContexState";
-import { encryptWithPrivateKey} from "../common/utils/crypto";
-import useBiometrics from "../hooks/useBiometrics"
+import { encryptWithPrivateKey } from "../common/utils/crypto";
+import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
 
 interface Props {
@@ -30,66 +30,64 @@ const LoginFingerprint = ({ navigation }: Props) => {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
   const handleLoginFingerprint = async () => {
+    try {
+      setLoading(true);
 
-      try {
-        setLoading(true);
-
-        if (!emailRegex.test(email)) {
-          Alert.alert("Por favor", "Ingrese un correo valido");
-          return;
-        }
-
-        const privateKey = await SecureStore.getItemAsync("privateKey");
-        if (!privateKey) {
-          Alert.alert("Error", "Este dispositivo no tiene una cuenta vinculada.");
-          return;
-        }
-
-        const successBiometric = await authenticate();
-        if (!successBiometric) {
-          Alert.alert("Error", "Autenticación fallida");
-          return;
-        }
-
-        const challengeResponse = await UserService.getChallenge(email);
-        if (challengeResponse.detail) {
-          Alert.alert("Error", challengeResponse.detail);
-          return;
-        }
-
-        const challengeResult = encryptWithPrivateKey(
-          challengeResponse.challenge,
-          JSON.parse(privateKey as unknown as string)
-        );
-
-        const response = await UserService.verifyChallenge(
-          email,
-          challengeResult
-        );
-
-        if (response.access_token) {
-          setContextState((state) => ({
-            ...state,
-            user: response.user,
-            connectionType: ConnectionType.ONLINE,
-            accessToken: response.access_token,
-            messages: [],
-          }));
-          navigation.navigate(Routes.Home);
-          setEmail("");
-        }
-
-        if (response.detail) {
-          Alert.alert("Error", response.detail);
-        }
-      } catch (error) {
-        console.error("Error logging in:", error);
-      } finally {
-        setLoading(false);
+      if (!emailRegex.test(email)) {
+        Alert.alert("Por favor", "Ingrese un correo valido");
+        return;
       }
-    };
+
+      const privateKey = await SecureStore.getItemAsync("privateKey");
+      if (!privateKey) {
+        Alert.alert("Error", "Este dispositivo no tiene una cuenta vinculada.");
+        return;
+      }
+
+      const successBiometric = await authenticate();
+      if (!successBiometric) {
+        Alert.alert("Error", "Autenticación fallida");
+        return;
+      }
+
+      const challengeResponse = await UserService.getChallenge(email);
+      if (challengeResponse.detail) {
+        Alert.alert("Error", challengeResponse.detail);
+        return;
+      }
+
+      const challengeResult = encryptWithPrivateKey(
+        challengeResponse.challenge,
+        JSON.parse(privateKey as unknown as string),
+      );
+
+      const response = await UserService.verifyChallenge(
+        email,
+        challengeResult,
+      );
+
+      if (response.access_token) {
+        setContextState((state) => ({
+          ...state,
+          user: response.user,
+          connectionType: ConnectionType.ONLINE,
+          accessToken: response.access_token,
+          messages: [],
+        }));
+        navigation.navigate(Routes.Home);
+        setEmail("");
+      }
+
+      if (response.detail) {
+        Alert.alert("Error", response.detail);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -114,12 +112,7 @@ const LoginFingerprint = ({ navigation }: Props) => {
           />
         }
       </TouchableOpacity>
-      <Text
-        style={styles.linkText}
-
-      >
-
-      </Text>
+      <Text style={styles.linkText}></Text>
     </View>
   );
 };

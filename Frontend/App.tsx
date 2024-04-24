@@ -3,10 +3,9 @@ import { ContextStateProvider } from "./src/ContexState";
 import Router from "./Router";
 
 const App = () => {
-
   return (
     <ContextStateProvider>
-        <Router/>
+      <Router />
     </ContextStateProvider>
   );
 };

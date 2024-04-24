@@ -59,7 +59,7 @@ export const generateKeyPair = (): IKeyPair => {
 
 export const encryptWithPrivateKey = (
   text: string,
-  privateKey: IPrivateKey
+  privateKey: IPrivateKey,
 ) => {
   const numericText = text.split("").map((char) => char.charCodeAt(0));
 

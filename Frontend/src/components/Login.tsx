@@ -38,7 +38,7 @@ const Login = ({ navigation }: Props) => {
       if (!emailRegex.test(email) || password.length < 6) {
         Alert.alert(
           "Por favor",
-          "Ingrese un correo valido y una contraseña de más de 6 caracteres."
+          "Ingrese un correo valido y una contraseña de más de 6 caracteres.",
         );
         return null;
       }
@@ -81,7 +81,7 @@ const Login = ({ navigation }: Props) => {
     const accessToken = await handlePasswordLogin();
 
     if (accessToken === null) {
-        return;
+      return;
     }
 
     const successBiometric = await authenticate();
@@ -95,14 +95,11 @@ const Login = ({ navigation }: Props) => {
     await UserService.updatePublicKey(
       JSON.stringify(publicKey),
       accessToken,
-      email
+      email,
     );
 
-    await SecureStore.setItemAsync(
-      "privateKey",
-      JSON.stringify(privateKey)
-    );
-  }
+    await SecureStore.setItemAsync("privateKey", JSON.stringify(privateKey));
+  };
 
   return (
     <View style={styles.container}>
@@ -137,18 +134,18 @@ const Login = ({ navigation }: Props) => {
         )}
       </TouchableOpacity>
       {showPassword && (
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleFingerprintRegistration}
-        disabled={loading}
-      >
-        <Text style={styles.buttonText}>Registrar Huella</Text>
-        <Image
-          source={require("../assets/fingerprint.png")}
-          style={styles.fingerprintIcon}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleFingerprintRegistration}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>Registrar Huella</Text>
+          <Image
+            source={require("../assets/fingerprint.png")}
+            style={styles.fingerprintIcon}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       )}
     </View>
   );

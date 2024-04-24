@@ -27,25 +27,22 @@ const Home = ({ navigation }: Props) => {
 
   const setConnection = async () => {
     try {
-        const response = await ConnectionService.isConnected();
+      const response = await ConnectionService.isConnected();
 
-        setContextState((state) => ({
-            ...state,
-            isConnected: response,
-        }));
-
+      setContextState((state) => ({
+        ...state,
+        isConnected: response,
+      }));
     } catch (error) {
-        console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
+  };
 
   useEffect(() => {
-
     setConnection();
-    setLoading(false)
+    setLoading(false);
 
-    return () => {
-    };
+    return () => {};
   }, []);
 
   const handleLoginFinger = async () => {
@@ -67,37 +64,36 @@ const Home = ({ navigation }: Props) => {
     await handleShowButtons();
   };
 
-
   const handleShowButtons = async () => {
     setShowUnlock(!showUnlock);
     setShowSignup(!showSignup);
   };
 
   const handleReconnect = async () => {
-    setLoading(true)
+    setLoading(true);
     await setConnection();
     if (!contextState.isConnected) {
-        Alert.alert("Reconexión fallida.");
+      Alert.alert("Reconexión fallida.");
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleOfflineAuth = async () => {
     setLoading(true);
 
     const successBiometric = await authenticate();
 
-    if (successBiometric){
-        setContextState((state) => ({
-            ...state,
-            connectionType: ConnectionType.OFFLINE,
-        }));
+    if (successBiometric) {
+      setContextState((state) => ({
+        ...state,
+        connectionType: ConnectionType.OFFLINE,
+        userOffline: true,
+      }));
+      navigation.navigate(Routes.Loans);
     }
 
     setLoading(false);
-    navigation.navigate(Routes.Home);
-}
-
+  };
 
   return (
     <View style={styles.container}>
@@ -114,103 +110,116 @@ const Home = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      {contextState.isConnected &&
-      <View style={styles.buttonsContainer}>
-        {contextState.accessToken === null && (
-          <>
-            <View style={styles.loginButtonsContainer}>
-              {showSignup && (
+      {contextState.isConnected && (
+        <View style={styles.buttonsContainer}>
+          {contextState.accessToken === null && (
+            <>
+              <View style={styles.loginButtonsContainer}>
+                {showSignup && (
+                  <TouchableOpacity
+                    style={styles.loginButton}
+                    onPress={handleShowButtons}
+                    disabled={loading}
+                  >
+                    <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+                  </TouchableOpacity>
+                )}
+
+                {showUnlock && (
+                  <>
+                    <Text style={styles.instruction}>
+                      Elija una opción para Ingresar:
+                    </Text>
+                    <View style={styles.unlockButtonsContainer}>
+                      <TouchableOpacity
+                        style={styles.fingerButton}
+                        onPress={handleLoginFinger}
+                        disabled={loading}
+                      >
+                        <Image
+                          source={require("../assets/fingerprint.png")}
+                          style={styles.fingerprintIcon}
+                          resizeMode="contain"
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.fingerButton}
+                        onPress={handleLoginFace}
+                        disabled={loading}
+                      >
+                        <Image
+                          source={require("../assets/face.png")}
+                          style={styles.fingerprintIcon}
+                          resizeMode="contain"
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.fingerButton}
+                        onPress={handleLoginPassword}
+                        disabled={loading}
+                      >
+                        <Image
+                          source={require("../assets/password.png")}
+                          style={styles.fingerprintIcon}
+                          resizeMode="contain"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+
                 <TouchableOpacity
-                  style={styles.loginButton}
-                  onPress={handleShowButtons}
+                  style={styles.signupButton}
+                  onPress={handleSignup}
                   disabled={loading}
                 >
-                  <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+                  <Text style={styles.signupButtonText}>Registrarse</Text>
                 </TouchableOpacity>
-              )}
-
-              {showUnlock && (
-                <>
-                  <Text style={styles.instruction}>Elija una opción para Ingresar:</Text>
-                  <View style={styles.unlockButtonsContainer}>
-                    <TouchableOpacity
-                      style={styles.fingerButton}
-                      onPress={handleLoginFinger}
-                      disabled={loading}
-                    >
-                      <Image
-                        source={require("../assets/fingerprint.png")}
-                        style={styles.fingerprintIcon}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.fingerButton}
-                      onPress={handleLoginFace}
-                      disabled={loading}
-                    >
-                      <Image
-                        source={require("../assets/face.png")}
-                        style={styles.fingerprintIcon}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.fingerButton}
-                      onPress={handleLoginPassword}
-                      disabled={loading}
-                    >
-                      <Image
-                        source={require("../assets/password.png")}
-                        style={styles.fingerprintIcon}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </>
-              )}
-
-              <TouchableOpacity
-                style={styles.signupButton}
-                onPress={handleSignup}
-                disabled={loading}
-              >
-                <Text style={styles.signupButtonText}>Registrarse</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
-      </View>}
-      {!contextState.isConnected &&
-      <View>
-        <View style={styles.noConnContainer}>
-        <Text style={styles.noConnTitle}>¡U! no tienes conexion a Internet :'(</Text>
-        <Text >Por favor verifica tu conexion a Internet.</Text>
-        <Text style={styles.noConnSubtitle}> Igual puedes Ingresar a SKYNET :D</Text>
-
-        <TouchableOpacity
-            style={styles.noConnButton}
-            onPress={handleOfflineAuth}
-            disabled={loading}
-        >
-            <Text style={styles.noConnButtonText}>Ingresar sin conexion</Text>
-            <Image
-                source={require("../assets/fingerprint.png")}
-                style={styles.fingerprintIconLogin}
-                resizeMode="contain"
-            />
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={styles.noConnButton}
-            onPress={handleReconnect}
-            disabled={loading}
-        >
-            <Text style={styles.noConnButtonText}>Reconectar</Text>
-        </TouchableOpacity>
+              </View>
+            </>
+          )}
         </View>
+      )}
+      {!contextState.isConnected && (
+        <View>
+          <View style={styles.noConnContainer}>
+            <Text style={styles.noConnTitle}>
+              ¡U! no tienes conexion a Internet :'(
+            </Text>
+            <Text>Por favor verifica tu conexion a Internet.</Text>
+            <Text style={styles.noConnSubtitle}>
+              {" "}
+              Igual puedes Ingresar a SKYNET :D
+            </Text>
+            {contextState.connectionType !== ConnectionType.OFFLINE && (
+              <>
+                <TouchableOpacity
+                  style={styles.noConnButton}
+                  onPress={handleOfflineAuth}
+                  disabled={loading}
+                >
+                  <Text style={styles.noConnButtonText}>
+                    Ingresar sin conexion
+                  </Text>
 
-      </View>
-      }
+                  <Image
+                    source={require("../assets/fingerprint.png")}
+                    style={styles.fingerprintIconLogin}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              </>
+            )}
+            <TouchableOpacity
+              style={styles.noConnButton}
+              onPress={handleReconnect}
+              disabled={loading}
+            >
+              <Text style={styles.noConnButtonText}>Reconectar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -380,7 +389,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginLeft: 5,
-},
+  },
 });
 
 export default Home;
