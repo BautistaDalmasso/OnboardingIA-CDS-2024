@@ -22,7 +22,8 @@ def initialize_database(db_path: Path) -> None:
                     email TEXT UNIQUE,
                     password TEXT,
                     challengeKey TEXT,
-                    dni TEXT)"""
+                    dni TEXT,
+                    faceID TEXT)"""
         )
         c.execute(
             """CREATE TABLE IF NOT EXISTS deviceRSAS

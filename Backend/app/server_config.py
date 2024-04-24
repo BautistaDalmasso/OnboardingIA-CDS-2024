@@ -20,6 +20,9 @@ class ServerConfig:
     def is_using_chatbot(self) -> bool:
         return self._configs["using_chatbot"]
 
+    def get_facial_recognition_server(self) -> str:
+        return self._configs["facial_recognition_service_url"]
+
     def get_jwt_secret(self) -> int:
         return self._configs["jwt_secret"]
 
