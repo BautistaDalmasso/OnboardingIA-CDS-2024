@@ -44,5 +44,5 @@ export interface IUpdateUserDNI {
 }
 
 export interface IDeviceUIDResponse {
-    deviceUID: number;
+  deviceUID: number;
 }

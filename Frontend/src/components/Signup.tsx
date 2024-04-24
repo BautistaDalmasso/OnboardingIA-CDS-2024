@@ -40,7 +40,7 @@ const Signup = ({ navigation }: Props) => {
       if (!firstName || !lastName) {
         Alert.alert(
           "Error",
-          "Por favor complete el formulario antes de enviar."
+          "Por favor complete el formulario antes de enviar.",
         );
         return;
       }
@@ -51,7 +51,7 @@ const Signup = ({ navigation }: Props) => {
       if (password.length < 6) {
         Alert.alert(
           "Error",
-          "Por favor ingrese una contraseña de 6 caracteres."
+          "Por favor ingrese una contraseña de 6 caracteres.",
         );
         return;
       }
@@ -63,7 +63,6 @@ const Signup = ({ navigation }: Props) => {
         lastName,
       });
 
-
       if (response.access_token) {
         if (isBiometricAvailable) {
           const autenticated = await authenticate();
@@ -74,12 +73,12 @@ const Signup = ({ navigation }: Props) => {
           await UserService.updatePublicKey(
             JSON.stringify(publicKey),
             response.access_token,
-            email
+            email,
           );
 
           await SecureStore.setItemAsync(
             "privateKey",
-            JSON.stringify(privateKey)
+            JSON.stringify(privateKey),
           );
         }
 

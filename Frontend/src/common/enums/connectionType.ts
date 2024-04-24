@@ -1,5 +1,5 @@
 export enum ConnectionType {
-    NONE = "NONE",
-    ONLINE = "ONLINE",
-    OFFLINE = "OFFLINE",
+  NONE = "NONE",
+  ONLINE = "ONLINE",
+  OFFLINE = "OFFLINE",
 }

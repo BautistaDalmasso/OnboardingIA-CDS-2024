@@ -17,6 +17,7 @@ const Logout = ({ navigation }: Props) => {
       user: null,
       connectionType: ConnectionType.NONE,
       accessToken: null,
+      userOffline: false,
       messages: [],
     }));
     navigation.navigate(Routes.Home);

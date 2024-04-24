@@ -6,4 +6,5 @@ export enum Routes {
   Logout = "Cerrar Sesión",
   Licence = "Mi carnet",
   LoginFingerprint = "Iniciar Sesión con Huella",
+  Loans = "Mis préstamos",
 }

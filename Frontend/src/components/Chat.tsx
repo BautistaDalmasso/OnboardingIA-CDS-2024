@@ -30,14 +30,14 @@ const Chat = () => {
   const formatAnswer = (text: string) => {
     text = text.replace(
       /{user}/g,
-      contextState.user ? ` ${contextState.user.firstName}` : ""
+      contextState.user ? ` ${contextState.user.firstName}` : "",
     );
 
     text = text.replace(
       /{carnetInstructions}/g,
       contextState.user
         ? 'dirigirte a la sección "Mi carnet"'
-        : 'iniciar sesión y dirigirte a la sección "Mi carnet"'
+        : 'iniciar sesión y dirigirte a la sección "Mi carnet"',
     );
 
     return text;
