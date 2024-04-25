@@ -14,7 +14,7 @@ import Loans from "./src/components/Loans";
 import Profile from "./src/components/Profile";
 import LoginFingerPrint from "./src/components/LoginFingerprint";
 import { ConnectionType } from "./src/common/enums/connectionType";
-
+import Capture from "./src/components/Capture";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -66,6 +66,7 @@ const Router = () => {
             )}
           </>
         )}
+        <Drawer.Screen name={Routes.Capture} component={Capture} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
