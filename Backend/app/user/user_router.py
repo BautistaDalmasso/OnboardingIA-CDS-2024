@@ -2,7 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
-from app.user.facial_recognition_service import upload_facial_profile
+from app.user.facial_recognition_service import (
+    upload_facial_profile,
+    compare_facial_profile,
+)
 from app.user import user_service
 
 from ..middlewares import verify_token
@@ -109,14 +112,26 @@ async def generate_device_UID(user_email: str):
     return result
 
 
-# TODO: dumb endpoint for testing, should be moded to a facial recognition router and improved to actually
-# be useful to our frontend.
 @router.post("/face")
-async def face(user_email: str, face: UploadFile):
+async def handle_facial_register(face: UploadFile, token=Depends(HTTPBearer())):
     face_file = await face.read()
+    user_email = await verify_token(token.credentials)
 
-    await upload_facial_profile(user_email, face_file)
+    result = await upload_facial_profile(user_email, face_file)
+
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
 
 
-# TODO: for compare facial profile the endpoint should be able to generate and send an access token to the user
-# if successful.
+@router.post("/login_face_recognition")
+async def login_face_recognition(user_email: str, face: UploadFile):
+    bytes_image = await face.read()
+    result = await compare_facial_profile(user_email, bytes_image)
+
+    if "error" in result:
+        raise HTTPException(status_code=401, detail="Inicio de sesión fallido.")
+
+    if result:
+        user = user_service.get_user_by_email(user_email)
+        access_token = user_service.create_access_token(data={"sub": user.email})
+        return {"access_token": access_token}
