@@ -1,12 +1,18 @@
-import * as React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Entypo } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import * as React from "react";
+import { Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Entypo } from "@expo/vector-icons";
 
-export default function Button({ title, onPress, icon, color }) {
+interface Props {
+  title?: string;
+  onPress: () => void;
+  icon: string;
+  color?: string;
+}
+
+export default function Button({ title, onPress, icon, color }: Props) {
   return (
     <TouchableOpacity onPress={onPress} style={styles.button}>
-      <Entypo name={icon} size={28} color={color ? color : '#f1f1f1'} />
+      <Entypo name={icon as any} size={28} color={color ? color : "#f1f1f1"} />
       <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   );
@@ -15,14 +21,14 @@ export default function Button({ title, onPress, icon, color }) {
 const styles = StyleSheet.create({
   button: {
     height: 40,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
-    color: '#f1f1f1',
+    color: "#f1f1f1",
     marginLeft: 10,
   },
 });
