@@ -6,11 +6,9 @@ import * as MediaLibrary from "expo-media-library";
 import Button from "./Button";
 
 export default function Capture() {
-  const [hasCameraPermission, setHasCameraPermission] = useState<
-    boolean | null
-  >(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [image, setImage] = useState<string>();
-  const [type, setType] = useState(CameraType.back);
+  const [cameraType, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
 
@@ -33,6 +31,7 @@ export default function Capture() {
       }
     }
   };
+
   const savePicture = async () => {
     if (image) {
       try {
@@ -46,6 +45,16 @@ export default function Capture() {
     }
   };
 
+  const switchCamera = () => {
+    setType(
+        cameraType === CameraType.back ? CameraType.front : CameraType.back
+    );
+  }
+
+  const switchFlash = () => {
+    setFlash(flash === FlashMode.off ? FlashMode.on : FlashMode.off);
+  }
+
   if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
   }
@@ -55,7 +64,7 @@ export default function Capture() {
       {!image ? (
         <Camera
           style={styles.camera}
-          type={type}
+          type={cameraType}
           ref={cameraRef}
           flashMode={flash}
         >
@@ -69,16 +78,10 @@ export default function Capture() {
             <Button
               title=""
               icon="retweet"
-              onPress={() => {
-                setType(
-                  type === CameraType.back ? CameraType.front : CameraType.back
-                );
-              }}
+              onPress={switchCamera}
             />
             <Button
-              onPress={() =>
-                setFlash(flash === FlashMode.off ? FlashMode.on : FlashMode.off)
-              }
+              onPress={switchFlash}
               icon="flash"
               color={flash === FlashMode.off ? "gray" : "#fff"}
             />
@@ -91,11 +94,7 @@ export default function Capture() {
       <View style={styles.controls}>
         {image ? (
           <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: 50,
-            }}
+            style={styles.retakeButton}
           >
             <Button
               title="Re-take"
@@ -143,4 +142,9 @@ const styles = StyleSheet.create({
   topControls: {
     flex: 1,
   },
+  retakeButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 50,
+  }
 });

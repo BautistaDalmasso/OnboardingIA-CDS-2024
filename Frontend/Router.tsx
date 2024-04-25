@@ -66,6 +66,7 @@ const Router = () => {
             )}
           </>
         )}
+        <Drawer.Screen name={Routes.Capture} component={Capture} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
