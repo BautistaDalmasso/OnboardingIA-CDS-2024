@@ -20,9 +20,6 @@ async def upload_facial_profile(user_email: str, user_face: bytes) -> None:
                 """UPDATE users SET faceID = ? WHERE email = ?""", (face_id, user_email)
             )
         else:
-            # raise requests.HTTPError(
-            #    f"Failed to upload facial profile. Status code: {r.status_code}"
-            # )
             raise HTTPException(
                 status_code=400, detail={"error": "Failed to upload facial profile."}
             )
@@ -44,9 +41,6 @@ async def compare_facial_profile(user_email: str, user_face: bytes) -> bool | No
         if r.status_code == 200:
             return r.json()["success"]
         else:
-            # raise requests.HTTPError(
-            #    f"Failed to upload facial profile. Status code: {r.status_code}"
-            # )
             raise HTTPException(
                 status_code=400, detail={"error": "Failed to upload facial profile."}
             )

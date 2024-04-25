@@ -112,10 +112,8 @@ async def generate_device_UID(user_email: str):
     return result
 
 
-# TODO: dumb endpoint for testing, should be moded to a facial recognition router and improved to actually
-# be useful to our frontend.
 @router.post("/face")
-async def face(face: UploadFile, token=Depends(HTTPBearer())):
+async def handle_facial_register(face: UploadFile, token=Depends(HTTPBearer())):
     face_file = await face.read()
     user_email = await verify_token(token.credentials)
 
@@ -137,7 +135,3 @@ async def login_face_recognition(user_email: str, face: UploadFile):
         user = user_service.get_user_by_email(user_email)
         access_token = user_service.create_access_token(data={"sub": user.email})
         return {"access_token": access_token}
-
-
-# TODO: for compare facial profile the endpoint should be able to generate and send an access token to the user
-# if successful.
