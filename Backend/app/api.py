@@ -7,6 +7,9 @@ from app.database import initialize_database
 from app.server_config import ServerConfig
 from app.user.user_router import router as user_router
 from app.file_paths import DATABASE_PATH
+from app.facial_recognition.facial_recognition_router import (
+    router as facial_recognition_router,
+)
 
 
 class QuestionRequest(BaseModel):
@@ -28,6 +31,7 @@ app.add_middleware(
 
 app.include_router(chatbot_router)
 app.include_router(user_router)
+app.include_router(facial_recognition_router)
 
 
 @app.get("/ping")

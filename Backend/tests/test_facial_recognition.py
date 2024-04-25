@@ -3,7 +3,7 @@ import pytest
 
 from app.user.user_dtos import CreateUserDTO
 from app.user import user_service
-from app.user.facial_recognition_service import (
+from app.facial_recognition.facial_recognition_service import (
     upload_facial_profile,
     compare_facial_profile,
 )
