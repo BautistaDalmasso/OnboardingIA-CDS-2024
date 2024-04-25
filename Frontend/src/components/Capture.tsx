@@ -6,7 +6,9 @@ import * as MediaLibrary from "expo-media-library";
 import Button from "./Button";
 
 export default function Capture() {
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<
+    boolean | null
+  >(null);
   const [image, setImage] = useState<string>();
   const [cameraType, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
@@ -47,13 +49,13 @@ export default function Capture() {
 
   const switchCamera = () => {
     setType(
-        cameraType === CameraType.back ? CameraType.front : CameraType.back
+      cameraType === CameraType.back ? CameraType.front : CameraType.back,
     );
-  }
+  };
 
   const switchFlash = () => {
     setFlash(flash === FlashMode.off ? FlashMode.on : FlashMode.off);
-  }
+  };
 
   if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
@@ -75,11 +77,7 @@ export default function Capture() {
               paddingHorizontal: 30,
             }}
           >
-            <Button
-              title=""
-              icon="retweet"
-              onPress={switchCamera}
-            />
+            <Button title="" icon="retweet" onPress={switchCamera} />
             <Button
               onPress={switchFlash}
               icon="flash"
@@ -93,9 +91,7 @@ export default function Capture() {
 
       <View style={styles.controls}>
         {image ? (
-          <View
-            style={styles.retakeButton}
-          >
+          <View style={styles.retakeButton}>
             <Button
               title="Re-take"
               onPress={() => setImage(undefined)}
@@ -146,5 +142,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 50,
-  }
+  },
 });
