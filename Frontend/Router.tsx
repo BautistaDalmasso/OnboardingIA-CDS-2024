@@ -15,6 +15,8 @@ import Profile from "./src/components/Profile";
 import LoginFingerPrint from "./src/components/LoginFingerprint";
 import { ConnectionType } from "./src/common/enums/connectionType";
 import Capture from "./src/components/Capture";
+import RegisterFace from "./src/components/RegisterFace";
+import LoginFace from "./src/components/LoginFace";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -44,6 +46,11 @@ const Router = () => {
                   component={LoginFingerPrint}
                   options={{ drawerItemStyle: { display: "none" } }}
                 />
+                <Drawer.Screen
+                  name={Routes.LoginFace}
+                  component={LoginFace}
+                  options={{ drawerItemStyle: { display: "none" } }}
+                />
                 <Drawer.Screen name={Routes.Login} component={Login} />
                 <Stack.Screen name={Routes.Signup} component={Signup} />
               </>
@@ -53,6 +60,10 @@ const Router = () => {
                 <Stack.Screen name={Routes.Licence} component={Profile} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
                 <Stack.Screen name={Routes.Loans} component={Loans} />
+                <Stack.Screen
+                  name={Routes.RegisterFace}
+                  component={RegisterFace}
+                />
               </>
             )}
           </>
@@ -66,7 +77,6 @@ const Router = () => {
             )}
           </>
         )}
-        <Drawer.Screen name={Routes.Capture} component={Capture} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

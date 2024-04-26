@@ -5,11 +5,15 @@ import { Camera, CameraType, FlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import Button from "./Button";
 
-export default function Capture() {
+interface Props {
+  onAccept: (imageURI: string) => Promise<void>;
+}
+
+const Capture = ({ onAccept }: Props) => {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
   >(null);
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<string>("");
   const [cameraType, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
@@ -26,7 +30,6 @@ export default function Capture() {
     if (cameraRef.current) {
       try {
         const data = await cameraRef.current.takePictureAsync();
-        console.log(data);
         setImage(data.uri);
       } catch (error) {
         console.log(error);
@@ -37,10 +40,7 @@ export default function Capture() {
   const savePicture = async () => {
     if (image) {
       try {
-        const asset = await MediaLibrary.createAssetAsync(image);
-        alert("Picture saved! 🎉");
-        setImage(undefined);
-        console.log("saved successfully");
+        await onAccept(image);
       } catch (error) {
         console.log(error);
       }
@@ -94,7 +94,7 @@ export default function Capture() {
           <View style={styles.retakeButton}>
             <Button
               title="Re-take"
-              onPress={() => setImage(undefined)}
+              onPress={() => setImage("")}
               icon="retweet"
             />
             <Button title="Save" onPress={savePicture} icon="check" />
@@ -105,7 +105,7 @@ export default function Capture() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -144,3 +144,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
   },
 });
+
+export default Capture;

@@ -10,5 +10,5 @@ if __name__ == "__main__":
         "app.api:app",
         host=server_config.get_server_ip(),
         port=server_config.get_server_port(),
-        reload=False,
+        reload=True,
     )
