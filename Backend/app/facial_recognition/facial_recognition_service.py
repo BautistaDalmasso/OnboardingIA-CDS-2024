@@ -41,14 +41,10 @@ async def compare_facial_profile(user_email: str, user_face: bytes) -> bool | No
 
     try:
         if r.status_code == 200:
-            return r.json()["success"]
+            return r.json()
         else:
             print(r.json())
-            raise HTTPException(
-                status_code=500, detail={"error": "Failed to upload facial profile."}
-            )
+            return {"error": "Failed to compare facial profile."}
     except Exception as e:
         print(e)
-        raise HTTPException(
-            status_code=500, detail={"error": "Failed to compare facial profile."}
-        )
+        return {"error": "Failed to compare facial profile."}

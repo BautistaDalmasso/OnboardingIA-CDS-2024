@@ -4,9 +4,12 @@ import Constants from "expo-constants";
 import { Camera, CameraType, FlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import Button from "./Button";
-import { FacialRecognitionService } from "../services/facialRecognitionService";
 
-export default function Capture() {
+interface Props {
+  onAccept: (imageURI: string) => Promise<void>;
+}
+
+const Capture = ({ onAccept }: Props) => {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
   >(null);
@@ -37,10 +40,7 @@ export default function Capture() {
   const savePicture = async () => {
     if (image) {
       try {
-        const asset = await MediaLibrary.createAssetAsync(image);
-        alert("Picture saved! 🎉");
-        setImage("");
-        console.log("saved successfully");
+        await onAccept(image);
       } catch (error) {
         console.log(error);
       }
@@ -105,7 +105,7 @@ export default function Capture() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -144,3 +144,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
   },
 });
+
+export default Capture;

@@ -56,7 +56,8 @@ const Home = ({ navigation }: Props) => {
   };
 
   const handleLoginFace = async () => {
-    // TODO: navigate to face login page
+    navigation.navigate(Routes.LoginFace);
+    await handleShowButtons();
   };
 
   const handleSignup = async () => {

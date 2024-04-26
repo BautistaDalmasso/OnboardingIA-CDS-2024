@@ -30,7 +30,7 @@ async def login_face_recognition(user_email: str, face: UploadFile):
     if "error" in result:
         raise HTTPException(status_code=401, detail="Inicio de sesión fallido.")
 
-    if result:
+    if result["success"]:
         user = user_service.get_user_by_email(user_email)
         access_token = user_service.create_access_token(data={"sub": user.email})
-        return {"access_token": access_token}
+        return {"access_token": access_token, "user": user}
