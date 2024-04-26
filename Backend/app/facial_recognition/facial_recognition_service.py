@@ -16,6 +16,9 @@ async def upload_facial_profile(user_email: str, user_face: bytes) -> None:
         if r.status_code == 200:
             face_id = r.json()["id"]
 
+            # TODO: Temporary, erase later
+            print(face_id)
+
             execute_in_database(
                 """UPDATE users SET faceID = ? WHERE email = ?""", (face_id, user_email)
             )

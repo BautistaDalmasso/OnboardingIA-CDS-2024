@@ -4,12 +4,13 @@ import Constants from "expo-constants";
 import { Camera, CameraType, FlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import Button from "./Button";
+import { FacialRecognitionService } from "../services/facialRecognitionService";
 
 export default function Capture() {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
   >(null);
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<string>("");
   const [cameraType, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
@@ -28,6 +29,12 @@ export default function Capture() {
         const data = await cameraRef.current.takePictureAsync();
         console.log(data);
         setImage(data.uri);
+        // TODO: temporary, erase later
+        const response = await FacialRecognitionService.registerFace("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoZWxsQGdtYWlsLmNvbSIsImV4cCI6MTcxNDE2MjI4OH0.2NEc6HyKyp5p69joDmDjDV8j5wZo4SE5AervNTkIzIg",
+            data.uri
+        );
+        console.log("test")
+        console.log(response)
       } catch (error) {
         console.log(error);
       }
@@ -39,7 +46,7 @@ export default function Capture() {
       try {
         const asset = await MediaLibrary.createAssetAsync(image);
         alert("Picture saved! 🎉");
-        setImage(undefined);
+        setImage("");
         console.log("saved successfully");
       } catch (error) {
         console.log(error);
@@ -94,7 +101,7 @@ export default function Capture() {
           <View style={styles.retakeButton}>
             <Button
               title="Re-take"
-              onPress={() => setImage(undefined)}
+              onPress={() => setImage("")}
               icon="retweet"
             />
             <Button title="Save" onPress={savePicture} icon="check" />
