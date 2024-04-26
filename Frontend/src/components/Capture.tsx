@@ -27,14 +27,7 @@ export default function Capture() {
     if (cameraRef.current) {
       try {
         const data = await cameraRef.current.takePictureAsync();
-        console.log(data);
         setImage(data.uri);
-        // TODO: temporary, erase later
-        const response = await FacialRecognitionService.registerFace("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoZWxsQGdtYWlsLmNvbSIsImV4cCI6MTcxNDE2MjI4OH0.2NEc6HyKyp5p69joDmDjDV8j5wZo4SE5AervNTkIzIg",
-            data.uri
-        );
-        console.log("test")
-        console.log(response)
       } catch (error) {
         console.log(error);
       }

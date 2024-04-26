@@ -12,35 +12,14 @@ from app.middlewares import verify_token
 router = APIRouter(prefix="/facial_recog", tags=["Facial Recognition"])
 
 
-@router.post("/")
-async def handle_facial_register(request: Request):
-    print(f"Headers: {request.headers}")
-    body = await request.body()
-    print(f"Body (first 10 bytes --- last 10): {body[:10]} --- {body[-20:]}")
-
-
 @router.post("/register_face")
 async def handle_facial_register(face: UploadFile, token=Depends(HTTPBearer())):
     face_file = await face.read()
     user_email = await verify_token(token.credentials)
 
-    print(face)
-    print(face.size)
-    print(face.size is None)
-
-    with open("face.jpg", "wb") as file:
-        f = await face.read()
-        print(f)
-        file.write(f)
-
-
-"""    result = await upload_facial_profile(user_email, face_file)
-
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
+    await upload_facial_profile(user_email, face_file)
 
     return {"message": "Facial profile uploaded successfully"}
-"""
 
 
 @router.post("/login_face_recognition")

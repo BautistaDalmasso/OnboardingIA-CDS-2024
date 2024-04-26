@@ -1,3 +1,3 @@
 export interface IFacialRegistrationResponse {
-    message: string;
+  message: string;
 }
