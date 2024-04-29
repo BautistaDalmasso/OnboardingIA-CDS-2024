@@ -72,7 +72,7 @@ const Signup = ({ navigation }: Props) => {
       Keyboard.dismiss();
       setLoading(true);
 
-      if (!/^\s]/g.test(firstName) || !/^\s]/g.test(lastName)) {
+      if (/\s/.test(firstName) || /\s/.test(lastName) || !firstName || !lastName ) {
         Alert.alert(
           'Por favor complete el formulario',
           'Para registrarse ingrese: \n1 nombre,\n1 apellido\nemail y contraseña validos \ny evite ingresar espacios.'
@@ -83,7 +83,7 @@ const Signup = ({ navigation }: Props) => {
         Alert.alert('Error', 'Por favor ingrese un correo valido.');
         return;
       }
-      if (password.length < 6 || !/^\s]/g.test(lastName)) {
+      if (password.length < 6 || /\s/.test(password)) {
         Alert.alert(
           'Error',
           'Por favor ingrese una contraseña de 6 caracteres sin espacios.'
