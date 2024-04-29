@@ -83,10 +83,10 @@ const Signup = ({ navigation }: Props) => {
         Alert.alert('Error', 'Por favor ingrese un correo valido.');
         return;
       }
-      if (password.length < 6) {
+      if (password.length < 6 || !/^\s]/g.test(lastName)) {
         Alert.alert(
           'Error',
-          'Por favor ingrese una contraseña de 6 caracteres.'
+          'Por favor ingrese una contraseña de 6 caracteres sin espacios.'
         );
         clearInput();
         return;
