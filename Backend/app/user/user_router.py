@@ -9,6 +9,7 @@ from .user_dtos import (
     CheckChallengeDTO,
     CreateUserDTO,
     LoginDTO,
+    TokenDataDTO,
     UpdateRSADTO,
     UpdateUserDniDTO,
 )
@@ -25,7 +26,13 @@ async def create_user(user: CreateUserDTO):
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
 
-    access_token = user_service.create_access_token(data={"sub": user.email})
+    access_token = user_service.create_access_token(
+        TokenDataDTO(
+            email=result["email"],
+            role=result["role"],
+            licenceLevel=result["licenceLevel"],
+        )
+    )
 
     return {"access_token": access_token, "user": user}
 
@@ -37,17 +44,19 @@ async def login_for_access_token(loginData: LoginDTO):
     if not user:
         raise HTTPException(status_code=401, detail="Email o contraseña incorrectos")
 
-    access_token = user_service.create_access_token(data={"sub": user["email"]})
+    access_token = user_service.create_access_token(
+        TokenDataDTO(email=user.email, role=user.role, licenceLevel=user.licenceLevel)
+    )
 
     return {"access_token": access_token, "user": user}
 
 
 @router.post("/rsa")
 async def update_rsa(updateRSADTO: UpdateRSADTO, token=Depends(HTTPBearer())):
-    user_email: str = await verify_token(token.credentials)
+    user_data: TokenDataDTO = await verify_token(token.credentials)
 
     user_service.update_public_rsa(
-        user_email, updateRSADTO.publicRSA, updateRSADTO.deviceUID
+        user_data.email, updateRSADTO.publicRSA, updateRSADTO.deviceUID
     )
 
 
@@ -77,7 +86,9 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 
     user_service.delete_challenge(challengeDTO.email)
 
-    access_token = user_service.create_access_token(data={"sub": user.email})
+    access_token = user_service.create_access_token(
+        TokenDataDTO(email=user.email, role=user.role, licenceLevel=user.licenceLevel)
+    )
     return {
         "access_token": access_token,
         "user": {
@@ -91,9 +102,9 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 
 @router.patch("/dni")
 async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
-    user_email = await verify_token(token.credentials)
+    user_data: TokenDataDTO = await verify_token(token.credentials)
 
-    result = user_service.update_user(user, user_email)
+    result = user_service.update_user(user, user_data.email)
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])

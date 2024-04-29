@@ -23,7 +23,9 @@ def initialize_database(db_path: Path) -> None:
                     password TEXT,
                     challengeKey TEXT,
                     dni TEXT,
-                    faceID TEXT)"""
+                    faceID TEXT,
+                    licenceLevel INTEGER,
+                    role TEXT)"""
         )
         c.execute(
             """CREATE TABLE IF NOT EXISTS deviceRSAS

@@ -43,7 +43,7 @@ def test_authenticating_user(db_path, user_1):
 
     result = user_service.authenticate_user("enriquez_test@gmail.com", "123456")
 
-    assert result["firstName"] == "Joaquin"
+    assert result.firstName == "Joaquin"
 
 
 def test_wrong_password_doesnt_auth(db_path, user_1):

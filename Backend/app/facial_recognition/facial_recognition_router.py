@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, Request
 from fastapi.security import HTTPBearer
 
+from app.user.user_dtos import TokenDataDTO
 from app.user import user_service
 from app.facial_recognition.facial_recognition_service import (
     compare_facial_profile,
@@ -15,9 +16,9 @@ router = APIRouter(prefix="/facial_recog", tags=["Facial Recognition"])
 @router.post("/register_face")
 async def handle_facial_register(face: UploadFile, token=Depends(HTTPBearer())):
     face_file = await face.read()
-    user_email = await verify_token(token.credentials)
+    user_data: TokenDataDTO = await verify_token(token.credentials)
 
-    await upload_facial_profile(user_email, face_file)
+    await upload_facial_profile(user_data.email, face_file)
 
     return {"message": "Facial profile uploaded successfully"}
 
@@ -32,5 +33,9 @@ async def login_face_recognition(user_email: str, face: UploadFile):
 
     if result["success"]:
         user = user_service.get_user_by_email(user_email)
-        access_token = user_service.create_access_token(data={"sub": user.email})
+        access_token = user_service.create_access_token(
+            TokenDataDTO(
+                email=user.email, role=user.role, licenceLevel=user.licenceLevel
+            )
+        )
         return {"access_token": access_token, "user": user}
