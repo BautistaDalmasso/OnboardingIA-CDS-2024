@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -6,6 +7,15 @@ class CreateUserDTO(BaseModel):
     lastName: str
     email: str
     password: str
+
+
+class UserDTO(BaseModel):
+    firstName: str
+    lastName: str
+    email: str
+    dni: Optional[str] = None
+    licenceLevel: Optional[int] = None
+    role: Optional[str] = None
 
 
 class LoginDTO(BaseModel):
@@ -26,3 +36,9 @@ class UpdateRSADTO(BaseModel):
 
 class UpdateUserDniDTO(BaseModel):
     dni: str
+
+
+class TokenDataDTO(BaseModel):
+    email: str
+    role: Optional[str] = "basic"
+    licenceLevel: Optional[int] = 1

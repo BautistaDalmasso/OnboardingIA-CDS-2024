@@ -11,3 +11,5 @@ class User(BaseModel):
     dni: Optional[str] = None
     challengeKey: Optional[str] = None
     faceId: Optional[str] = None
+    licenceLevel: Optional[int] = None
+    role: Optional[str] = None

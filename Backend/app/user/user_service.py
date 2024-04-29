@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 from ..database import execute_in_database, query_database
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
-from .user_dtos import UpdateUserDniDTO
+from .user_dtos import TokenDataDTO, UpdateUserDniDTO, UserDTO
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -20,38 +20,46 @@ def create_user(user: User):
 
     try:
         execute_in_database(
-            """INSERT INTO users (firstName, lastName, email, password)
-                        VALUES (?, ?, ?, ?)""",
-            (user.firstName, user.lastName, user.email, hashed_password),
+            """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel)
+                        VALUES (?, ?, ?, ?, ?, ?)""",
+            (user.firstName, user.lastName, user.email, hashed_password, "basic", 1),
         )
         return {
             "email": user.email,
             "firstName": user.firstName,
             "lastName": user.lastName,
+            "role": "basic",
+            "licenceLevel": 1,
         }
     except sqlite3.IntegrityError:
         return {"error": "El email ya está registrado"}
 
 
-def authenticate_user(email: str, password: str) -> User | None:
+def authenticate_user(email: str, password: str) -> UserDTO | None:
     user = get_user_by_email(email)
 
     if user:
         if pwd_context.verify(password, user.password):
-            return {
-                "email": user.email,
-                "firstName": user.firstName,
-                "lastName": user.lastName,
-                "dni": user.dni,
-            }
+            return UserDTO(
+                email=user.email,
+                firstName=user.firstName,
+                lastName=user.lastName,
+                dni=user.dni,
+                role=user.role,
+                licenceLevel=user.licenceLevel,
+            )
 
 
-def create_access_token(data: dict):
+def create_access_token(data: TokenDataDTO):
     expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = data.copy()
     expire = datetime.now() + expires_delta
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    data = {
+        "sub": data.email,
+        "role": data.role,
+        "licenceLevel": data.licenceLevel,
+        "exp": expire,
+    }
+    encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
@@ -67,6 +75,8 @@ def get_user_by_email(email: str) -> User:
             challengeKey=user_data[5],
             dni=user_data[6],
             faceId=user_data[7],
+            licenceLevel=user_data[8],
+            role=user_data[9],
         )
         return user
 
@@ -126,7 +136,6 @@ def generate_new_uid(user_email: str):
     if latest_user_device[0] is not None:
         result["deviceUID"] = latest_user_device[0] + 1
 
-    print(result)
     return result
 
 
