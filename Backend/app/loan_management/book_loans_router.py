@@ -6,7 +6,7 @@ from .book_loans_dtos import LoanDTO, RequestedBookDTO
 router = APIRouter(prefix="/book", tags=["Book"])
 
 
-@router.post("confirmed_loan")
+@router.post("loan")
 async def create_confirmed_loan(book: LoanDTO):
     result = book_loans_service.add_confirmed_loan(book)
     if "error" in result:
