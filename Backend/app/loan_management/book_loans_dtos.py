@@ -22,7 +22,7 @@ class RequestedBookDTO(BaseModel):
     
     
     
-class LoanConfirmedDTO(BaseModel):
+class LoanDTO(BaseModel):
     id: str
     isbn: str
     expirationDate: datetime
