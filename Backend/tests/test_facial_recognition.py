@@ -2,13 +2,7 @@ from pathlib import Path
 import pytest
 
 from app.user.user_dtos import CreateUserDTO
-from app.user import user_service
-from app.facial_recognition.facial_recognition_service import (
-    upload_facial_profile,
-    compare_facial_profile,
-)
-
-from tests.common_fixtures import db_path
+from tests.common_fixtures import user_service, fr_service
 
 
 """
@@ -22,10 +16,10 @@ Using jpeg is important here!!
 
 @pytest.mark.skip(reason="Facial recognition tests should be run locally.")
 @pytest.mark.asyncio
-async def test_upload_face(db_path, user_1, person1_image1):
+async def test_upload_face(user_service, fr_service, user_1, person1_image1):
     user_service.create_user(user_1)
 
-    await upload_facial_profile(user_1.email, person1_image1)
+    await fr_service.upload_facial_profile(user_1.email, person1_image1)
 
     user = user_service.get_user_by_email(user_1.email)
 
@@ -35,23 +29,26 @@ async def test_upload_face(db_path, user_1, person1_image1):
 @pytest.mark.skip(reason="Facial recognition tests should be run locally.")
 @pytest.mark.asyncio
 async def test_same_person_gets_recognized(
-    db_path, user_1, person1_image1, person1_image2
+    user_service, fr_service, user_1, person1_image1, person1_image2
 ):
     user_service.create_user(user_1)
-    await upload_facial_profile(user_1.email, person1_image1)
+    await fr_service.upload_facial_profile(user_1.email, person1_image1)
 
-    assert await compare_facial_profile(user_1.email, person1_image2)
+    assert await fr_service.compare_facial_profile(user_1.email, person1_image2)
 
 
 @pytest.mark.skip(reason="Facial recognition tests should be run locally.")
 @pytest.mark.asyncio
 async def test_different_person_doesnt_get_recognized(
-    db_path, user_1, person1_image1, person2_image1
+    user_service, fr_service, user_1, person1_image1, person2_image1
 ):
     user_service.create_user(user_1)
-    await upload_facial_profile(user_1.email, person1_image1)
+    await fr_service.upload_facial_profile(user_1.email, person1_image1)
 
-    assert not (await compare_facial_profile(user_1.email, person2_image1))
+    result = await fr_service.compare_facial_profile(user_1.email, person2_image1)
+    print(result)
+
+    assert not result["success"]
 
 
 @pytest.fixture

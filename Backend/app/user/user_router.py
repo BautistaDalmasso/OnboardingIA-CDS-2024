@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
-from app.user import user_service
+from app.user.user_service import UserService
+from app.file_paths import DATABASE_PATH
+
 
 from ..middlewares import verify_token
 from .user_dtos import (
@@ -13,6 +15,8 @@ from .user_dtos import (
     UpdateRSADTO,
     UpdateUserDniDTO,
 )
+
+user_service = UserService(DATABASE_PATH)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
