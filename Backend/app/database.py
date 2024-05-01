@@ -28,7 +28,7 @@ def initialize_database(db_path: Path) -> None:
                     role TEXT)"""
         )
         c.execute(
-            """CREATE TABLE IF NOT EXISTS confirmed_book_loans
+            """CREATE TABLE IF NOT EXISTS loans
                     (id TEXT,
                     isbn TEXT,
                     expirationDate DATE,
