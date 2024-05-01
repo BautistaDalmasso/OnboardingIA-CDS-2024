@@ -1,12 +1,12 @@
 import sqlite3
-from .book_loans_dtos import RequestedBookDTO,LoanConfirmedDTO
+from .book_loans_dtos import RequestedBookDTO,LoanDTO
 from ..database import execute_in_database
 
 
-def add_confirmed_loan(book:LoanConfirmedDTO):
+def add_confirmed_loan(book:LoanDTO):
     try:
         execute_in_database(
-            """INSERT INTO confirmed_book_loans (id, isbn, expirationDate, userEmail)
+            """INSERT INTO loans (id, isbn, expirationDate, userEmail)
                      VALUES (?, ?, ?, ?)""",
             (book.id, book.isbn, book.expirationDate, book.userEmail),
         )
