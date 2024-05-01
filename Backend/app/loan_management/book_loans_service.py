@@ -1,55 +1,37 @@
 import sqlite3
-from ..models import Book
+from .book_loans_dtos import RequestedBookDTO,LoanConfirmedDTO
 from ..database import execute_in_database
 
 
-def add_confirmed_loan(book: Book):
+def add_confirmed_loan(book:LoanConfirmedDTO):
     try:
         execute_in_database(
-            """INSERT INTO confirmed_book_loans (id, isbn, name, author, expirationDate)
-                     VALUES (?, ?, ?, ?, ?)""",
-            (book.id, book.isbn, book.name, book.author, book.expirationDate),
+            """INSERT INTO confirmed_book_loans (id, isbn, expirationDate, userEmail)
+                     VALUES (?, ?, ?, ?)""",
+            (book.id, book.isbn, book.expirationDate, book.userEmail),
         )
         return {
             "id": book.id,
             "isbn": book.isbn,
-            "name": book.name,
-            "author": book.author,
             "expirationDate": book.expirationDate,
+            "userEmail": book.userEmail,
         }
-
+    
     except sqlite3.IntegrityError:
-        return {"error": ""}
+        return {"error": "Error al registrar un prestamo realizado"}
 
 
-def add_requested_book(book: Book):
+def add_requested_book(book: RequestedBookDTO):
     try:
         execute_in_database(
-            """INSERT INTO requested_books (id, isbn, name, author)
+            """INSERT INTO requested_books (id, isbn, userEmail)
                         VALUES (?, ?, ?, ?)""",
-            (book.id, book.isbn, book.name, book.author),
+            (book.id, book.isbn, book.userEmail),
         )
         return {
             "id": book.id,
             "isbn": book.isbn,
-            "name": book.name,
-            "author": book.author,
+            "userEmail": book.userEmail,
         }
     except sqlite3.IntegrityError:
-        return {"error": ""}
-
-
-def addgit_books_available_to_request():
-    return {}
-
-
-def remove_book():
-    return {}
-
-
-def get_book_by_id():
-    return {}
-
-
-def get_expiration_date():
-    return {}
+        return {"error": "Error al registrar un libro solicitado"}

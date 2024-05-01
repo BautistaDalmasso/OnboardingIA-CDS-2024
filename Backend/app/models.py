@@ -15,11 +15,3 @@ class User(BaseModel):
     role: Optional[str] = None
 
 
-class Book(BaseModel):
-        id: int
-        isbn: str
-        name: str
-        author: str
-        expirationDate: str
-        confirmedLoanDate: str
-

@@ -18,3 +18,4 @@ async def create_requested_book(book: RequestedBookDTO):
     result = book_loans_service.add_requested_book(book)
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
+    

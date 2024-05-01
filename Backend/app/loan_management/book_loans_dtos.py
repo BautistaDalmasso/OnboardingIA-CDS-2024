@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -11,18 +12,19 @@ class CreateBookDTO(BaseModel):
     confirmedLoanDate: datetime
     confirmedLoan: bool
     requested: bool
-
-
-class LoanConfirmedDTO(BaseModel):
-    id: str
-    isbn: str
-    name: str
-    author: str
-    expirationDate: datetime
-
-
+    
+    
+    
 class RequestedBookDTO(BaseModel):
     id: str
     isbn: str
-    name: str
-    author: str
+    userEmail:str
+    
+    
+    
+class LoanConfirmedDTO(BaseModel):
+    id: str
+    isbn: str
+    expirationDate: datetime
+    userEmail:str
+     
