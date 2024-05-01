@@ -28,13 +28,21 @@ def initialize_database(db_path: Path) -> None:
                     role TEXT)"""
         )
         c.execute(
-            """CREATE TABLE IF NOT EXISTS deviceRSAS
-                    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    email TEXT,
-                    deviceUID INTEGER,
-                    publicRSA TEXT,
-                    UNIQUE(email, deviceUID))"""
+            """CREATE TABLE IF NOT EXISTS confirmed_book_loans
+                    (id TEXT,
+                    isbn TEXT,
+                    name TEXT,
+                    author TEXT,
+                    expirationDate DATE)""",
         )
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS requested_books
+                    (id TEXT,
+                    isbn TEXT,
+                    name TEXT,
+                    author TEXT)""",
+        )
+        c.execute()
         conn.commit()
     finally:
         conn.close()

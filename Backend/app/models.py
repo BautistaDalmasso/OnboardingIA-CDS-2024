@@ -13,3 +13,13 @@ class User(BaseModel):
     faceId: Optional[str] = None
     licenceLevel: Optional[int] = None
     role: Optional[str] = None
+
+
+class Book(BaseModel):
+        id: int
+        isbn: str
+        name: str
+        author: str
+        expirationDate: str
+        confirmedLoanDate: str
+
