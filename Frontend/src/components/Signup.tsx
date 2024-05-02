@@ -95,7 +95,6 @@ const Signup = ({ navigation }: Props) => {
     <View style={styles.container}>
       <Text style={styles.title}>Crea tu cuenta</Text>
       <Text style={styles.subtitle}>
-        {' '}
         Utiliza (
         <Image
           source={require('../assets/send-message-button.png')}
