@@ -31,6 +31,13 @@ const Signup = ({ navigation }: Props) => {
   const { setContextState } = useContextState();
   const { authenticate, isBiometricAvailable } = useBiometrics();
 
+  const clearInput = () => {
+    setName('');
+    setLastName('');
+    setEmail('');
+    setPassword('');
+  };
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
@@ -75,14 +82,14 @@ const Signup = ({ navigation }: Props) => {
         }));
         navigation.navigate(Routes.Home);
         Alert.alert('¡Usted ha sido registrado con exito!.');
-
-        setName('');
-        setLastName('');
-        setEmail('');
-        setPassword('');
+        clearInput();
       }
 
-      if (response.detail) Alert.alert('Error', response.detail);
+      if (response.detail){
+        Alert.alert('Error', response.detail)
+        clearInput();
+        return;
+      }
 
     } catch (error) {
       console.error('Error saving user data:', error);
@@ -94,14 +101,14 @@ const Signup = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Crea tu cuenta</Text>
-      <Text style={styles.subtitle}>
+      <Text style={styles.subtitleInstruction}>
         Utiliza (
         <Image
           source={require('../assets/send-message-button.png')}
           style={styles.sendButton}
           resizeMode="contain"
         />
-        ) para registrar tus datos.
+        ) para guardar tus datos.
       </Text>
       {!firstName ? (
         <FormTextInput
@@ -110,7 +117,7 @@ const Signup = ({ navigation }: Props) => {
           set={setName}
         />
       ) : (
-        <Text style={styles.subtitle}>Nombre registrado ✔️</Text>
+        <Text style={styles.subtitle}>• Nombre/s:    {firstName} </Text>
       )}
       {!lastName ? (
         <FormTextInput
@@ -119,7 +126,7 @@ const Signup = ({ navigation }: Props) => {
           set={setLastName}
         />
       ) : (
-        <Text style={styles.subtitle}>Apellido registrado ✔️</Text>
+        <Text style={styles.subtitle}>• Apellido/s:   {lastName}</Text>
       )}
       {!email ? (
         <FormTextInput
@@ -128,7 +135,7 @@ const Signup = ({ navigation }: Props) => {
           set={setEmail}
         />
       ) : (
-        <Text style={styles.subtitle}>Email registrado ✔️</Text>
+        <Text style={styles.subtitle}>• Email:            {email}</Text>
       )}
       {!password ? (
         <FormTextInput
@@ -137,7 +144,7 @@ const Signup = ({ navigation }: Props) => {
           set={setPassword}
         />
       ) : (
-        <Text style={styles.subtitle}>Contraseña registrado ✔️</Text>
+        <Text style={styles.subtitle}>---------contraseña valida  ✅---------</Text>
       )}
       <TouchableOpacity
         style={styles.button}
@@ -170,22 +177,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     height: '50%',
-    alignItems: 'center',
     backgroundColor: '#ffffff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-
     textAlign: 'center',
     color: '#3369FF',
+    marginBottom: 0 ,
+  },
+  subtitleInstruction:{
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginTop: 0,
+    marginBottom: 40,
+    marginLeft: 30,
   },
   subtitle: {
     fontSize: 15,
-    fontWeight: 'bold',
-    marginBottom: 40,
+
+    marginBottom: 20,
+    marginLeft: 30,
+    textAlign: 'left',
   },
   button: {
+    alignSelf:'center',
     backgroundColor: '#3369FF',
     paddingVertical: 10,
     paddingHorizontal: 20,
