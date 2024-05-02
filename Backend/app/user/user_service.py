@@ -9,22 +9,24 @@ from typing import Any
 import jwt
 from passlib.context import CryptContext
 
-from ..database_actions import execute_in_database, query_database
+from app.database_user import DatabaseUser
+
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
 from .user_dtos import TokenDataDTO, UpdateUserDniDTO, UserDTO
 
 
-class UserService:
+class UserService(DatabaseUser):
     def __init__(self, db_path: Path) -> None:
-        self._db_path = db_path
+        super().__init__(db_path)
+
         self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     def create_user(self, user: User):
         hashed_password = self._pwd_context.hash(user.password)
 
         try:
-            self._execute_in_database(
+            self.execute_in_database(
                 """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel)
                             VALUES (?, ?, ?, ?, ?, ?)""",
                 (
@@ -73,7 +75,7 @@ class UserService:
         return encoded_jwt
 
     def get_user_by_email(self, email: str) -> User:
-        user_data = self._query_database(
+        user_data = self.query_database(
             """SELECT * FROM users WHERE email = ?""",
             (email,),
         )
@@ -100,7 +102,7 @@ class UserService:
             self.create_new_public_rsa(user_email, public_rsa, device_uid)
 
     def device_rsa_exists(self, user_email: str, device_uid: int) -> bool:
-        device_rsa = self._query_database(
+        device_rsa = self.query_database(
             """SELECT * FROM deviceRSAS WHERE email = ? AND deviceUID = ?""",
             (user_email, device_uid),
         )
@@ -111,21 +113,21 @@ class UserService:
         self, user_email: str, public_rsa: str, device_uid: int
     ):
 
-        self._execute_in_database(
+        self.execute_in_database(
             """UPDATE deviceRSAS SET publicRSA = ? WHERE email = ? AND deviceUID = ?""",
             (public_rsa, user_email, device_uid),
         )
 
     def create_new_public_rsa(self, user_email: str, public_rsa: str, device_uid: int):
 
-        self._execute_in_database(
+        self.execute_in_database(
             """INSERT INTO deviceRSAS (email, deviceUID, publicRSA)
                             VALUES (?, ?, ?)""",
             (user_email, device_uid, public_rsa),
         )
 
     def get_public_rsa(self, user_email: str, device_uid: int) -> str | None:
-        deviceRSA = self._query_database(
+        deviceRSA = self.query_database(
             """SELECT * FROM deviceRSAS WHERE email = ? AND deviceUID = ?""",
             (user_email, device_uid),
         )
@@ -137,7 +139,7 @@ class UserService:
     def generate_new_uid(self, user_email: str):
         result = {"deviceUID": 0}
 
-        latest_user_device = self._query_database(
+        latest_user_device = self.query_database(
             """SELECT MAX(deviceUID) FROM deviceRSAS WHERE email = ?""",
             (user_email,),
         )
@@ -150,7 +152,7 @@ class UserService:
     def create_challenge(self, email: str):
         challenge = self.generate_random_challenge(20)
 
-        self._execute_in_database(
+        self.execute_in_database(
             """UPDATE users SET challengeKey = ? WHERE email = ?""",
             (challenge, email),
         )
@@ -158,7 +160,7 @@ class UserService:
         return challenge
 
     def delete_challenge(self, email: str):
-        self._execute_in_database(
+        self.execute_in_database(
             """UPDATE users SET challengeKey = ? WHERE email = ?""",
             (None, email),
         )
@@ -184,7 +186,7 @@ class UserService:
     def update_user(self, user: UpdateUserDniDTO, email: str):
 
         try:
-            self._execute_in_database(
+            self.execute_in_database(
                 """UPDATE users SET dni = ?
                             WHERE email = ?""",
                 (user.dni, email),
@@ -194,9 +196,3 @@ class UserService:
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
-
-    def _execute_in_database(self, command: str, args: tuple[Any]) -> None:
-        execute_in_database(command, args, self._db_path)
-
-    def _query_database(self, query: str, args: tuple[Any]) -> list[Any]:
-        return query_database(query, args, self._db_path)
