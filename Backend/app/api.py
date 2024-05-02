@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from app.library.library_service import LibraryService
 from app.ai.chatbot_router import router as chatbot_router
-from app.initialize_db import initialize_database
+from app.database.initialize_db import initialize_database
 from app.server_config import ServerConfig
 from app.user.user_router import router as user_router
 from app.file_paths import DATABASE_PATH, LIBRARY_DB_PATH

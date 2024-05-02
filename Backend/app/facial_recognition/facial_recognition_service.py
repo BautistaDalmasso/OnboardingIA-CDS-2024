@@ -2,8 +2,8 @@ from pathlib import Path
 import requests
 from fastapi import HTTPException
 
-from app.database_user import DatabaseUser
-from app.database_actions import execute_in_database
+from app.database.database_user import DatabaseUser
+from app.database.database_actions import execute_in_database
 from app.user.user_service import UserService
 from app.server_config import ServerConfig
 

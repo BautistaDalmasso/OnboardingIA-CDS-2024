@@ -5,7 +5,7 @@ import pytest
 from app.library.library_service import LibraryService
 from app.facial_recognition.facial_recognition_service import FacialRecognitionService
 from app.user.user_service import UserService
-from app import initialize_db
+from app.database import initialize_db
 from app.file_paths import TEST_DB_PATH, LIBRARY_DB_PATH, LIBRARY_TEST_PATH
 
 

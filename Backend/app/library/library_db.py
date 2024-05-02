@@ -1,7 +1,7 @@
 from pathlib import Path
 import random
 
-from app.database_actions import execute_in_database
+from app.database.database_actions import execute_in_database
 
 
 def initialize_database(db_path: Path) -> None:

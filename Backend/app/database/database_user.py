@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from app.database_actions import execute_in_database, query_database
+from app.database.database_actions import execute_in_database, query_database
 
 
 class DatabaseUser:

@@ -1,6 +1,6 @@
 import sqlite3
 from typing import Any
-from app.database_user import DatabaseUser
+from app.database.database_user import DatabaseUser
 from app.library.library_models import BookData, PhysicalCopyData
 
 

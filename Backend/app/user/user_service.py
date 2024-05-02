@@ -9,7 +9,7 @@ from typing import Any
 import jwt
 from passlib.context import CryptContext
 
-from app.database_user import DatabaseUser
+from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
