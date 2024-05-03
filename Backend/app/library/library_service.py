@@ -27,6 +27,11 @@ class LibraryService(DatabaseUser):
             return create_book_data(bookEntry)
         return None
 
+    def consult_all_books(self) -> list[BookData]:
+        all_books = self.query_multiple_rows("""SELECT * FROM books""", tuple())
+
+        return [create_book_data(entry) for entry in all_books]
+
     def borrow_book(self, isbn: str) -> PhysicalCopyData:
         """Mark a book as "borrowed". This is not the same as making a loan!
 
@@ -121,8 +126,6 @@ class LibraryService(DatabaseUser):
 
 
 def create_book_data(db_entry: list[Any]) -> BookData:
-    print(db_entry)
-
     return BookData(
         isbn=db_entry[0],
         title=db_entry[1],

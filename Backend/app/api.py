@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from app.licence_levels.licence_service import LicenceService
 from app.library.library_service import LibraryService
 from app.ai.chatbot_router import router as chatbot_router
 from app.database.initialize_db import initialize_database
@@ -43,3 +44,5 @@ async def ping():
 
 initialize_database(DATABASE_PATH)
 library_db.initialize_database(LIBRARY_DB_PATH)
+# DELETE IN PRODUCTION!!!
+LicenceService(DATABASE_PATH, LIBRARY_DB_PATH).fill_with_random_entries()

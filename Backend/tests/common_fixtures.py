@@ -2,6 +2,7 @@ import shutil
 
 import pytest
 
+from app.licence_levels.licence_service import LicenceService
 from app.library.library_service import LibraryService
 from app.facial_recognition.facial_recognition_service import FacialRecognitionService
 from app.user.user_service import UserService
@@ -32,3 +33,15 @@ def library_service():
         yield LibraryService(LIBRARY_TEST_PATH)
     finally:
         LIBRARY_TEST_PATH.unlink()
+
+
+@pytest.fixture
+def licence_req_service():
+    shutil.copyfile(LIBRARY_DB_PATH, LIBRARY_TEST_PATH)
+    initialize_db.initialize_database(TEST_DB_PATH)
+
+    try:
+        yield LicenceService(TEST_DB_PATH, LIBRARY_TEST_PATH)
+    finally:
+        LIBRARY_TEST_PATH.unlink()
+        TEST_DB_PATH.unlink()

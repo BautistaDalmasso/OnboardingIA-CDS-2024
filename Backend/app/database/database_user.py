@@ -1,7 +1,11 @@
 from pathlib import Path
 from typing import Any
 
-from app.database.database_actions import execute_in_database, query_database
+from app.database.database_actions import (
+    execute_in_database,
+    query_database,
+    query_multiple_rows,
+)
 
 
 class DatabaseUser:
@@ -13,3 +17,6 @@ class DatabaseUser:
 
     def query_database(self, query: str, args: tuple[Any]) -> list[Any]:
         return query_database(query, args, self._db_path)
+
+    def query_multiple_rows(self, query: str, args: tuple[Any]) -> list[Any]:
+        return query_multiple_rows(query, args, self._db_path)

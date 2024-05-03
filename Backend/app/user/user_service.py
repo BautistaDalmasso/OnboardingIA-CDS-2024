@@ -9,6 +9,7 @@ from typing import Any
 import jwt
 from passlib.context import CryptContext
 
+from app.licence_levels.licence_level import LicenceLevel
 from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
@@ -35,7 +36,7 @@ class UserService(DatabaseUser):
                     user.email,
                     hashed_password,
                     "basic",
-                    1,
+                    LicenceLevel.NONE,
                 ),
             )
             return {
@@ -43,7 +44,7 @@ class UserService(DatabaseUser):
                 "firstName": user.firstName,
                 "lastName": user.lastName,
                 "role": "basic",
-                "licenceLevel": 1,
+                "licenceLevel": LicenceLevel.NONE,
             }
         except sqlite3.IntegrityError:
             return {"error": "El email ya está registrado"}
