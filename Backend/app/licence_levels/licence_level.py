@@ -6,3 +6,7 @@ class LicenceLevel:
     REGULAR = 1  # Is the default requiremente unless specified otherwise.
     TRUSTED = 2
     RESEARCHER = 3
+
+
+def default_licence():
+    return LicenceLevel.REGULAR

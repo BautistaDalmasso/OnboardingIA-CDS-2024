@@ -1,7 +1,8 @@
+from collections import defaultdict
 from pathlib import Path
 import random
 
-from app.licence_levels.licence_level import LicenceLevel
+from app.licence_levels.licence_level import LicenceLevel, default_licence
 from app.library.library_models import BookData
 from app.library.library_service import LibraryService
 from app.database.database_user import DatabaseUser
@@ -24,12 +25,7 @@ class LicenceService(DatabaseUser):
 
         licence_level_required = self._consult_book_licence_req(isbn)
 
-        return BookDataWithLicence(
-            isbn=isbn,
-            title=book.title,
-            available_copies=book.available_copies,
-            licence_required=licence_level_required,
-        )
+        return create_book_with_licence(book, licence_level_required)
 
     def _consult_book_licence_req(self, isbn: str) -> int:
         licence_level = self.query_database(
@@ -40,8 +36,43 @@ class LicenceService(DatabaseUser):
         if licence_level is not None:
             return licence_level[0]
 
-        # Default licence level requirement.
-        return LicenceLevel.REGULAR
+        return default_licence()
+
+    def consult_books_by_page(
+        self, page_size: int, page_number: int
+    ) -> list[BookDataWithLicence]:
+        """Page numbering should start at 0"""
+        consulted_books = self._library_service.consult_books_by_page(
+            page_size, page_number
+        )
+        consulted_isbns = [book.isbn for book in consulted_books]
+
+        consulted_licences = self._query_multiple_isbns(consulted_isbns)
+        isbn_to_licence = defaultdict(default_licence)
+        isbn_to_licence.update({entry[0]: entry[1] for entry in consulted_licences})
+
+        return [
+            create_book_with_licence(book, isbn_to_licence[book.isbn])
+            for book in consulted_books
+        ]
+
+    def get_number_of_books(self) -> int:
+        return self._library_service.get_number_of_books()
+
+    def _query_multiple_isbns(self, isbns: list[str]):
+        if len(isbns) == 0:
+            isbns_str = "()"
+        else:
+            # (?, ?, ..., ?)
+            tmp = "".join([", ?" for _ in range(len(isbns) - 1)])
+            isbns_str = f"(?{tmp})"
+
+        consulted_licences = self.query_multiple_rows(
+            f"""SELECT * FROM licenceRequirements
+                                 WHERE isbn IN {isbns_str}""",
+            isbns,
+        )
+        return consulted_licences
 
     def fill_with_random_entries(self):
         """
@@ -66,3 +97,12 @@ class LicenceService(DatabaseUser):
                       VALUES (?, ?)""",
                     (book.isbn, random.randint(1, 3)),
                 )
+
+
+def create_book_with_licence(book: BookData, licence_level: int) -> BookDataWithLicence:
+    return BookDataWithLicence(
+        isbn=book.isbn,
+        title=book.title,
+        available_copies=book.available_copies,
+        licence_required=licence_level,
+    )

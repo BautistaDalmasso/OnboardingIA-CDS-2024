@@ -32,6 +32,20 @@ class LibraryService(DatabaseUser):
 
         return [create_book_data(entry) for entry in all_books]
 
+    def consult_books_by_page(self, page_size: int, page_number: int):
+        """Page numbering should start at 0"""
+        selected_books = self.query_multiple_rows(
+            f"""SELECT * FROM books
+                                                  LIMIT {page_size} OFFSET {page_number*page_size}""",
+            tuple(),
+        )
+
+        return [create_book_data(entry) for entry in selected_books]
+
+    def get_number_of_books(self) -> int:
+
+        return self.query_database("SELECT count(*) FROM books", tuple())[0]
+
     def borrow_book(self, isbn: str) -> PhysicalCopyData:
         """Mark a book as "borrowed". This is not the same as making a loan!
 
