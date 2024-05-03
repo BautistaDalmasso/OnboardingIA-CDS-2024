@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Keyboard,
-  Alert,
-} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { UserService } from '../services/userService';
 import { NavigationProp } from '@react-navigation/native';
@@ -16,7 +8,7 @@ import { useContextState } from '../ContexState';
 import { generateKeyPair } from '../common/utils/crypto';
 import useBiometrics from '../hooks/useBiometrics';
 import { ConnectionType } from '../common/enums/connectionType';
-import FormTextInput from './FormTextInput';
+import CustomTextInput from './CustomTextInput';
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -31,19 +23,26 @@ const Signup = ({ navigation }: Props) => {
   const { setContextState } = useContextState();
   const { authenticate, isBiometricAvailable } = useBiometrics();
 
-  const clearInput = () => {
-    setName('');
-    setLastName('');
-    setEmail('');
-    setPassword('');
-  };
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = async () => {
     try {
-      setLoading(true);
-
-      if (!firstName || !lastName || !email || !password) {
-        Alert.alert('Error', 'Por favor  complete el formulario primero.');
+      if (!firstName || !lastName) {
+        Alert.alert(
+          'Error',
+          'Por favor complete el formulario antes de enviar.'
+        );
+        return;
+      }
+      if (!emailRegex.test(email)) {
+        Alert.alert('Error', 'Por favor ingrese un correo valido.');
+        return;
+      }
+      if (password.length < 6 || password.includes(' ')) {
+        Alert.alert(
+          'Error',
+          'Por favor ingrese una contraseña de 6 caracteres.'
+        );
         return;
       }
 
@@ -82,15 +81,14 @@ const Signup = ({ navigation }: Props) => {
         }));
         navigation.navigate(Routes.Home);
         Alert.alert('¡Usted ha sido registrado con exito!.');
-        clearInput();
+
+        setName('');
+        setLastName('');
+        setEmail('');
+        setPassword('');
       }
 
-      if (response.detail){
-        Alert.alert('Error', response.detail)
-        clearInput();
-        return;
-      }
-
+      if (response.detail) Alert.alert('Error', response.detail);
     } catch (error) {
       console.error('Error saving user data:', error);
     } finally {
@@ -101,72 +99,31 @@ const Signup = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Crea tu cuenta</Text>
-      <Text style={styles.subtitleInstruction}>
-        Utiliza (
-        <Image
-          source={require('../assets/send-message-button.png')}
-          style={styles.sendButton}
-          resizeMode="contain"
-        />
-        ) para guardar tus datos.
-      </Text>
-      {!firstName ? (
-        <FormTextInput
-          placeholder="Nombre"
-          secureTextEntry={false}
-          set={setName}
-        />
-      ) : (
-        <Text style={styles.subtitle}>• Nombre/s:    {firstName} </Text>
-      )}
-      {!lastName ? (
-        <FormTextInput
-          placeholder="Apellido"
-          secureTextEntry={false}
-          set={setLastName}
-        />
-      ) : (
-        <Text style={styles.subtitle}>• Apellido/s:   {lastName}</Text>
-      )}
-      {!email ? (
-        <FormTextInput
-          placeholder="email"
-          secureTextEntry={false}
-          set={setEmail}
-        />
-      ) : (
-        <Text style={styles.subtitle}>• Email:            {email}</Text>
-      )}
-      {!password ? (
-        <FormTextInput
-          placeholder="Contraseña"
-          secureTextEntry={true}
-          set={setPassword}
-        />
-      ) : (
-        <Text style={styles.subtitle}>---------contraseña valida  ✅---------</Text>
-      )}
+      <CustomTextInput
+        placeholder={"Nombre"}
+        value={firstName}
+        onChangeText={(text) => setName(text)}
+      />
+      <CustomTextInput
+        placeholder={"Apellido"}
+        value={lastName}
+        onChangeText={(text) => setLastName(text)}
+      />
+      <CustomTextInput
+        placeholder={"Email"}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+      />
+      <CustomTextInput
+        placeholder={"Contraseña"}
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+      />
       <TouchableOpacity
         style={styles.button}
         onPress={handleSubmit}
         disabled={loading}>
-        <Text style={styles.buttonText}>Registrar Huella</Text>
-        <Image
-          source={require('../assets/fingerprint.png')}
-          style={styles.fingerprintIcon}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSubmit}
-        disabled={loading}>
-        <Text style={styles.buttonText}>Capturar Rostro </Text>
-        <Image
-          source={require('../assets/face.png')}
-          style={styles.fingerprintIcon}
-          resizeMode="contain"
-        />
+        <Text style={styles.buttonText}>Registrarme</Text>
       </TouchableOpacity>
     </View>
   );
@@ -177,56 +134,30 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     height: '50%',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 40,
     textAlign: 'center',
     color: '#3369FF',
-    marginBottom: 0 ,
-  },
-  subtitleInstruction:{
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginTop: 0,
-    marginBottom: 40,
-    marginLeft: 30,
-  },
-  subtitle: {
-    fontSize: 15,
-
-    marginBottom: 20,
-    marginLeft: 30,
-    textAlign: 'left',
   },
   button: {
-    alignSelf:'center',
     backgroundColor: '#3369FF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 100,
-    width: '70%',
+    width: '100%',
     marginTop: 20,
     maxWidth: 330,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#3369FF',
   },
   buttonText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  fingerprintIcon: {
-    width: 20,
-    height: 20,
-    marginLeft: 5,
-  },
-  sendButton: {
-    width: 18,
   },
 });
 
