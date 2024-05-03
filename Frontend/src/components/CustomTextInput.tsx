@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, TextInput, StyleSheet, Keyboard } from 'react-native';
+import React, { useState } from 'react';
+import { Text, TextInput, StyleSheet } from 'react-native';
 
 interface Props {
   placeholder: string;
@@ -8,9 +8,8 @@ interface Props {
 }
 
 const CustomTextInput = ({ placeholder, value, onChangeText }: Props) => {
-  const [secureTextEntry, setSecureTextEntry] = useState(
-    placeholder === 'Contraseña'
-  );
+  const secureTextEntry = placeholder === 'Contraseña';
+  const [error, setError] = useState('');
 
   const handleBlur = () => {
     onChangeText(value.trim());
@@ -21,21 +20,25 @@ const CustomTextInput = ({ placeholder, value, onChangeText }: Props) => {
       (placeholder === 'Nombre' || placeholder === 'Apellido') &&
       !/^[a-zA-Z\s]*$/.test(text)
     ) {
-      Alert.alert('Error', 'Solo se permiten letras.');
+      setError('Solo se permiten letras.');
       return;
     }
+    setError('');
     onChangeText(text);
   };
 
   return (
-    <TextInput
-      style={styles.input}
-      placeholder={placeholder}
-      secureTextEntry={secureTextEntry}
-      value={value}
-      onChangeText={handleInputChange}
-      onBlur={handleBlur}
-    />
+    <>
+      <TextInput
+        style={styles.input}
+        placeholder={placeholder}
+        secureTextEntry={secureTextEntry}
+        value={value}
+        onChangeText={handleInputChange}
+        onBlur={handleBlur}
+      />
+      {error && <Text style={styles.error}>{error}</Text>}
+    </>
   );
 };
 
@@ -49,6 +52,11 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     paddingHorizontal: 15,
     maxWidth: 330,
+  },
+  error: {
+    color: 'red',
+    marginTop: 5,
+    marginHorizontal: 15,
   },
 });
 
