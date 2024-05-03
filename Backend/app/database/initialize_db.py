@@ -1,7 +1,6 @@
 from pathlib import Path
-import sqlite3
 
-from app.database_actions import execute_in_database
+from app.database.database_actions import execute_in_database
 
 
 def initialize_database(db_path: Path) -> None:
@@ -31,6 +30,14 @@ def initialize_database(db_path: Path) -> None:
                     deviceUID INTEGER,
                     publicRSA TEXT,
                     UNIQUE(email, deviceUID))""",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
+        """CREATE TABLE IF NOT EXISTS licenceRequirements
+                    (isbn TEXT PRIMARY KEY,
+                    licenceLevel INTEGER)""",
         tuple(),
         db_path,
     )
