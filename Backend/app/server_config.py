@@ -25,6 +25,10 @@ class ServerConfig:
 
     def get_jwt_secret(self) -> int:
         return self._configs["jwt_secret"]
+    
+    def get_loans_service(self) -> str:
+        return self._configs["loans_service_url"]
+
 
 
 def _load_config():

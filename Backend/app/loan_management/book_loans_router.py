@@ -21,4 +21,6 @@ async def create_requested_book(book: RequestedBookDTO,token=Depends(HTTPBearer(
         result = add_requested_book(book)
         if "error" in result:
             raise HTTPException(status_code=400, detail=result["error en solicitar libro"])
+    else:
+        raise HTTPException(status_code=401, detail="No tienes permisos para solicitar este libro")
     
