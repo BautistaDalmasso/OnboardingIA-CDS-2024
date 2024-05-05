@@ -22,10 +22,29 @@ def initialize_database(db_path: Path) -> None:
                 copyID TEXT,
                 status TEXT,
                 PRIMARY KEY (isbn, copyID))""",
+                
         tuple(),
         db_path,
     )
-
+    execute_in_database(
+        """CREATE TABLE IF NOT EXISTS loans
+                (
+                copyID TEXT,
+                isbn TEXT,
+                expirationDate DATE,
+                userEmail TEXT UNIQUE)""",    
+        tuple(),
+        db_path,
+    ) 
+    execute_in_database(
+        """CREATE TABLE IF NOT EXISTS requested_books
+                (
+                    copyID TEXT,
+                    isbn TEXT,
+                    userEmail TEXT UNIQUE)""",  
+        tuple(),
+        db_path,
+    )
 
 def fill_database(entries: list[tuple[str, str]], db_path):
     """

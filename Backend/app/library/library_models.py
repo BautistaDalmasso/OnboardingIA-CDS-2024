@@ -1,6 +1,6 @@
 from typing import Literal
 from pydantic import BaseModel
-
+from datetime import datetime
 
 class BookData(BaseModel):
     isbn: str
@@ -20,3 +20,19 @@ class PhysicalCopyData(BaseModel):
     isbn: str
     copy_id: str
     status: Literal["available"] | Literal["borrowed"]
+ 
+    
+class LoanDTO(BaseModel):
+    isbn: str
+    copy_id: str
+    expiration_date: datetime
+    user_email:str
+    
+    
+class RequestedBookDTO(BaseModel):
+    isbn: str
+    copy_id: str
+    user_email:str
+    
+    
+     
