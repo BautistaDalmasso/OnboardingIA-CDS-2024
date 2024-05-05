@@ -17,6 +17,7 @@ import { ConnectionType } from "./src/common/enums/connectionType";
 import Capture from "./src/components/Capture";
 import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
+import BookList from "./src/components/BookList";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -25,10 +26,12 @@ const Router = () => {
 
   return (
     <NavigationContainer>
+      <Drawer.Screen name ="" component={BookList}/>
       <Drawer.Navigator
         screenOptions={{ headerTitle: "", headerTransparent: true }}
       >
         <Drawer.Screen name={Routes.Home} component={Home} />
+        <Drawer.Screen name={Routes.BookList} component={BookList} />
         {contextState.isConnected ? (
           <>
             <Stack.Screen
@@ -53,6 +56,8 @@ const Router = () => {
                 />
                 <Drawer.Screen name={Routes.Login} component={Login} />
                 <Stack.Screen name={Routes.Signup} component={Signup} />
+                <Stack.Screen name={Routes.Loans} component={Loans} />
+
               </>
             )}
             {contextState.user !== null && (
