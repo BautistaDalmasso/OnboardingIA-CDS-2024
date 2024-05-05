@@ -14,9 +14,9 @@ import Loans from "./src/components/Loans";
 import Profile from "./src/components/Profile";
 import LoginFingerPrint from "./src/components/LoginFingerprint";
 import { ConnectionType } from "./src/common/enums/connectionType";
-import Capture from "./src/components/Capture";
 import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
+import My_loans from "./src/components/MyLoans";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -58,12 +58,13 @@ const Router = () => {
             {contextState.user !== null && (
               <>
                 <Stack.Screen name={Routes.Licence} component={Profile} />
-                <Stack.Screen name={Routes.Logout} component={Logout} />
                 <Stack.Screen name={Routes.Loans} component={Loans} />
+                <Stack.Screen name={Routes.MyLoans} component={My_loans} />
                 <Stack.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}
                 />
+                <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
           </>
@@ -72,6 +73,7 @@ const Router = () => {
             {contextState.connectionType == ConnectionType.OFFLINE && (
               <>
                 <Stack.Screen name={Routes.Loans} component={Loans} />
+                <Stack.Screen name={Routes.MyLoans} component={My_loans} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}

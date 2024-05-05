@@ -68,6 +68,7 @@ const Home = ({ navigation }: Props) => {
   const handleShowButtons = async () => {
     setShowUnlock(!showUnlock);
     setShowSignup(!showSignup);
+
   };
 
   const handleReconnect = async () => {
@@ -91,6 +92,7 @@ const Home = ({ navigation }: Props) => {
         userOffline: true,
       }));
       navigation.navigate(Routes.Loans);
+      navigation.navigate(Routes.MyLoans);
     }
 
     setLoading(false);
