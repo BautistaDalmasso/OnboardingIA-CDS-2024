@@ -26,12 +26,10 @@ const Router = () => {
 
   return (
     <NavigationContainer>
-      <Drawer.Screen name ="" component={BookList}/>
       <Drawer.Navigator
         screenOptions={{ headerTitle: "", headerTransparent: true }}
       >
         <Drawer.Screen name={Routes.Home} component={Home} />
-        <Drawer.Screen name={Routes.BookList} component={BookList} />
         {contextState.isConnected ? (
           <>
             <Stack.Screen
@@ -56,7 +54,6 @@ const Router = () => {
                 />
                 <Drawer.Screen name={Routes.Login} component={Login} />
                 <Stack.Screen name={Routes.Signup} component={Signup} />
-                <Stack.Screen name={Routes.Loans} component={Loans} />
 
               </>
             )}
@@ -65,6 +62,7 @@ const Router = () => {
                 <Stack.Screen name={Routes.Licence} component={Profile} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
                 <Stack.Screen name={Routes.Loans} component={Loans} />
+                <Stack.Screen name={Routes.BookList} component={BookList} />
                 <Stack.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}

@@ -15,9 +15,9 @@ const Loans = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-      <Text>Componente de Préstamos</Text>
+      <Text style={styles.title}>Préstamos</Text>
       <TouchableOpacity style={styles.button} onPress={handleBookListNavigation}>
-        <Text style={styles.buttonText}>Ver Lista de Libros</Text>
+        <Text style={styles.buttonText}>Solicitar préstamos</Text>
       </TouchableOpacity>
     </View>
   );
@@ -31,13 +31,20 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+    elevation: 3,
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
 

@@ -1,57 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
-import { ServerAddress } from "../common/consts/serverAddress";
-
-interface Book {
-  isbn: string;
-  title: string;
-  available_copies: number;
-  licence_required: number;
-}
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Button } from "react-native";
+import { LibraryService } from "../services/LibraryService";
+import { IBook } from "../common/interfaces/Book";
 
 const BookList = () => {
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<IBook[]>([]);
 
   useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const books = await LibraryService.getBooks();
+        setBooks(books);
+      } catch (error) {
+        console.error('Error al obtener libros:', error);
+      }
+    };
+
     fetchBooks();
   }, []);
 
-  const fetchBooks = async () => {
-    try {
-      const response = await fetch(`${ServerAddress}books`);
-      if (!response.ok) {
-        throw new Error("Response error");
-      }
-      const data = await response.json();
-      console.log(data);
-      setBooks(data);
-    } catch (error) {
-      console.error("Error fetching books:", error);
-    }
-  };
-
   const handleBorrow = async (isbn: string) => {
-    try {
-      const response = await fetch(`${ServerAddress}/books/${isbn}/borrow/`, {
-        method: 'POST',
-      });
-      if (!response.ok) {
-        throw new Error('Response error');
-      }
-      console.log('Successful loan application');
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    //TODO
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Libros</Text>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         {books.map((book) => (
           <View key={book.isbn} style={styles.bookContainer}>
             <Text style={styles.bookTitle}>{book.title}</Text>
-            <Text style={styles.cardLevel}>Carnet: {book.licence_required.toString()}</Text>
+            <Text style={styles.cardLevel}>Carnet: {book.licence_required}</Text>
             <TouchableOpacity
               style={styles.button}
               onPress={() => handleBorrow(book.isbn)}
@@ -67,9 +46,13 @@ const BookList = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#f5f5f5",
     padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    overflow: "hidden",
   },
   header: {
     fontSize: 24,
@@ -108,6 +91,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  scrollContent: {
+    paddingBottom: 80,
+  },
+  paginationContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 20,
+    paddingHorizontal: 10,
   },
 });
 
