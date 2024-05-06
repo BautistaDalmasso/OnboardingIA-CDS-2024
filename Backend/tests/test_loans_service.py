@@ -2,7 +2,21 @@ import pytest
 import sqlite3
 from app.loan_management.book_loans_service import LoanService
 from app.loan_management.book_loans_dtos import LoanDTO, RequestedBookDTO
+import sqlite3
+from app.database.initialize_db import  initialize_database
 
+def setup_database():
+    db_path = 'test.db'
+    conn = sqlite3.connect(db_path)
+    conn.execute('PRAGMA foreign_keys = ON')
+    initialize_database(conn)
+    conn.commit()
+    conn.close()
+
+if __name__ == '__main__':
+    setup_database()
+    
+    
 @pytest.fixture
 def loan_service():
     db_path = "test.db"
