@@ -11,7 +11,7 @@ class LoanService(DatabaseUser):
     def add_confirmed_loan(self, book:LoanDTO):    
         try:
             self.execute_in_database(
-                """INSERT INTO loans ( isbn, copy_id, expiration_date, user_email)
+                """INSERT INTO loans ( isbn, copyId, expirationDate, userEmail)
                         VALUES (?, ?, ?, ?)""",
                 ( book.isbn,book.copy_id, book.expiration_date, book.user_email),
                 )
@@ -28,7 +28,7 @@ class LoanService(DatabaseUser):
     def add_requested_book(self, book: RequestedBookDTO):
         try:
             self.execute_in_database(
-                """INSERT INTO requested_books (isbn, copy_id, user_email)
+                """INSERT INTO requested_books (isbn, copyId, userEmail)
                             VALUES (?, ?, ?, ?)""",
                 ( book.isbn, book.copy_id, book.user_email),
             )

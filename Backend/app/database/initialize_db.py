@@ -44,8 +44,8 @@ def initialize_database(db_path: Path) -> None:
     
     execute_in_database(
         """CREATE TABLE IF NOT EXISTS loans
-                (copyID TEXT,
-                isbn TEXT,
+                (isbn TEXT,
+                copyId TEXT,
                 expirationDate DATE,
                 userEmail TEXT UNIQUE)""",    
         tuple(),
@@ -54,8 +54,8 @@ def initialize_database(db_path: Path) -> None:
      
     execute_in_database(
         """CREATE TABLE IF NOT EXISTS requested_books
-                (copyID TEXT,
-                isbn TEXT,
+                (isbn TEXT,
+                copyId TEXT,
                 userEmail TEXT UNIQUE)""",  
         tuple(),
         db_path,
