@@ -24,13 +24,12 @@ class ServerConfig:
         return self._configs["facial_recognition_service_url"]
 
     def get_jwt_secret(self) -> int:
-        return self._configs["jwt_secret"]
+        return self._configs["jwt_secret"]    
+       
     
-    def get_loans_service(self) -> str:
-        return self._configs["loans_service_url"]
-
-
-
+    
+    
+    
 def _load_config():
     with open(CONFIG_FILE) as config_file:
         configs = json.loads(config_file.read())

@@ -6,7 +6,7 @@ from ..middlewares import verify_token
 from ..user.user_dtos import (TokenDataDTO,)
 from licence_levels.licence_service import consult_book_data
 
-router = APIRouter(prefix="/book", tags=["Book"])
+router = APIRouter(prefix="/loans", tags=["Loan"])
 
 
 @router.post("loan")
