@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from library.library_service import add_requested_book, add_confirmed_loan
-from library.library_models import LoanDTO, RequestedBookDTO
+from .book_loans_service import add_requested_book, add_confirmed_loan
+from .book_loans_dtos import RequestedBookDTO, LoanDTO
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
 from ..user.user_dtos import (
