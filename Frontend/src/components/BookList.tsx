@@ -69,10 +69,9 @@ const BookList = () => {
       );
       //To fix: it doesn't catch all the errors, it's just a temporary solution
       if (response === null) {
-        handleConfirmedLoan(requestData,book.title);
+        handleConfirmedLoan(requestData, book.title);
         handleRequest(book.isbn);
         handleBorrow(book);
-
       } else {
         Alert.alert("Error: diferente nivel de carnet");
       }

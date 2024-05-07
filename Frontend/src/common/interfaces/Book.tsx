@@ -33,5 +33,5 @@ export interface IPhysicalCopyData {
 export interface ILoanWithTitle {
   title: string;
   expiration_date: Date;
-  isbn: string,
+  isbn: string;
 }

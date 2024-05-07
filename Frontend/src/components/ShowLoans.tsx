@@ -6,7 +6,6 @@ import { ILoanWithTitle } from "../common/interfaces/Book";
 const ShowLoans = () => {
   const [books, setBooks] = useState<ILoanWithTitle[]>([]);
 
-
   useEffect(() => {
     const loadBooksFromAsyncStorage = async () => {
       try {
@@ -18,7 +17,7 @@ const ShowLoans = () => {
 
         const data = JSON.parse(jsonData);
         setBooks([data]);
-        console.log([data])
+        console.log([data]);
       } catch (error) {
         console.error("Error al cargar los datos desde AsyncStorage:", error);
       }
