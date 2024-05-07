@@ -1,23 +1,27 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  ImageBackground,
-  Keyboard,
+import React, { useEffect, useState } from "react";
+import { NavigationProp } from "@react-navigation/native";
+import { Routes } from "../common/enums/routes";
+import {View, Text, StyleSheet,  TextInput,  TouchableOpacity,  Alert, Keyboard,
 } from "react-native";
 import { useContextState } from "../ContexState";
 import { UserService } from "../services/userService";
 import { IUser } from "../common/interfaces/User";
+import Licence from "./Licence";
 
-const Profile = () => {
+interface Props {
+
+  navigation: NavigationProp<any, any>;
+}
+
+const Profile = ({ navigation } : Props) => {
   const [dni, setDni] = useState("");
   const [showDniInput, setShowDniInput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const { contextState, setContextState } = useContextState();
+
+  const handleLicenceNavigation = () => {
+    navigation.navigate(Routes.Carnet);
+  };
 
   const handleDniInput = (text: string) => {
     setDni(text);
@@ -47,6 +51,7 @@ const Profile = () => {
       setShowDniInput(false);
       Keyboard.dismiss();
       Alert.alert("¡Felicidades!", "A solicitado su carnet con exito");
+
     } catch (error) {
       Alert.alert("Error", "No se pudo solicitar su carnet");
     }
@@ -56,11 +61,16 @@ const Profile = () => {
     setInputFocused(false);
   };
 
+  useEffect(() => {
+    if (contextState.user?.dni) {
+      {handleLicenceNavigation}
+    }
+  }, [contextState.user?.dni, navigation]);
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.saludo}>¡Hola {contextState.user?.firstName}!</Text>
-      <Text style={styles.email}>{contextState.user?.email}</Text>
-
       {!contextState.user?.dni && (
         <>
           <Text style={styles.instruction}>Aún no tienes un carnet</Text>
@@ -95,24 +105,7 @@ const Profile = () => {
           </TouchableOpacity>
         </View>
       )}
-      {contextState.user?.dni && (
-        <View style={styles.outerContainer}>
-          <Text style={styles.title}>Aquí está tu carnet</Text>
-          <View style={styles.innerContainer}>
-            <ImageBackground
-              source={require("../assets/carnet.png")}
-              style={styles.imageBackground}
-            >
-              <Text style={styles.nameCarnet}>
-                {contextState.user.firstName} {contextState.user.lastName}
-              </Text>
-              <Text style={styles.emailCarnet}>{contextState.user.email}</Text>
-              <Text style={styles.dniCarnet}>DNI: {contextState.user.dni}</Text>
-              <Text style={styles.companyCarnet}>Skynet</Text>
-            </ImageBackground>
-          </View>
-        </View>
-      )}
+
     </View>
   );
 };
