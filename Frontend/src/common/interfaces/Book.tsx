@@ -29,3 +29,9 @@ export interface IPhysicalCopyData {
   copy_id: string;
   status: "available" | "borrowed";
 }
+
+export interface ILoanWithTitle {
+  title: string;
+  expiration_date: Date;
+  isbn: string,
+}

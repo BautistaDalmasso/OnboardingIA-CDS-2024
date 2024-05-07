@@ -14,8 +14,11 @@ import {
   IRequestedBook,
   IBookWithLicence,
   IBook,
+  ILoan,
+  ILoanWithTitle,
 } from "../common/interfaces/Book";
 import { useContextState } from "../ContexState";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //TODO: refactor
 const BookList = () => {
@@ -66,9 +69,10 @@ const BookList = () => {
       );
       //To fix: it doesn't catch all the errors, it's just a temporary solution
       if (response === null) {
-        handleConfirmedLoan(requestData);
+        handleConfirmedLoan(requestData,book.title);
         handleRequest(book.isbn);
         handleBorrow(book);
+
       } else {
         Alert.alert("Error: diferente nivel de carnet");
       }
@@ -77,7 +81,7 @@ const BookList = () => {
     }
   };
 
-  const handleConfirmedLoan = async (book: IRequestedBook) => {
+  const handleConfirmedLoan = async (book: IRequestedBook, title: string) => {
     if (contextState.user?.email === undefined) {
       throw Error("User email is undefined.");
     }
@@ -94,6 +98,11 @@ const BookList = () => {
     try {
       const response = await LoanService.addConfirmedLoan(requestData);
       console.log(response);
+      handleJSON({
+        title: title,
+        expiration_date: futureDate,
+        isbn: book.isbn,
+      });
     } catch (error) {
       console.error(error);
       Alert.alert("Error");
@@ -111,6 +120,19 @@ const BookList = () => {
     } catch (error) {
       console.error(error);
       Alert.alert("Error");
+    }
+  };
+
+  /*TEMPORARY SOLUTION TO SHOW USER LOANS OFFLINE (many users trying to use "show loans" may cause trouble
+    and increasing storage may increase memory shortage )
+  */
+  const handleJSON = async (requestData: ILoanWithTitle) => {
+    try {
+      const jsonData = JSON.stringify(requestData);
+      await AsyncStorage.setItem("requestData", jsonData);
+      console.log("Datos guardados correctamente en AsyncStorage.");
+    } catch (error) {
+      console.error("Error al guardar los datos en AsyncStorage:", error);
     }
   };
 

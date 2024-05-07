@@ -73,7 +73,7 @@ const Home = ({ navigation }: Props) => {
   const handleReconnect = async () => {
     setLoading(true);
     await setConnection();
-    if (contextState.isConnected) {
+    if (!contextState.isConnected) {
       Alert.alert("Reconexión fallida.");
     }
     setLoading(false);
@@ -90,7 +90,7 @@ const Home = ({ navigation }: Props) => {
         connectionType: ConnectionType.OFFLINE,
         userOffline: true,
       }));
-      navigation.navigate(Routes.Loans);
+      navigation.navigate(Routes.ShowLoans);
     }
 
     setLoading(false);
