@@ -1,5 +1,3 @@
-import shutil
-
 import pytest
 
 from app.loan_management.book_loans_service import LoanService
@@ -8,7 +6,8 @@ from app.library.library_service import LibraryService
 from app.facial_recognition.facial_recognition_service import FacialRecognitionService
 from app.user.user_service import UserService
 from app.database import initialize_db
-from app.file_paths import TEST_DB_PATH, LIBRARY_DB_PATH, LIBRARY_TEST_PATH
+from app.file_paths import TEST_DB_PATH, LIBRARY_TEST_PATH
+from app.library.library_db import initialize_database as initialize_library
 
 
 @pytest.fixture
@@ -28,7 +27,7 @@ def fr_service():
 
 @pytest.fixture
 def library_service():
-    shutil.copyfile(LIBRARY_DB_PATH, LIBRARY_TEST_PATH)
+    initialize_library(LIBRARY_TEST_PATH)
 
     try:
         yield LibraryService(LIBRARY_TEST_PATH)
@@ -38,7 +37,7 @@ def library_service():
 
 @pytest.fixture
 def licence_req_service():
-    shutil.copyfile(LIBRARY_DB_PATH, LIBRARY_TEST_PATH)
+    initialize_library(LIBRARY_TEST_PATH)
     initialize_db.initialize_database(TEST_DB_PATH)
 
     try:
@@ -50,11 +49,12 @@ def licence_req_service():
 
 @pytest.fixture(scope="module")
 def loan_service():
-    shutil.copyfile(LIBRARY_DB_PATH, LIBRARY_TEST_PATH)
+
+    initialize_library(LIBRARY_TEST_PATH)
     initialize_db.initialize_database(TEST_DB_PATH)
 
     try:
-        yield LoanService(TEST_DB_PATH, LIBRARY_DB_PATH)
+        yield LoanService(TEST_DB_PATH, LIBRARY_TEST_PATH)
     finally:
         LIBRARY_TEST_PATH.unlink()
         TEST_DB_PATH.unlink()
