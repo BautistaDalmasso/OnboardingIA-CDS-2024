@@ -51,7 +51,7 @@ const Profile = ({ navigation } : Props) => {
       setShowDniInput(false);
       Keyboard.dismiss();
       Alert.alert("¡Felicidades!", "A solicitado su carnet con exito");
-
+      handleLicenceNavigation();
     } catch (error) {
       Alert.alert("Error", "No se pudo solicitar su carnet");
     }
@@ -60,13 +60,6 @@ const Profile = ({ navigation } : Props) => {
   const handleInputBlur = () => {
     setInputFocused(false);
   };
-
-  useEffect(() => {
-    if (contextState.user?.dni) {
-      {handleLicenceNavigation}
-    }
-  }, [contextState.user?.dni, navigation]);
-
 
   return (
     <View style={styles.container}>
