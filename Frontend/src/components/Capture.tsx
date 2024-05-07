@@ -10,7 +10,9 @@ interface Props {
 }
 
 const Capture = ({ onAccept }: Props) => {
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<
+    boolean | null
+  >(null);
   const [image, setImage] = useState<string>("");
   const [cameraType, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
@@ -53,7 +55,9 @@ const Capture = ({ onAccept }: Props) => {
   };
 
   const switchCamera = () => {
-    setType(cameraType === CameraType.back ? CameraType.front : CameraType.back);
+    setType(
+      cameraType === CameraType.back ? CameraType.front : CameraType.back,
+    );
   };
 
   const switchFlash = () => {
@@ -98,7 +102,13 @@ const Capture = ({ onAccept }: Props) => {
             />
           </View>
         ) : (
-          <View style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 10 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingHorizontal: 10,
+            }}
+          >
             <Button
               title=""
               icon="retweet"
@@ -106,7 +116,7 @@ const Capture = ({ onAccept }: Props) => {
               width={60}
               height={60}
               color="#006694"
-              />
+            />
             <Button
               title="Take a picture"
               onPress={takePicture}
@@ -115,7 +125,7 @@ const Capture = ({ onAccept }: Props) => {
               height={60}
               color="#006694"
               disabled={isDisabled}
-              />
+            />
             <Button
               onPress={switchFlash}
               icon="flash"

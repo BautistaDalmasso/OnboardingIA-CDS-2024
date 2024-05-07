@@ -13,15 +13,32 @@ interface Props {
   disabled?: boolean;
 }
 
-export default function Button({ title, onPress, disabled, icon, colorIcon, color, height = 40, width = 300 }: Props) {
+export default function Button({
+  title,
+  onPress,
+  disabled,
+  icon,
+  colorIcon,
+  color,
+  height = 40,
+  width = 300,
+}: Props) {
   return (
-    <TouchableOpacity onPress={onPress} disabled={disabled} style={[styles.button, { backgroundColor: color || "black", height, width }]}>
-      <Entypo style={styles.icono}
-              name={icon as any}
-              size={28}
-              color={colorIcon ? colorIcon : "white"} />
-      <Text style={styles.text}>{title}
-      </Text>
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+      style={[
+        styles.button,
+        { backgroundColor: color || "black", height, width },
+      ]}
+    >
+      <Entypo
+        style={styles.icono}
+        name={icon as any}
+        size={28}
+        color={colorIcon ? colorIcon : "white"}
+      />
+      <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   );
 }
