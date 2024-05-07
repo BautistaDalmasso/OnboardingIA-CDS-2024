@@ -11,6 +11,7 @@ import {
   IUser,
   IVerifyChallenge,
   IDeviceUIDResponse,
+  IUpgradeBasicResponse,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
 
@@ -75,8 +76,8 @@ export class UserService {
     });
   }
 
-  static async updateDNI(dni: string, token: string): Promise<IUser> {
-    return baseFetch<IUpdateUserDNI, IUser>({
+  static async acquireBasicLicence(dni: string, token: string): Promise<IUpgradeBasicResponse> {
+    return baseFetch<IUpdateUserDNI, IUpgradeBasicResponse>({
       url: `${this.baseRoute}/dni`,
       method: "PATCH",
       data: { dni },

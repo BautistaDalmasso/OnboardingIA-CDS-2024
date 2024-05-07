@@ -1,3 +1,4 @@
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from app.library.library_models import PhysicalCopyData
 from app.library.library_service import BookNotFound, NoCopiesAvailable
@@ -20,7 +21,8 @@ licence_service = LicenceService(DATABASE_PATH, LIBRARY_DB_PATH)
 
 
 @router.post("/borrow", response_model=PhysicalCopyData)
-async def create_requested_book(book: RequestedBookDTO, token=Depends(HTTPBearer())):
+async def create_requested_book(book: LoanDTO, token=Depends(HTTPBearer())):
+    print(book)
     user_data: TokenDataDTO = await verify_token(token.credentials)
     requested_book = licence_service.consult_book_data(book.isbn)
 
@@ -30,6 +32,7 @@ async def create_requested_book(book: RequestedBookDTO, token=Depends(HTTPBearer
 
             return result
         except (BookNotFound, NoCopiesAvailable) as e:
+            print(e)
             raise HTTPException(status_code=400, detail=str(e))
     else:
         raise HTTPException(

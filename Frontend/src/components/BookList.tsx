@@ -60,24 +60,19 @@ const BookList = () => {
     };
 
     try {
-      const response = await LoanService.createRequestedBook(
-        requestData,
-        contextState.accessToken,
-      );
+      const response = await handleConfirmedLoan(requestData, contextState.accessToken);
       //To fix: it doesn't catch all the errors, it's just a temporary solution
-      if (response === null) {
-        handleConfirmedLoan(requestData);
-        handleRequest(book.isbn);
-        handleBorrow(book);
-      } else {
-        Alert.alert("Error: diferente nivel de carnet");
+      if (response.detail) {
+          Alert.alert("Error: diferente nivel de carnet");
+    } else {
+          handleRequest(book.isbn);
       }
     } catch {
       setRequestState("Error");
     }
   };
 
-  const handleConfirmedLoan = async (book: IRequestedBook) => {
+  const handleConfirmedLoan = async (book: IRequestedBook, accessToken: string) => {
     if (contextState.user?.email === undefined) {
       throw Error("User email is undefined.");
     }
@@ -87,30 +82,22 @@ const BookList = () => {
 
     const requestData = {
       isbn: book.isbn,
-      copy_id: book.copy_id,
       expiration_date: futureDate,
       user_email: contextState.user?.email,
     };
     try {
-      const response = await LoanService.addConfirmedLoan(requestData);
+      const response = await LoanService.createRequestedBook(
+        requestData,
+        accessToken,
+      );
       console.log(response);
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error");
-    }
-  };
 
-  const handleBorrow = async (book: IBook) => {
-    try {
-      const response = await LibraryService.handleBorrow(book);
-      if (response.status === "borrowed") {
-        setButtonDisabled(true);
-        Alert.alert("Success");
-      }
-      console.log(response);
+      return response
     } catch (error) {
       console.error(error);
-      Alert.alert("Error");
+      Alert.alert(`Error: ${error}`);
+
+      return {"detail": error}
     }
   };
 
