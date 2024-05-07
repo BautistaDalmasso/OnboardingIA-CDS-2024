@@ -185,13 +185,18 @@ class UserService(DatabaseUser):
         letters_and_digits = string.ascii_letters + string.digits
         return "".join((random.choice(letters_and_digits) for i in range(length)))
 
-    def update_user(self, user: UpdateUserDniDTO, email: str):
+    def upgrade_to_basic_licence(self, user: UpdateUserDniDTO, email: str):
 
         try:
             self.execute_in_database(
                 """UPDATE users SET dni = ?
                             WHERE email = ?""",
                 (user.dni, email),
+            )
+            self.execute_in_database(
+                """UPDATE users SET licenceLevel = ?
+                            WHERE email = ?""",
+                (LicenceLevel.REGULAR, email),
             )
             return {
                 "dni": user.dni,

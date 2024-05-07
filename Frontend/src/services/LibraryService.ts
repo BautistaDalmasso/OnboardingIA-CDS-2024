@@ -7,14 +7,15 @@ import {
 } from "../common/interfaces/Book";
 
 export class LibraryService {
-  private static baseRoute: string = `${ServerAddress}books`;
+  private static booksRoute: string = `${ServerAddress}books`;
+  private static loansRoute: string = `${ServerAddress}loans`
 
   constructor() {}
 
   static async getBooks(): Promise<IBookWithLicence[]> {
     try {
       const books = await baseFetch<void, IBookWithLicence[]>({
-        url: `${this.baseRoute}/show_books/`,
+        url: `${this.booksRoute}/show_books`,
         method: "GET",
       });
 
@@ -28,7 +29,7 @@ export class LibraryService {
   static async handleBorrow(book: IBook): Promise<IPhysicalCopyData> {
     try {
       const response = await baseFetch<IBook, IPhysicalCopyData>({
-        url: `${this.baseRoute}/borrow/`,
+        url: `${this.loansRoute}/borrow`,
         method: "POST",
         data: book,
       });
