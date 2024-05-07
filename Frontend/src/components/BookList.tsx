@@ -1,15 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Button, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Button,
+  Alert,
+} from "react-native";
 import { LibraryService } from "../services/LibraryService";
 import { LoanService } from "../services/LoanManagementService";
-import { IRequestedBook, IBookWithLicence, IBook } from "../common/interfaces/Book";
+import {
+  IRequestedBook,
+  IBookWithLicence,
+  IBook,
+} from "../common/interfaces/Book";
 import { useContextState } from "../ContexState";
 
 //TODO: refactor
 const BookList = () => {
   const [books, setBooks] = useState<IBookWithLicence[]>([]);
   const { contextState } = useContextState();
-  const [requestState, setRequestState] = useState('')
+  const [requestState, setRequestState] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [requestedBooks, setRequestedBooks] = useState<string[]>([]);
 
@@ -21,21 +33,20 @@ const BookList = () => {
     return requestedBooks.includes(isbn);
   };
 
-
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         const books = await LibraryService.getBooks();
         setBooks(books);
       } catch (error) {
-        console.error('Error al obtener libros:', error);
+        console.error("Error al obtener libros:", error);
       }
     };
 
     fetchBooks();
   }, []);
 
-  const handleLoanRequest = async (book:IBookWithLicence) => {
+  const handleLoanRequest = async (book: IBookWithLicence) => {
     if (contextState.accessToken === null) {
       throw Error("Access token is null.");
     }
@@ -49,21 +60,24 @@ const BookList = () => {
     };
 
     try {
-      const response = await LoanService.createRequestedBook(requestData, contextState.accessToken);
+      const response = await LoanService.createRequestedBook(
+        requestData,
+        contextState.accessToken,
+      );
       //To fix: it doesn't catch all the errors, it's just a temporary solution
-      if (response === null){
-        handleConfirmedLoan(requestData)
+      if (response === null) {
+        handleConfirmedLoan(requestData);
         handleRequest(book.isbn);
         handleBorrow(book);
       } else {
-        Alert.alert('Error: diferente nivel de carnet');
+        Alert.alert("Error: diferente nivel de carnet");
       }
     } catch {
-      setRequestState('Error');
+      setRequestState("Error");
     }
   };
 
-  const handleConfirmedLoan = async (book:IRequestedBook) => {
+  const handleConfirmedLoan = async (book: IRequestedBook) => {
     if (contextState.user?.email === undefined) {
       throw Error("User email is undefined.");
     }
@@ -82,23 +96,23 @@ const BookList = () => {
       console.log(response);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error');
+      Alert.alert("Error");
     }
-  }
+  };
 
-  const handleBorrow = async (book:IBook) => {
+  const handleBorrow = async (book: IBook) => {
     try {
       const response = await LibraryService.handleBorrow(book);
-      if (response.status === "borrowed"){
+      if (response.status === "borrowed") {
         setButtonDisabled(true);
-        Alert.alert('Success');
+        Alert.alert("Success");
       }
       console.log(response);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error');
+      Alert.alert("Error");
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -107,14 +121,25 @@ const BookList = () => {
         {books.map((book) => (
           <View key={book.isbn} style={styles.bookContainer}>
             <Text style={styles.bookTitle}>{book.title}</Text>
-            <Text style={styles.cardLevel}>Carnet: {book.licence_required}</Text>
+            <Text style={styles.cardLevel}>
+              Carnet: {book.licence_required}
+            </Text>
             <TouchableOpacity
-                 style={[styles.button, { backgroundColor: isBookRequested(book.isbn) ? "#ccc" : "#007bff" }]}
-                 onPress={() => handleLoanRequest(book)}
-                 disabled={isBookRequested(book.isbn)}
-             >
-               <Text style={styles.buttonText}>{isBookRequested(book.isbn) ? "Solicitado" : "Solicitar"}</Text>
-           </TouchableOpacity>
+              style={[
+                styles.button,
+                {
+                  backgroundColor: isBookRequested(book.isbn)
+                    ? "#ccc"
+                    : "#007bff",
+                },
+              ]}
+              onPress={() => handleLoanRequest(book)}
+              disabled={isBookRequested(book.isbn)}
+            >
+              <Text style={styles.buttonText}>
+                {isBookRequested(book.isbn) ? "Solicitado" : "Solicitar"}
+              </Text>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>

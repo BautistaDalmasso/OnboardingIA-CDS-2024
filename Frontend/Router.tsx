@@ -54,7 +54,6 @@ const Router = () => {
                 />
                 <Drawer.Screen name={Routes.Login} component={Login} />
                 <Stack.Screen name={Routes.Signup} component={Signup} />
-
               </>
             )}
             {contextState.user !== null && (

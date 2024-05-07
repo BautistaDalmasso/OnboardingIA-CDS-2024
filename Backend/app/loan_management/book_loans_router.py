@@ -39,3 +39,9 @@ async def create_requested_book(book: RequestedBookDTO, token=Depends(HTTPBearer
         raise HTTPException(
             status_code=401, detail="No tienes permisos para solicitar este libro"
         )
+
+
+@router.get("/user_loans")
+async def book_loans_by_user_email(email: str):
+    result = loan_service.consult_book_loans_by_user_email(email)
+    return result

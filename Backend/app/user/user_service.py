@@ -72,6 +72,7 @@ class UserService(DatabaseUser):
             "licenceLevel": data.licenceLevel,
             "exp": expire,
         }
+
         encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
 

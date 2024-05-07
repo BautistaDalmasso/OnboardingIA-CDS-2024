@@ -3,6 +3,8 @@ from .book_loans_dtos import RequestedBookDTO, LoanDTO
 
 from pathlib import Path
 from app.database.database_user import DatabaseUser
+from typing import List
+from typing import Any
 
 
 class LoanService(DatabaseUser):
@@ -40,3 +42,18 @@ class LoanService(DatabaseUser):
 
         except sqlite3.IntegrityError:
             return {"error": "Error al registrar un libro solicitado"}
+
+    def consult_book_loans_by_user_email(self, email: str) -> List[LoanDTO]:
+        loans = self.query_multiple_rows(
+            """SELECT isbn, copyID, expirationDate FROM loans WHERE userEmail =?""",
+            (email,),
+        )
+        return [self.create_loan_data(entry) for entry in loans]
+
+    def create_loan_data(self, db_entry: list[Any]) -> LoanDTO:
+        return LoanDTO(
+            isbn=db_entry[0],
+            copy_id=db_entry[1],
+            expiration_date=db_entry[2],
+            user_email= None,
+        )

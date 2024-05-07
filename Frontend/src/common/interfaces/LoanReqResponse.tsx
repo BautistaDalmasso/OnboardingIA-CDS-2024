@@ -1,3 +1,3 @@
 export interface ILoanRequestResponse {
-    message: string;
-  }
+  message: string;
+}

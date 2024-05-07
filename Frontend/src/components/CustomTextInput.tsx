@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Text, TextInput, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { Text, TextInput, StyleSheet } from "react-native";
 
 interface Props {
   placeholder: string;
@@ -8,8 +8,8 @@ interface Props {
 }
 
 const CustomTextInput = ({ placeholder, value, onChangeText }: Props) => {
-  const secureTextEntry = placeholder === 'Contraseña';
-  const [error, setError] = useState('');
+  const secureTextEntry = placeholder === "Contraseña";
+  const [error, setError] = useState("");
 
   const handleBlur = () => {
     onChangeText(value.trim());
@@ -17,13 +17,13 @@ const CustomTextInput = ({ placeholder, value, onChangeText }: Props) => {
 
   const handleInputChange = (text: string) => {
     if (
-      (placeholder === 'Nombre' || placeholder === 'Apellido') &&
+      (placeholder === "Nombre" || placeholder === "Apellido") &&
       !/^[a-zA-Z\s]*$/.test(text)
     ) {
-      setError('Solo se permiten letras.');
+      setError("Solo se permiten letras.");
       return;
     }
-    setError('');
+    setError("");
     onChangeText(text);
   };
 
@@ -45,8 +45,8 @@ const CustomTextInput = ({ placeholder, value, onChangeText }: Props) => {
 const styles = StyleSheet.create({
   input: {
     height: 50,
-    width: '100%',
-    borderColor: '#E6E6E6',
+    width: "100%",
+    borderColor: "#E6E6E6",
     borderWidth: 1,
     borderRadius: 5,
     marginVertical: 5,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     maxWidth: 330,
   },
   error: {
-    color: 'red',
+    color: "red",
     marginTop: 5,
     marginHorizontal: 15,
   },
