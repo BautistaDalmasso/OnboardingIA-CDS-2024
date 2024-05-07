@@ -57,27 +57,19 @@ const Router = () => {
               </>
             )}
             {contextState.user !== null && (
-              <>{contextState.user.dni && (
-                <>
-                <Stack.Screen name={Routes.Carnet} component={Licence} />
-                <Stack.Screen name={Routes.Logout} component={Logout} />
-                <Stack.Screen name={Routes.Loans} component={Loans} />
-                <Stack.Screen
-                  name={Routes.RegisterFace}
-                  component={RegisterFace}
-                />
-                </>)}
-
-                {!contextState.user.dni && (
-                <>
-              <Stack.Screen name={Routes.Licence} component={Profile} />
-                <Stack.Screen name={Routes.Logout} component={Logout} />
-                <Stack.Screen name={Routes.Loans} component={Loans} />
-                <Stack.Screen
-                  name={Routes.RegisterFace}
-                  component={RegisterFace}
-                />
-                </>)}
+              <>
+                  {contextState.user.dni ? (
+                    <>
+                      <Stack.Screen name={Routes.Carnet} component={Licence} />
+                    </>
+                  ) : (
+                    <>
+                      <Stack.Screen name={Routes.Licence} component={Profile} />
+                    </>
+                  )}
+                  <Stack.Screen name={Routes.Logout} component={Logout} />
+                  <Stack.Screen name={Routes.Loans} component={Loans} />
+                  <Stack.Screen name={Routes.RegisterFace} component={RegisterFace} />
               </>
             )}
           </>
