@@ -1,4 +1,7 @@
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
+from app.library.library_models import PhysicalCopyData
+from app.library.library_service import BookNotFound, NoCopiesAvailable
 from app.loan_management.book_loans_service import LoanService
 from app.loan_management.book_loans_dtos import LoanDTO, RequestedBookDTO
 from fastapi.security import HTTPBearer
@@ -13,28 +16,24 @@ router = APIRouter(prefix="/loans", tags=["Loan"])
 from app.file_paths import LIBRARY_DB_PATH
 from app.file_paths import DATABASE_PATH
 
-loan_service = LoanService(DATABASE_PATH)
+loan_service = LoanService(DATABASE_PATH, LIBRARY_DB_PATH)
 licence_service = LicenceService(DATABASE_PATH, LIBRARY_DB_PATH)
 
 
-@router.post("/loan/")
-async def create_confirmed_loan(book: LoanDTO):
-    return loan_service.add_confirmed_loan(book)
-
-
-@router.post("/requested_book/")
-async def create_requested_book(book: RequestedBookDTO, token=Depends(HTTPBearer())):
+@router.post("/borrow", response_model=PhysicalCopyData)
+async def create_requested_book(book: LoanDTO, token=Depends(HTTPBearer())):
+    print(book)
     user_data: TokenDataDTO = await verify_token(token.credentials)
-    book_level: int = licence_service._consult_book_licence_req(book.isbn)
+    requested_book = licence_service.consult_book_data(book.isbn)
 
-    user_data.licenceLevel = 1  # Delete later, temporary solution.
+    if requested_book.licence_required <= user_data.licenceLevel:
+        try:
+            result = loan_service.add_loan(book)
 
-    if book_level == user_data.licenceLevel:
-        result = loan_service.add_requested_book(book)
-        if "error" in result:
-            raise HTTPException(
-                status_code=400, detail=result["error en solicitar libro"]
-            )
+            return result
+        except (BookNotFound, NoCopiesAvailable) as e:
+            print(e)
+            raise HTTPException(status_code=400, detail=str(e))
     else:
         raise HTTPException(
             status_code=401, detail="No tienes permisos para solicitar este libro"
