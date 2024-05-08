@@ -29,16 +29,17 @@ const ShowLoans = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Préstamos solicitados</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {Array.isArray(books) && books.map((book) => (
-          <View key={book.isbn} style={styles.bookContainer}>
-            <Text style={styles.bookTitle}>{book.title}</Text>
-            {book.expiration_date && (
-              <Text style={styles.expirationDate}>
-                Fecha de vencimiento: {book.expiration_date.toString()}
-              </Text>
-            )}
-          </View>
-        ))}
+        {Array.isArray(books) &&
+          books.map((book) => (
+            <View key={book.isbn} style={styles.bookContainer}>
+              <Text style={styles.bookTitle}>{book.title}</Text>
+              {book.expiration_date && (
+                <Text style={styles.expirationDate}>
+                  Fecha de vencimiento: {book.expiration_date.toString()}
+                </Text>
+              )}
+            </View>
+          ))}
       </ScrollView>
     </View>
   );
