@@ -15,6 +15,7 @@ import Profile from "./src/components/Profile";
 import LoginFingerPrint from "./src/components/LoginFingerprint";
 import { ConnectionType } from "./src/common/enums/connectionType";
 import Capture from "./src/components/Capture";
+import Licence from "./src/components/Licence";
 import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
 import BookList from "./src/components/BookList";
@@ -58,14 +59,23 @@ const Router = () => {
             )}
             {contextState.user !== null && (
               <>
-                <Stack.Screen name={Routes.Licence} component={Profile} />
-                <Stack.Screen name={Routes.Logout} component={Logout} />
-                <Stack.Screen name={Routes.Loans} component={Loans} />
+                {contextState.user.dni ? (
+                  <>
+                    <Stack.Screen name={Routes.Carnet} component={Licence} />
+                  </>
+                ) : (
+                  <>
+                    <Stack.Screen name={Routes.Licence} component={Profile} />
+                  </>
+                )}
                 <Stack.Screen name={Routes.BookList} component={BookList} />
+                <Stack.Screen name={Routes.Loans} component={Loans} />
                 <Stack.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}
                 />
+
+                <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
           </>

@@ -60,19 +60,25 @@ const BookList = () => {
     };
 
     try {
-      const response = await handleConfirmedLoan(requestData, contextState.accessToken);
+      const response = await handleConfirmedLoan(
+        requestData,
+        contextState.accessToken,
+      );
       //To fix: it doesn't catch all the errors, it's just a temporary solution
       if (response.detail) {
-          Alert.alert("Error: diferente nivel de carnet");
-    } else {
-          handleRequest(book.isbn);
+        Alert.alert("Error: diferente nivel de carnet");
+      } else {
+        handleRequest(book.isbn);
       }
     } catch {
       setRequestState("Error");
     }
   };
 
-  const handleConfirmedLoan = async (book: IRequestedBook, accessToken: string) => {
+  const handleConfirmedLoan = async (
+    book: IRequestedBook,
+    accessToken: string,
+  ) => {
     if (contextState.user?.email === undefined) {
       throw Error("User email is undefined.");
     }
@@ -92,12 +98,12 @@ const BookList = () => {
       );
       console.log(response);
 
-      return response
+      return response;
     } catch (error) {
       console.error(error);
       Alert.alert(`Error: ${error}`);
 
-      return {"detail": error}
+      return { detail: error };
     }
   };
 
