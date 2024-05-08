@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class LoanInformationDTO(BaseModel):
     isbn: str
     copy_id: str
+    title: str
     expiration_date: datetime
     user_email: str
 
@@ -18,4 +19,3 @@ class LoanDTO(BaseModel):
 class RequestedBookDTO(BaseModel):
     isbn: str
     user_email: str
-

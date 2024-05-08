@@ -4,7 +4,7 @@ import { Entypo } from "@expo/vector-icons";
 
 interface BookCardProps {
   title: string;
-  dueDate: string;
+  dueDate: Date;
 }
 
 const BookCard: React.FC<BookCardProps> = ({ title, dueDate }) => {
@@ -15,7 +15,7 @@ const BookCard: React.FC<BookCardProps> = ({ title, dueDate }) => {
         <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.detail}>Vencimiento: {dueDate}</Text>
+        <Text style={styles.detail}>Vencimiento: {new Date(dueDate).toLocaleDateString()}</Text>
       </View>
     </View>
   );
