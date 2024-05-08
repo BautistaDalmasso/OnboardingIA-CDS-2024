@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, ScrollView , ImageBackground} from "react-native";
-import Button from "./Button";
 import BookCard from './BookCard';
 
 //TODO: Loan interface
@@ -18,60 +17,51 @@ const bookList = [
     id: "1",
     name: "Rayuela",
     fecha_vencimiento: '23-05-23',
-    fecha_retiro: '23-04-23'
   },
   {
     id: "2",
     name: "Cien años de soledad",
     fecha_vencimiento: '13-04-23',
-    fecha_retiro: '03-04-23'
   },
   {
     id: "4",
     name: "Sobre héroes y tumbas",
     fecha_vencimiento: '25-05-23',
-    fecha_retiro: '29-04-23'
   },
   {
     id: "10",
     name: "El amor en tiempos de cólera",
     fecha_vencimiento: '01-04-23',
-    fecha_retiro: '29-02-23'
   },
   {
     id: "14",
     name: "Crónica de una muerte anunciada",
     fecha_vencimiento: '02-06-23',
-    fecha_retiro: '30-04-23'
   },
   {
     id: "1112",
     name: "Martín fierro",
     fecha_vencimiento: '23-07-23',
-    fecha_retiro: '06-04-23'
   },
   {
     id: "165",
     name: "Los ojos del perro siberiano",
     fecha_vencimiento: '23-04-23',
-    fecha_retiro: '23-02-23'
   },
   {
     id: "156",
     name: "Metamorfosis",
     fecha_vencimiento: '13-04-23',
-    fecha_retiro: '02-04-23'
   },
   {
     id: "155",
     name: "El señor de los anillos",
     fecha_vencimiento: '23-05-23',
-    fecha_retiro: '23-04-23'
   },
 
 ];
 
-const My_loans = () => {
+const MyLoans = () => {
   return (
     <View style={styles.container1}>
 
@@ -130,4 +120,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default My_loans;
+export default MyLoans;
