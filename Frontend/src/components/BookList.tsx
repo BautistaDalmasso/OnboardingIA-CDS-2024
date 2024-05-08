@@ -30,7 +30,7 @@ const BookList = () => {
   const [requestedBooks, setRequestedBooks] = useState<ILoanWithTitle[]>([]);
 
   const handleRequestedBook = (book: ILoanWithTitle) => {
-    requestedBooks.push(book)
+    requestedBooks.push(book);
   };
 
   const handleRequestButton = (isbn: string) => {
@@ -65,16 +65,19 @@ const BookList = () => {
       isbn: book.isbn,
       copy_id: book.available_copies.toString(),
       user_email: contextState.user?.email,
-      title: book.title
+      title: book.title,
     };
 
     try {
-      const response = await handleConfirmedLoan(requestData, contextState.accessToken);
+      const response = await handleConfirmedLoan(
+        requestData,
+        contextState.accessToken,
+      );
       //To fix: it doesn't catch all the errors; ej: no book available
       if (response.detail) {
-          Alert.alert("Error: diferente nivel de carnet");
-    } else {
-          handleRequestButton(book.isbn);
+        Alert.alert("Error: diferente nivel de carnet");
+      } else {
+        handleRequestButton(book.isbn);
       }
     } catch {
       setRequestState("Error");
@@ -103,7 +106,7 @@ const BookList = () => {
         requestData,
         accessToken,
       );
-      if (!response.detail){
+      if (!response.detail) {
         console.log(response);
         handleJSON({
           isbn: book.isbn,
@@ -112,16 +115,16 @@ const BookList = () => {
           user_email: book.user_email,
         });
       }
-      return response
+      return response;
     } catch (error) {
       console.error(error);
       Alert.alert(`Error: ${error}`);
-      return {"detail": error}
+      return { detail: error };
     }
   };
 
   /*
-  */
+   */
   const handleJSON = async (requestData: ILoanWithTitle) => {
     try {
       handleRequestedBook(requestData);
