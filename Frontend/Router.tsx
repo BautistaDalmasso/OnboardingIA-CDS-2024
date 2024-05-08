@@ -10,15 +10,18 @@ import { Routes } from "./src/common/enums/routes";
 import ChatHeader from "./src/components/ChatHeader";
 import { useContextState } from "./src/ContexState";
 import Logout from "./src/components/Logout";
-import Loans from "./src/components/Loans";
 import Profile from "./src/components/Profile";
 import LoginFingerPrint from "./src/components/LoginFingerprint";
 import { ConnectionType } from "./src/common/enums/connectionType";
-import Capture from "./src/components/Capture";
 import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
+import MyLoans from "./src/components/MyLoans";
 import BookList from "./src/components/BookList";
+<<<<<<< HEAD
 import ShowLoans from "./src/components/ShowLoans";
+=======
+import Licence from "./src/components/Licence";
+>>>>>>> 03ba9f12855afc0ac2747e8c3e3a7e568488e550
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -59,14 +62,22 @@ const Router = () => {
             )}
             {contextState.user !== null && (
               <>
-                <Stack.Screen name={Routes.Licence} component={Profile} />
-                <Stack.Screen name={Routes.Logout} component={Logout} />
-                <Stack.Screen name={Routes.Loans} component={Loans} />
+                {contextState.user.dni ? (
+                  <>
+                    <Stack.Screen name={Routes.Carnet} component={Licence} />
+                  </>
+                ) : (
+                  <>
+                    <Stack.Screen name={Routes.Licence} component={Profile} />
+                  </>
+                )}
                 <Stack.Screen name={Routes.BookList} component={BookList} />
+                <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Stack.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}
                 />
+                <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
           </>
@@ -74,7 +85,11 @@ const Router = () => {
           <>
             {contextState.connectionType == ConnectionType.OFFLINE && (
               <>
+<<<<<<< HEAD
                 <Stack.Screen name={Routes.ShowLoans} component={ShowLoans} />
+=======
+                <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
+>>>>>>> 03ba9f12855afc0ac2747e8c3e3a7e568488e550
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}

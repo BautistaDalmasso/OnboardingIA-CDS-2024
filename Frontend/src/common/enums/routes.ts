@@ -9,6 +9,8 @@ export enum Routes {
   LoginFace = "Iniciar Sesión con Reconocimiento Facial",
   Loans = "Préstamos",
   RegisterFace = "Registrar Rostro",
+  MyLoans = "Préstamos solicitados",
+  Carnet = "Mi Carnet",
   BookList = "Solicitar préstamo",
   ShowLoans = "Mis Préstamos",
 }

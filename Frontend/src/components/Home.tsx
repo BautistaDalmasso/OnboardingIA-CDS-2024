@@ -90,7 +90,11 @@ const Home = ({ navigation }: Props) => {
         connectionType: ConnectionType.OFFLINE,
         userOffline: true,
       }));
+<<<<<<< HEAD
       navigation.navigate(Routes.ShowLoans);
+=======
+      navigation.navigate(Routes.MyLoans);
+>>>>>>> 03ba9f12855afc0ac2747e8c3e3a7e568488e550
     }
 
     setLoading(false);

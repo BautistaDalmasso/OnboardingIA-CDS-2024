@@ -1,5 +1,5 @@
 from app.library.library_service import LibraryService
-from .book_loans_dtos import  LoanDTO, LoanInformationDTO
+from .book_loans_dtos import LoanDTO, LoanInformationDTO
 
 from pathlib import Path
 from app.database.database_user import DatabaseUser
@@ -37,8 +37,10 @@ class LoanService(DatabaseUser):
         return [self.create_loan_data(entry) for entry in loans]
 
     def create_loan_data(self, db_entry: list[Any]) -> LoanInformationDTO:
+        book = self._library_service.consult_book_data(db_entry[0])
         return LoanInformationDTO(
             isbn=db_entry[0],
+            title=book.title,
             copy_id=db_entry[1],
             expiration_date=db_entry[2],
             user_email=db_entry[3],

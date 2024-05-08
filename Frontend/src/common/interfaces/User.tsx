@@ -44,8 +44,8 @@ export interface IUpdateUserDNI {
 }
 
 export interface IUpgradeBasicResponse {
-    dni: string;
-    access_token: string
+  dni: string;
+  access_token: string;
 }
 
 export interface IDeviceUIDResponse {
