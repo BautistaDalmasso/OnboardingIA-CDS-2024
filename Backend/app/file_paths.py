@@ -5,6 +5,7 @@ APP_DIR = Path(".") / "app"
 DATABASE_PATH = Path(".") / "sqlite.db"
 TEST_DB_PATH = Path(".") / "testing.db"
 
+EXAMPLE_LIBRARY = Path(".") / "library_example.db"
 LIBRARY_DB_PATH = Path(".") / "library.db"
 LIBRARY_TEST_PATH = Path(".") / "test_library.db"
 

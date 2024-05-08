@@ -47,7 +47,8 @@ def initialize_database(db_path: Path) -> None:
                 (isbn TEXT,
                 copyId TEXT,
                 expirationDate DATE,
-                userEmail TEXT UNIQUE)""",
+                userEmail TEXT,
+                PRIMARY KEY (isbn, expirationDate))""",
         tuple(),
         db_path,
     )
@@ -56,7 +57,8 @@ def initialize_database(db_path: Path) -> None:
         """CREATE TABLE IF NOT EXISTS requested_books
                 (isbn TEXT,
                 copyId TEXT,
-                userEmail TEXT UNIQUE)""",
+                userEmail TEXT,
+                PRIMARY KEY (isbn, userEmail))""",
         tuple(),
         db_path,
     )

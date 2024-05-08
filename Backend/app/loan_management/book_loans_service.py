@@ -1,5 +1,5 @@
-import sqlite3
-from .book_loans_dtos import RequestedBookDTO, LoanDTO
+from app.library.library_service import LibraryService
+from .book_loans_dtos import  LoanDTO, LoanInformationDTO
 
 from pathlib import Path
 from app.database.database_user import DatabaseUser
@@ -8,52 +8,38 @@ from typing import Any
 
 
 class LoanService(DatabaseUser):
-    def __init__(self, db_path: Path) -> None:
+    def __init__(self, db_path: Path, library_path: Path) -> None:
         super().__init__(db_path)
+        self._library_service = LibraryService(library_path)
 
-    def add_confirmed_loan(self, book: LoanDTO):
-        try:
-            self.execute_in_database(
-                """INSERT INTO loans ( isbn, copyId, expirationDate, userEmail)
+    def add_loan(self, book_request: LoanDTO):
+        """Add a loan without requiring any confirmation."""
+        copy_data = self._library_service.borrow_book(book_request.isbn)
+
+        self.execute_in_database(
+            """INSERT INTO loans ( isbn, copyId, expirationDate, userEmail)
                         VALUES (?, ?, ?, ?)""",
-                (book.isbn, book.copy_id, book.expiration_date, book.user_email),
-            )
-            return {
-                "isbn": book.isbn,
-                "copy_id": book.copy_id,
-                "expiration_date": book.expiration_date,
-                "user_email": book.user_email,
-            }
-        except sqlite3.IntegrityError:
-            return {"error": "Error al registrar un prestamo realizado"}
+            (
+                copy_data.isbn,
+                copy_data.copy_id,
+                book_request.expiration_date,
+                book_request.user_email,
+            ),
+        )
 
-    def add_requested_book(self, book: RequestedBookDTO):
-        try:
-            self.execute_in_database(
-                """INSERT INTO requested_books (isbn, copyId, userEmail)
-                            VALUES (?, ?, ?)""",
-                (book.isbn, book.copy_id, book.user_email),
-            )
-            return {
-                "isbn": book.isbn,
-                "copy_id": book.copy_id,
-                "user_email": book.user_email,
-            }
+        return copy_data
 
-        except sqlite3.IntegrityError:
-            return {"error": "Error al registrar un libro solicitado"}
-
-    def consult_book_loans_by_user_email(self, email: str) -> List[LoanDTO]:
+    def consult_book_loans_by_user_email(self, email: str) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(
-            """SELECT isbn, copyID, expirationDate FROM loans WHERE userEmail =?""",
+            """SELECT * FROM loans WHERE userEmail =?""",
             (email,),
         )
         return [self.create_loan_data(entry) for entry in loans]
 
-    def create_loan_data(self, db_entry: list[Any]) -> LoanDTO:
-        return LoanDTO(
+    def create_loan_data(self, db_entry: list[Any]) -> LoanInformationDTO:
+        return LoanInformationDTO(
             isbn=db_entry[0],
             copy_id=db_entry[1],
             expiration_date=db_entry[2],
-            user_email= None,
+            user_email=db_entry[3],
         )

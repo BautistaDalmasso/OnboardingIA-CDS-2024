@@ -1,12 +1,14 @@
 from pathlib import Path
 import random
+import shutil
 
+from app.file_paths import EXAMPLE_LIBRARY
 from app.database.database_actions import execute_in_database
 
 
 def initialize_database(db_path: Path) -> None:
     if not db_path.exists():
-        open(db_path, "a").close()
+        shutil.copyfile(EXAMPLE_LIBRARY, db_path)
 
     execute_in_database(
         """CREATE TABLE IF NOT EXISTS books

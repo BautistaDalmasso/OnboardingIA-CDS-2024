@@ -63,24 +63,32 @@ const BookList = () => {
     };
 
     try {
-      const response = await LoanService.createRequestedBook(
-        requestData,
-        contextState.accessToken,
-      );
+      const response = await handleConfirmedLoan(requestData, contextState.accessToken);
       //To fix: it doesn't catch all the errors, it's just a temporary solution
+<<<<<<< HEAD
       if (response === null) {
         handleConfirmedLoan(requestData, book.title);
         handleRequest(book.isbn);
         handleBorrow(book);
       } else {
         Alert.alert("Error: diferente nivel de carnet");
+=======
+      if (response.detail) {
+          Alert.alert("Error: diferente nivel de carnet");
+    } else {
+          handleRequest(book.isbn);
+>>>>>>> 8b615244115c5e53cdb409146e52ae13c122c055
       }
     } catch {
       setRequestState("Error");
     }
   };
 
+<<<<<<< HEAD
   const handleConfirmedLoan = async (book: IRequestedBook, title: string) => {
+=======
+  const handleConfirmedLoan = async (book: IRequestedBook, accessToken: string) => {
+>>>>>>> 8b615244115c5e53cdb409146e52ae13c122c055
     if (contextState.user?.email === undefined) {
       throw Error("User email is undefined.");
     }
@@ -90,13 +98,16 @@ const BookList = () => {
 
     const requestData = {
       isbn: book.isbn,
-      copy_id: book.copy_id,
       expiration_date: futureDate,
       user_email: contextState.user?.email,
     };
     try {
-      const response = await LoanService.addConfirmedLoan(requestData);
+      const response = await LoanService.createRequestedBook(
+        requestData,
+        accessToken,
+      );
       console.log(response);
+<<<<<<< HEAD
       handleJSON({
         title: title,
         expiration_date: futureDate,
@@ -107,18 +118,15 @@ const BookList = () => {
       Alert.alert("Error");
     }
   };
+=======
+>>>>>>> 8b615244115c5e53cdb409146e52ae13c122c055
 
-  const handleBorrow = async (book: IBook) => {
-    try {
-      const response = await LibraryService.handleBorrow(book);
-      if (response.status === "borrowed") {
-        setButtonDisabled(true);
-        Alert.alert("Success");
-      }
-      console.log(response);
+      return response
     } catch (error) {
       console.error(error);
-      Alert.alert("Error");
+      Alert.alert(`Error: ${error}`);
+
+      return {"detail": error}
     }
   };
 

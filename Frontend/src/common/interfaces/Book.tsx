@@ -13,13 +13,11 @@ export interface IBook {
 
 export interface IRequestedBook {
   isbn: string;
-  copy_id: string;
   user_email: string;
 }
 
 export interface ILoan {
   isbn: string;
-  copy_id: string;
   expiration_date: Date;
   user_email: string;
 }
