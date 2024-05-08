@@ -37,6 +37,7 @@ server_config.json
 *.pem
 
 sqlite.db
+library.db
 
 # Test images
 tests/images

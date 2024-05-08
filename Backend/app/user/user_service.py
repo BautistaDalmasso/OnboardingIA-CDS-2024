@@ -72,6 +72,7 @@ class UserService(DatabaseUser):
             "licenceLevel": data.licenceLevel,
             "exp": expire,
         }
+
         encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
 
@@ -184,16 +185,29 @@ class UserService(DatabaseUser):
         letters_and_digits = string.ascii_letters + string.digits
         return "".join((random.choice(letters_and_digits) for i in range(length)))
 
-    def update_user(self, user: UpdateUserDniDTO, email: str):
+    def upgrade_to_regular_licence(
+        self, user: UpdateUserDniDTO, token_data: TokenDataDTO
+    ):
 
+        access_token_data = TokenDataDTO(
+            email=token_data.email,
+            role=token_data.role,
+            licenceLevel=LicenceLevel.REGULAR,
+        )
         try:
             self.execute_in_database(
                 """UPDATE users SET dni = ?
                             WHERE email = ?""",
-                (user.dni, email),
+                (user.dni, token_data.email),
+            )
+            self.execute_in_database(
+                """UPDATE users SET licenceLevel = ?
+                            WHERE email = ?""",
+                (LicenceLevel.REGULAR, token_data.email),
             )
             return {
                 "dni": user.dni,
+                "access_token": self.create_access_token(access_token_data),
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}

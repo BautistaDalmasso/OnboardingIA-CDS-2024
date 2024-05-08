@@ -41,4 +41,4 @@ class UpdateUserDniDTO(BaseModel):
 class TokenDataDTO(BaseModel):
     email: str
     role: Optional[str] = "basic"
-    licenceLevel: Optional[int] = 1
+    licenceLevel: Optional[int] = 0

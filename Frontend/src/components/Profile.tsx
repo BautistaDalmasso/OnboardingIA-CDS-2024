@@ -40,9 +40,10 @@ const Profile = ({ navigation } : Props) => {
 
   const handleSendPress = async () => {
     try {
-      await UserService.updateDNI(dni, contextState.accessToken as string);
+      const result = await UserService.acquireBasicLicence(dni, contextState.accessToken as string);
       setContextState((state) => ({
         ...state,
+        accessToken: result.access_token,
         user: {
           ...state.user,
           dni,
