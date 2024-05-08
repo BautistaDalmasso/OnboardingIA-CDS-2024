@@ -1,5 +1,5 @@
 from app.library.library_service import LibraryService
-from .book_loans_dtos import RequestedBookDTO, LoanDTO
+from .book_loans_dtos import  LoanDTO, LoanInformationDTO
 
 from pathlib import Path
 from app.database.database_user import DatabaseUser
@@ -29,15 +29,15 @@ class LoanService(DatabaseUser):
 
         return copy_data
 
-    def consult_book_loans_by_user_email(self, email: str) -> List[LoanDTO]:
+    def consult_book_loans_by_user_email(self, email: str) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(
             """SELECT * FROM loans WHERE userEmail =?""",
             (email,),
         )
         return [self.create_loan_data(entry) for entry in loans]
 
-    def create_loan_data(self, db_entry: list[Any]) -> LoanDTO:
-        return LoanDTO(
+    def create_loan_data(self, db_entry: list[Any]) -> LoanInformationDTO:
+        return LoanInformationDTO(
             isbn=db_entry[0],
             copy_id=db_entry[1],
             expiration_date=db_entry[2],
