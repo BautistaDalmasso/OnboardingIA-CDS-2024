@@ -3,7 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.library.library_models import PhysicalCopyData
 from app.library.library_service import BookNotFound, NoCopiesAvailable
 from app.loan_management.book_loans_service import LoanService
-from app.loan_management.book_loans_dtos import LoanDTO, RequestedBookDTO
+from app.loan_management.book_loans_dtos import (
+    LoanDTO,
+    LoanInformationDTO,
+    RequestedBookDTO,
+)
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
 from ..user.user_dtos import (
@@ -40,7 +44,7 @@ async def create_requested_book(book: LoanDTO, token=Depends(HTTPBearer())):
         )
 
 
-@router.get("/user_loans")
-async def book_loans_by_user_email(email: str):
-    result = loan_service.consult_book_loans_by_user_email(email)
+@router.get("/user_loans", response_model=list[LoanInformationDTO])
+async def book_loans_by_user_email(user_email: str):
+    result = loan_service.consult_book_loans_by_user_email(user_email)
     return result
