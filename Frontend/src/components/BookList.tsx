@@ -26,14 +26,19 @@ const BookList = () => {
   const { contextState } = useContextState();
   const [requestState, setRequestState] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [requestedBooks, setRequestedBooks] = useState<string[]>([]);
+  const [requestedButton, setRequestedButton] = useState<string[]>([]);
+  const [requestedBooks, setRequestedBooks] = useState<ILoanWithTitle[]>([]);
 
-  const handleRequest = (isbn: string) => {
-    setRequestedBooks([...requestedBooks, isbn]);
+  const handleRequestedBook = (book: ILoanWithTitle) => {
+    requestedBooks.push(book)
+  };
+
+  const handleRequestButton = (isbn: string) => {
+    setRequestedButton([...requestedButton, isbn]);
   };
 
   const isBookRequested = (isbn: string) => {
-    return requestedBooks.includes(isbn);
+    return requestedButton.includes(isbn);
   };
 
   useEffect(() => {
@@ -60,15 +65,16 @@ const BookList = () => {
       isbn: book.isbn,
       copy_id: book.available_copies.toString(),
       user_email: contextState.user?.email,
+      title: book.title
     };
 
     try {
       const response = await handleConfirmedLoan(requestData, contextState.accessToken);
-      //To fix: it doesn't catch all the errors, it's just a temporary solution
+      //To fix: it doesn't catch all the errors; ej: no book available
       if (response.detail) {
           Alert.alert("Error: diferente nivel de carnet");
     } else {
-          handleRequest(book.isbn);
+          handleRequestButton(book.isbn);
       }
     } catch {
       setRequestState("Error");
@@ -76,7 +82,7 @@ const BookList = () => {
   };
 
   const handleConfirmedLoan = async (book: IRequestedBook, accessToken: string) => {
-    if (contextState.user?.email === undefined) {
+    if (book.user_email === undefined) {
       throw Error("User email is undefined.");
     }
     const today: Date = new Date();
@@ -86,34 +92,41 @@ const BookList = () => {
     const requestData = {
       isbn: book.isbn,
       expiration_date: futureDate,
-      user_email: contextState.user?.email,
+      user_email: book.user_email,
     };
+
     try {
       const response = await LoanService.createRequestedBook(
         requestData,
         accessToken,
       );
-      console.log(response);
-
+      if (!response.detail){
+        console.log(response);
+        handleJSON({
+          isbn: book.isbn,
+          title: book.title,
+          expiration_date: futureDate,
+          user_email: book.user_email,
+        });
+      }
       return response
     } catch (error) {
       console.error(error);
       Alert.alert(`Error: ${error}`);
-
       return {"detail": error}
     }
   };
 
-  /*TEMPORARY SOLUTION TO SHOW USER LOANS OFFLINE (many users trying to use "show loans" may cause trouble
-    and increasing storage may increase memory shortage )
+  /*
   */
   const handleJSON = async (requestData: ILoanWithTitle) => {
     try {
-      const jsonData = JSON.stringify(requestData);
-      await AsyncStorage.setItem("requestData", jsonData);
-      console.log("Datos guardados correctamente en AsyncStorage.");
+      handleRequestedBook(requestData);
+      const jsonData = JSON.stringify(requestedBooks);
+      await AsyncStorage.setItem("Loans", jsonData);
+      console.log("Data saved succesfully on AsyncStorage.");
     } catch (error) {
-      console.error("Error al guardar los datos en AsyncStorage:", error);
+      console.error("Error saving data on AyncStorage:", error);
     }
   };
 

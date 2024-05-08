@@ -9,15 +9,15 @@ const ShowLoans = () => {
   useEffect(() => {
     const loadBooksFromAsyncStorage = async () => {
       try {
-        const jsonData = await AsyncStorage.getItem("requestData");
+        const jsonData = await AsyncStorage.getItem("Loans");
         if (!jsonData) {
           console.log("No hay datos guardados en AsyncStorage.");
           return;
         }
 
         const data = JSON.parse(jsonData);
-        setBooks([data]);
-        console.log([data]);
+        setBooks(data);
+        console.log(data);
       } catch (error) {
         console.error("Error al cargar los datos desde AsyncStorage:", error);
       }
@@ -29,7 +29,7 @@ const ShowLoans = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Préstamos solicitados</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {books.map((book) => (
+        {Array.isArray(books) && books.map((book) => (
           <View key={book.isbn} style={styles.bookContainer}>
             <Text style={styles.bookTitle}>{book.title}</Text>
             {book.expiration_date && (
