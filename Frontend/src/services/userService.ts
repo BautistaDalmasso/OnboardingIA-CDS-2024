@@ -76,7 +76,10 @@ export class UserService {
     });
   }
 
-  static async acquireBasicLicence(dni: string, token: string): Promise<IUpgradeBasicResponse> {
+  static async acquireBasicLicence(
+    dni: string,
+    token: string,
+  ): Promise<IUpgradeBasicResponse> {
     return baseFetch<IUpdateUserDNI, IUpgradeBasicResponse>({
       url: `${this.baseRoute}/dni`,
       method: "PATCH",

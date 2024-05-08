@@ -1,8 +1,6 @@
 import { ServerAddress } from "../common/consts/serverAddress";
 import { baseFetch } from "./fetch";
-import {
-  IBookWithLicence,
-} from "../common/interfaces/Book";
+import { IBookWithLicence } from "../common/interfaces/Book";
 
 export class LibraryService {
   private static booksRoute: string = `${ServerAddress}books`;

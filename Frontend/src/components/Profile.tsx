@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../common/enums/routes";
-import {View, Text, StyleSheet,  TextInput,  TouchableOpacity,  Alert, Keyboard,
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Keyboard,
 } from "react-native";
 import { useContextState } from "../ContexState";
 import { UserService } from "../services/userService";
@@ -9,11 +16,10 @@ import { IUser } from "../common/interfaces/User";
 import Licence from "./Licence";
 
 interface Props {
-
   navigation: NavigationProp<any, any>;
 }
 
-const Profile = ({ navigation } : Props) => {
+const Profile = ({ navigation }: Props) => {
   const [dni, setDni] = useState("");
   const [showDniInput, setShowDniInput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
@@ -40,7 +46,10 @@ const Profile = ({ navigation } : Props) => {
 
   const handleSendPress = async () => {
     try {
-      const result = await UserService.acquireBasicLicence(dni, contextState.accessToken as string);
+      const result = await UserService.acquireBasicLicence(
+        dni,
+        contextState.accessToken as string,
+      );
       setContextState((state) => ({
         ...state,
         accessToken: result.access_token,
@@ -99,7 +108,6 @@ const Profile = ({ navigation } : Props) => {
           </TouchableOpacity>
         </View>
       )}
-
     </View>
   );
 };

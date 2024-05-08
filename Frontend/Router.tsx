@@ -59,15 +59,15 @@ const Router = () => {
             )}
             {contextState.user !== null && (
               <>
-                  {contextState.user.dni ? (
-                    <>
-                      <Stack.Screen name={Routes.Carnet} component={Licence} />
-                    </>
-                  ) : (
-                    <>
-                      <Stack.Screen name={Routes.Licence} component={Profile} />
-                    </>
-                  )}
+                {contextState.user.dni ? (
+                  <>
+                    <Stack.Screen name={Routes.Carnet} component={Licence} />
+                  </>
+                ) : (
+                  <>
+                    <Stack.Screen name={Routes.Licence} component={Profile} />
+                  </>
+                )}
                 <Stack.Screen name={Routes.BookList} component={BookList} />
                 <Stack.Screen name={Routes.Loans} component={Loans} />
                 <Stack.Screen
@@ -76,7 +76,6 @@ const Router = () => {
                 />
 
                 <Stack.Screen name={Routes.Logout} component={Logout} />
-
               </>
             )}
           </>
