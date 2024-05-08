@@ -68,7 +68,6 @@ const Home = ({ navigation }: Props) => {
   const handleShowButtons = async () => {
     setShowUnlock(!showUnlock);
     setShowSignup(!showSignup);
-
   };
 
   const handleReconnect = async () => {

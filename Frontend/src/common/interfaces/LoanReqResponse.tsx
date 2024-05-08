@@ -4,9 +4,9 @@ export interface ILoanRequestResponse {
 }
 
 export interface ILoanInformationResponse {
-    isbn: string;
-    copy_id: string;
-    title: string;
-    expiration_date: Date;
-    user_email: string;
+  isbn: string;
+  copy_id: string;
+  title: string;
+  expiration_date: Date;
+  user_email: string;
 }

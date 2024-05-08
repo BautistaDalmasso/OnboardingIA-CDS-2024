@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 
 interface BookCardProps {
@@ -11,11 +11,13 @@ const BookCard: React.FC<BookCardProps> = ({ title, dueDate }) => {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-      <Entypo name ="book" color="#006691" size={32} />
+        <Entypo name="book" color="#006691" size={32} />
         <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.detail}>Vencimiento: {new Date(dueDate).toLocaleDateString()}</Text>
+        <Text style={styles.detail}>
+          Vencimiento: {new Date(dueDate).toLocaleDateString()}
+        </Text>
       </View>
     </View>
   );
@@ -24,11 +26,11 @@ const BookCard: React.FC<BookCardProps> = ({ title, dueDate }) => {
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 2,
-    width:330,
+    width: 330,
     height: 100,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 15,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -40,25 +42,23 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   titleContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 8,
-
   },
   title: {
-    marginStart:10,
+    marginStart: 10,
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#006691',
+    fontWeight: "bold",
+    color: "#006691",
   },
   detailsContainer: {
-    flex:1,
-   justifyContent:'flex-end',
-    alignItems: 'flex-end',
-
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
   },
   detail: {
     fontSize: 17,
-    color: '#006695',
+    color: "#006695",
   },
 });
 

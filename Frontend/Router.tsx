@@ -59,11 +59,11 @@ const Router = () => {
             {contextState.user !== null && (
               <>
                 {contextState.user.dni ? (
-                    <>
+                  <>
                     <Stack.Screen name={Routes.Carnet} component={Licence} />
                   </>
                 ) : (
-                    <>
+                  <>
                     <Stack.Screen name={Routes.Licence} component={Profile} />
                   </>
                 )}
@@ -74,7 +74,6 @@ const Router = () => {
                   component={RegisterFace}
                 />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
-
               </>
             )}
           </>
