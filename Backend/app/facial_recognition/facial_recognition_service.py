@@ -2,7 +2,8 @@ from pathlib import Path
 import requests
 from fastapi import HTTPException
 
-from app.database_actions import execute_in_database
+from app.database.database_user import DatabaseUser
+from app.database.database_actions import execute_in_database
 from app.user.user_service import UserService
 from app.server_config import ServerConfig
 
@@ -10,9 +11,7 @@ from app.server_config import ServerConfig
 BASE_URL = ServerConfig().get_facial_recognition_server()
 
 
-class FacialRecognitionService:
-    def __init__(self, db_path: Path) -> None:
-        self._db_path = db_path
+class FacialRecognitionService(DatabaseUser):
 
     async def upload_facial_profile(self, user_email: str, user_face: bytes) -> None:
         r = requests.post(f"{BASE_URL}/facial_profile", files={"file": user_face})

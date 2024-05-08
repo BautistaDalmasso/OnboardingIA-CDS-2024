@@ -16,6 +16,8 @@ import { ConnectionType } from "./src/common/enums/connectionType";
 import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
 import MyLoans from "./src/components/MyLoans";
+import BookList from "./src/components/BookList";
+import Licence from "./src/components/Licence";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -56,13 +58,23 @@ const Router = () => {
             )}
             {contextState.user !== null && (
               <>
-                <Stack.Screen name={Routes.Licence} component={Profile} />
+                {contextState.user.dni ? (
+                    <>
+                    <Stack.Screen name={Routes.Carnet} component={Licence} />
+                  </>
+                ) : (
+                    <>
+                    <Stack.Screen name={Routes.Licence} component={Profile} />
+                  </>
+                )}
+                <Stack.Screen name={Routes.BookList} component={BookList} />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Stack.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}
                 />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
+
               </>
             )}
           </>

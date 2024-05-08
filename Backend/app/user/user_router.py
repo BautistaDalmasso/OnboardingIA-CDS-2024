@@ -108,7 +108,11 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
     user_data: TokenDataDTO = await verify_token(token.credentials)
 
-    result = user_service.update_user(user, user_data.email)
+    print(user)
+
+    result = user_service.upgrade_to_regular_licence(user, user_data)
+
+    print(result)
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])

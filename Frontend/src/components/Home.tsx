@@ -74,7 +74,7 @@ const Home = ({ navigation }: Props) => {
   const handleReconnect = async () => {
     setLoading(true);
     await setConnection();
-    if (!contextState.isConnected) {
+    if (contextState.isConnected) {
       Alert.alert("Reconexión fallida.");
     }
     setLoading(false);

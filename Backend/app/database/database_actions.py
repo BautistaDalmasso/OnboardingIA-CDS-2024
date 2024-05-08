@@ -14,6 +14,17 @@ def query_database(query: str, args: tuple[Any], db_path: Path) -> list[Any]:
         conn.close()
 
 
+def query_multiple_rows(query: str, args: tuple[Any], db_path: Path) -> list[list[Any]]:
+    try:
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        c.execute(query, args)
+        data = c.fetchall()
+        return data
+    finally:
+        conn.close()
+
+
 def execute_in_database(command: str, args: tuple[Any], db_path: Path) -> None:
     try:
         conn = sqlite3.connect(db_path)

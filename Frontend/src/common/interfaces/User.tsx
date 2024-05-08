@@ -43,6 +43,11 @@ export interface IUpdateUserDNI {
   dni: string;
 }
 
+export interface IUpgradeBasicResponse {
+  dni: string;
+  access_token: string;
+}
+
 export interface IDeviceUIDResponse {
   deviceUID: number;
 }

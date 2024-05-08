@@ -10,4 +10,6 @@ export enum Routes {
   Loans = "Mis préstamos",
   RegisterFace = "Registrar Rostro",
   MyLoans = "Préstamos solicitados" ,
+  Carnet = "Mi Carnet",
+  BookList = "Solicitar préstamo",
 }

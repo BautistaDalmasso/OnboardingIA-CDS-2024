@@ -17,6 +17,7 @@ const Capture = ({ onAccept }: Props) => {
   const [cameraType, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -27,6 +28,7 @@ const Capture = ({ onAccept }: Props) => {
   }, []);
 
   const takePicture = async () => {
+    setIsDisabled(true);
     if (cameraRef.current) {
       try {
         const data = await cameraRef.current.takePictureAsync();
@@ -35,6 +37,11 @@ const Capture = ({ onAccept }: Props) => {
         console.log(error);
       }
     }
+  };
+
+  const reTake = async () => {
+    setIsDisabled(false);
+    setImage("");
   };
 
   const savePicture = async () => {
@@ -69,22 +76,7 @@ const Capture = ({ onAccept }: Props) => {
           type={cameraType}
           ref={cameraRef}
           flashMode={flash}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: 30,
-            }}
-          >
-            <Button title="" icon="retweet" onPress={switchCamera} />
-            <Button
-              onPress={switchFlash}
-              icon="flash"
-              color={flash === FlashMode.off ? "gray" : "#fff"}
-            />
-          </View>
-        </Camera>
+        />
       ) : (
         <Image source={{ uri: image }} style={styles.camera} />
       )}
@@ -94,13 +86,54 @@ const Capture = ({ onAccept }: Props) => {
           <View style={styles.retakeButton}>
             <Button
               title="Re-take"
-              onPress={() => setImage("")}
-              icon="retweet"
+              onPress={reTake}
+              icon="camera"
+              width={150}
+              height={60}
+              color="#006694"
             />
-            <Button title="Save" onPress={savePicture} icon="check" />
+            <Button
+              title="Save"
+              onPress={savePicture}
+              icon="check"
+              width={150}
+              height={60}
+              color="#006694"
+            />
           </View>
         ) : (
-          <Button title="Take a picture" onPress={takePicture} icon="camera" />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingHorizontal: 10,
+            }}
+          >
+            <Button
+              title=""
+              icon="retweet"
+              onPress={switchCamera}
+              width={60}
+              height={60}
+              color="#006694"
+            />
+            <Button
+              title="Take a picture"
+              onPress={takePicture}
+              icon="camera"
+              width={200}
+              height={60}
+              color="#006694"
+              disabled={isDisabled}
+            />
+            <Button
+              onPress={switchFlash}
+              icon="flash"
+              width={60}
+              height={60}
+              color={flash === FlashMode.off ? "gray" : "#006694"}
+            />
+          </View>
         )}
       </View>
     </View>
@@ -116,32 +149,16 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   controls: {
+    marginTop: 15,
     flex: 0.5,
-  },
-  button: {
-    height: 40,
-    borderRadius: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "#E9730F",
-    marginLeft: 10,
   },
   camera: {
     flex: 5,
     borderRadius: 20,
   },
-  topControls: {
-    flex: 1,
-  },
   retakeButton: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 50,
+    justifyContent: "space-evenly",
   },
 });
 

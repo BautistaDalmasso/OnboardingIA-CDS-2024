@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  Keyboard,
-  Alert,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { UserService } from "../services/userService";
 import { NavigationProp } from "@react-navigation/native";
@@ -16,6 +8,7 @@ import { useContextState } from "../ContexState";
 import { generateKeyPair } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
+import CustomTextInput from "./CustomTextInput";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -34,9 +27,6 @@ const Signup = ({ navigation }: Props) => {
 
   const handleSubmit = async () => {
     try {
-      Keyboard.dismiss();
-      setLoading(true);
-
       if (!firstName || !lastName) {
         Alert.alert(
           "Error",
@@ -48,7 +38,7 @@ const Signup = ({ navigation }: Props) => {
         Alert.alert("Error", "Por favor ingrese un correo valido.");
         return;
       }
-      if (password.length < 6) {
+      if (password.length < 6 || password.includes(" ")) {
         Alert.alert(
           "Error",
           "Por favor ingrese una contraseña de 6 caracteres.",
@@ -109,28 +99,23 @@ const Signup = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Crea tu cuenta</Text>
-      <TextInput
-        placeholder="Nombre"
-        style={styles.input}
+      <CustomTextInput
+        placeholder={"Nombre"}
         value={firstName}
         onChangeText={(text) => setName(text)}
       />
-      <TextInput
-        placeholder="Apellido"
-        style={styles.input}
+      <CustomTextInput
+        placeholder={"Apellido"}
         value={lastName}
         onChangeText={(text) => setLastName(text)}
       />
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
+      <CustomTextInput
+        placeholder={"Email"}
         value={email}
         onChangeText={(text) => setEmail(text)}
       />
-      <TextInput
-        placeholder="Contraseña"
-        style={styles.input}
-        secureTextEntry={true}
+      <CustomTextInput
+        placeholder={"Contraseña"}
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
@@ -159,16 +144,6 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     textAlign: "center",
     color: "#3369FF",
-  },
-  input: {
-    height: 50,
-    width: "100%",
-    borderColor: "#E6E6E6",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginVertical: 5,
-    paddingHorizontal: 15,
-    maxWidth: 330,
   },
   button: {
     backgroundColor: "#3369FF",
