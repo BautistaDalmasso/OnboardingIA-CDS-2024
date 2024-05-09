@@ -13,4 +13,5 @@ export enum Routes {
   Carnet = "Mi Carnet",
   BookList = "Solicitar préstamo",
   ShowLoans = "Mis Préstamos",
+  UserConfiguration = "Configuración",
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -19,6 +19,7 @@ import MyLoans from "./src/components/MyLoans";
 import BookList from "./src/components/BookList";
 import ShowLoans from "./src/components/ShowLoans";
 import Licence from "./src/components/Licence";
+import UserConfiguration from "./src/components/UserConfiguration";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -74,6 +75,7 @@ const Router = () => {
                   name={Routes.RegisterFace}
                   component={RegisterFace}
                 />
+                <Stack.Screen name={Routes.UserConfiguration} component={UserConfiguration} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
