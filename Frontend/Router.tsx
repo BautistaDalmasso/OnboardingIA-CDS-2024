@@ -71,9 +71,10 @@ const Router = () => {
                 )}
                 <Stack.Screen name={Routes.BookList} component={BookList} />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
-                <Stack.Screen
+                <Drawer.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}
+                  options={{ drawerItemStyle: { display: "none" } }}
                 />
                 <Stack.Screen name={Routes.UserConfiguration} component={UserConfiguration} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />

@@ -6,6 +6,7 @@ import { useContextState } from "../ContexState";
 import useBiometrics from "../hooks/useBiometrics";
 import { generateKeyPair } from "../common/utils/crypto";
 import React, { useState } from "react";
+import { Routes } from "../common/enums/routes";
 
 interface Props {
     navigation: NavigationProp<any, any>;
@@ -49,6 +50,10 @@ const UserConfiguration = ({ navigation }: Props) => {
     };
 
 
+    function handleRegisterFace() {
+        navigation.navigate(Routes.RegisterFace)
+    }
+
       return (
         <View style={styles.container}>
             <TouchableOpacity
@@ -62,6 +67,14 @@ const UserConfiguration = ({ navigation }: Props) => {
             style={styles.fingerprintIcon}
             resizeMode="contain"
           />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleRegisterFace}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>Registrar Rostro</Text>
         </TouchableOpacity>
         </View>
       );
