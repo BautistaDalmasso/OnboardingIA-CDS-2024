@@ -17,6 +17,7 @@ import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
 import MyLoans from "./src/components/MyLoans";
 import BookList from "./src/components/BookList";
+import ShowLoans from "./src/components/ShowLoans";
 import Licence from "./src/components/Licence";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -81,7 +82,7 @@ const Router = () => {
           <>
             {contextState.connectionType == ConnectionType.OFFLINE && (
               <>
-                <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
+                <Stack.Screen name={Routes.ShowLoans} component={ShowLoans} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}

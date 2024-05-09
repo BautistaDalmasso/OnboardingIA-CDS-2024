@@ -14,6 +14,7 @@ export interface IBook {
 export interface IRequestedBook {
   isbn: string;
   user_email: string;
+  title: string;
 }
 
 export interface ILoan {
@@ -26,4 +27,11 @@ export interface IPhysicalCopyData {
   isbn: string;
   copy_id: string;
   status: "available" | "borrowed";
+}
+
+export interface ILoanWithTitle {
+  isbn: string;
+  title: string;
+  expiration_date: Date;
+  user_email: string;
 }
