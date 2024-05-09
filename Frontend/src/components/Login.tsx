@@ -80,13 +80,13 @@ const Login = ({ navigation }: Props) => {
         value={email}
         onChangeText={(text) => setEmail(text)}
       />
-        <TextInput
-          placeholder="Contraseña"
-          style={styles.input}
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
+      <TextInput
+        placeholder="Contraseña"
+        style={styles.input}
+        secureTextEntry={true}
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+      />
       <TouchableOpacity
         style={styles.button}
         onPress={handleLogin}

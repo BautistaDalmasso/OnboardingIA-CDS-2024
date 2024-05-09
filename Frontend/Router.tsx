@@ -76,7 +76,10 @@ const Router = () => {
                   component={RegisterFace}
                   options={{ drawerItemStyle: { display: "none" } }}
                 />
-                <Stack.Screen name={Routes.UserConfiguration} component={UserConfiguration} />
+                <Stack.Screen
+                  name={Routes.UserConfiguration}
+                  component={UserConfiguration}
+                />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
