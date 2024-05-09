@@ -92,10 +92,21 @@ class LicenceService(DatabaseUser):
                 tuple(),
             )
             for book in all_books:
+                # Adjust weights for random selection
+                random_value = random.randint(
+                    1, 10
+                )  # Choose a random number between 1 and 10
+                if random_value <= 7:  # 70% chance for 1
+                    licence_level = 1
+                elif random_value <= 9:  # 20% chance for 2
+                    licence_level = 2
+                else:  # 10% chance for 3
+                    licence_level = 3
+
                 self.execute_in_database(
                     """INSERT INTO licenceRequirements (isbn, licenceLevel)
                       VALUES (?, ?)""",
-                    (book.isbn, random.randint(1, 3)),
+                    (book.isbn, licence_level),
                 )
 
 
