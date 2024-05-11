@@ -1,8 +1,14 @@
-from Backend.app.catalogue.book_models import MarcBookData
+from app.catalogue.read_mods import ReadMod
+from app.catalogue.book_models import MarcBookData
 from app.database.database_user import DatabaseUser
 
 
-class CatalogueService(DatabaseUser):
+class AddToCatalogueService(DatabaseUser):
+
+    def add_book_by_url(self, book_url: str) -> None:
+        book_data = ReadMod(mods_url=book_url).get_marcs_data()
+
+        self.add_book(book_data)
 
     def add_book(self, book_data: MarcBookData) -> None:
         self._insert_book(book_data)

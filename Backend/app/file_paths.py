@@ -9,6 +9,8 @@ EXAMPLE_LIBRARY = Path(".") / "library_example.db"
 LIBRARY_DB_PATH = Path(".") / "library.db"
 LIBRARY_TEST_PATH = Path(".") / "test_library.db"
 
+CATALOGUE_PATH = Path(".") / "catalogue.db"
+
 CONFIG_FILE = APP_DIR / "server_config.json"
 
 DATA_DIR = APP_DIR / "ai" / "data"
