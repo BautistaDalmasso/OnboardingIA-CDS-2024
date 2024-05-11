@@ -8,7 +8,7 @@ class MarcBookData(BaseModel):
     publisher: str
     date_issued: str
     edition: str
-    abstract: str
+    abstract: str | None
     description: str
     ddc_class: str
     authors: list[str]

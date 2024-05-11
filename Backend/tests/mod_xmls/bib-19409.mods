@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.1" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-1.xsd">
+  <titleInfo>
+    <title>Ingeniería de software orientada a ojetivos con UML, Java e Internet</title>
+  </titleInfo>
+  <name type="personal">
+    <namePart>Weitzenfeld, Alfredo</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="text">creator</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>text</typeOfResource>
+  <originInfo>
+    <place>
+      <placeTerm type="code" authority="marccountry">mx</placeTerm>
+    </place>
+    <place>
+      <placeTerm type="text">México, D. F</placeTerm>
+    </place>
+    <publisher>Thomson</publisher>
+    <dateIssued>2005</dateIssued>
+    <edition>1ra. ed.</edition>
+    <issuance>monographic</issuance>
+  </originInfo>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+  </language>
+  <physicalDescription>
+    <extent>xx, 678 p. : il.</extent>
+  </physicalDescription>
+  <abstract>&lt;p&gt;Dirigido a estudiantes universitarios y a profesionales en el área del desarrollo de software orientado a objetos. La obra refleja el interés de resaltar ciertos aspectos que en la actualidad tienen un significado muy especial. El Lenguaje de Modelo Unificado - UML Unified Modeling -. Lenguaje de programación de Java e Internet.&lt;/p&gt;</abstract>
+  <subject>
+    <topic>INFORMATICA</topic>
+  </subject>
+  <subject>
+    <topic>INGENIERIA DE PROGRAMAS INFORMATICOS</topic>
+  </subject>
+  <subject>
+    <topic>PROGRAMACION DE COMPUTADORAS</topic>
+  </subject>
+  <subject>
+    <topic>TECNOLOGIA</topic>
+  </subject>
+  <subject>
+    <geographic>DOCUMENTOS TEORICOS O METODOLOGICOS</geographic>
+  </subject>
+  <classification authority="ddc">005.1 436ing</classification>
+  <identifier type="isbn">9706861904</identifier>
+  <recordInfo>
+    <recordContentSource authority="marcorg">AR-LpoUNG</recordContentSource>
+    <recordCreationDate encoding="marc">191001</recordCreationDate>
+    <recordChangeDate encoding="iso8601">20210131233135.0</recordChangeDate>
+    <recordIdentifier source="AR-LpoUNG">PT23247</recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>
