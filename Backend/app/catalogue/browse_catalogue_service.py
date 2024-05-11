@@ -8,16 +8,15 @@ class BrowseCatalogueService(DatabaseUser):
         result = self.query_database(
             """
             SELECT book.isbn, book.title, book.place, book.publisher, book.dateIssued,
-                   book.edition, book.abstract, book.description, book.ddcClass,
-                GROUP_CONCAT(DISTINCT author.name) AS authors,
-                GROUP_CONCAT(DISTINCT topic.topicName) AS topics
+                book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName) AS authors,
+                GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
-                LEFT JOIN author ON bookAuthor.authorName = author.name
                 LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
-                LEFT JOIN topic ON bookTopic.topic = topic.topicName
             WHERE book.isbn = ?
-            GROUP BY book.isbn, book.title, book.place, book.publisher, book.dateIssued, book.edition;
+            GROUP BY book.isbn, book.title, book.place, book.publisher, book.dateIssued,
+                    book.edition, book.abstract, book.description, book.ddcClass;
             """,
             (isbn,),
         )
@@ -33,15 +32,14 @@ class BrowseCatalogueService(DatabaseUser):
         result = self.query_multiple_rows(
             f"""
             SELECT book.isbn, book.title, book.place, book.publisher, book.dateIssued,
-                   book.edition, book.abstract, book.description, book.ddcClass,
-                GROUP_CONCAT(DISTINCT author.name) AS authors,
-                GROUP_CONCAT(DISTINCT topic.topicName) AS topics
+                book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName) AS authors,
+                GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
-                LEFT JOIN author ON bookAuthor.authorName = author.name
                 LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
-                LEFT JOIN topic ON bookTopic.topic = topic.topicName
-            GROUP BY book.isbn, book.title, book.place, book.publisher, book.dateIssued, book.edition
+            GROUP BY book.isbn, book.title, book.place, book.publisher, book.dateIssued,
+                    book.edition, book.abstract, book.description, book.ddcClass
             LIMIT {page_size} OFFSET {page_number*page_size};
             """,
             tuple(),
