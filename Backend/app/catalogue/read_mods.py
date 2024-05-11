@@ -56,9 +56,13 @@ class ReadMod:
 
         return self._query_xml("./mods:dateIssued/text()", self._origin_info)[0]
 
-    def _get_edition(self) -> str:
+    def _get_edition(self) -> str | None:
+        edition_element = self._query_xml("./mods:edition/text()", self._origin_info)
 
-        return self._query_xml("./mods:edition/text()", self._origin_info)[0]
+        if len(edition_element) == 0:
+            return None
+
+        return edition_element[0]
 
     def _get_abstract(self) -> str | None:
         abstract = self._query_xml("./mods:abstract/text()")

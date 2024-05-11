@@ -8,7 +8,7 @@ class MarcBookData(BaseModel):
     place: str
     publisher: str
     date_issued: str
-    edition: str
+    edition: str | None
     abstract: str | None
     description: str
     ddc_class: str

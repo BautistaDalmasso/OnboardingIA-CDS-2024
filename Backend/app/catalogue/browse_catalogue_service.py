@@ -4,7 +4,7 @@ from app.database.database_user import DatabaseUser
 
 class BrowseCatalogueService(DatabaseUser):
 
-    def browse_by_isbn(self, isbn: str) -> MarcBookData:
+    def browse_by_isbn(self, isbn: str) -> MarcBookData | None:
         result = self.query_database(
             """
             SELECT book.isbn, book.title, book.place, book.publisher, book.dateIssued,
@@ -22,7 +22,32 @@ class BrowseCatalogueService(DatabaseUser):
             (isbn,),
         )
 
+        if result is None:
+            return None
+
         return create_marc_book_data(result)
+
+    def browse_books_by_page(
+        self, page_size: int, page_number: int
+    ) -> list[MarcBookData]:
+        result = self.query_multiple_rows(
+            f"""
+            SELECT book.isbn, book.title, book.place, book.publisher, book.dateIssued,
+                   book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT author.name) AS authors,
+                GROUP_CONCAT(DISTINCT topic.topicName) AS topics
+            FROM book
+                LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN author ON bookAuthor.authorName = author.name
+                LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
+                LEFT JOIN topic ON bookTopic.topic = topic.topicName
+            GROUP BY book.isbn, book.title, book.place, book.publisher, book.dateIssued, book.edition
+            LIMIT {page_size} OFFSET {page_number*page_size};
+            """,
+            tuple(),
+        )
+
+        return [create_marc_book_data(book_data) for book_data in result]
 
 
 def create_marc_book_data(query_result) -> MarcBookData:

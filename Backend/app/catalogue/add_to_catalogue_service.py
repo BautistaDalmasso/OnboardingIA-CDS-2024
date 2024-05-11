@@ -1,3 +1,4 @@
+from app.file_paths import CATALOGUE_PATH
 from app.catalogue.read_mods import ReadMod
 from app.catalogue.book_models import MarcBookData
 from app.database.database_user import DatabaseUser
@@ -66,3 +67,11 @@ class AddToCatalogueService(DatabaseUser):
                 """INSERT INTO bookTopic (isbn, topic) VALUES (?, ?)""",
                 (isbn, topic),
             )
+
+
+def run():
+    service = AddToCatalogueService(CATALOGUE_PATH)
+
+    while True:
+        url = input("url: ")
+        service.add_book_by_url(url)
