@@ -15,13 +15,13 @@ from ..user.user_dtos import (
 )
 from app.licence_levels.licence_service import LicenceService
 
+from app.file_paths import LIBRARY_DB_PATH
+from app.file_paths import DATABASE_PATH, CATALOGUE_PATH
+
 router = APIRouter(prefix="/loans", tags=["Loan"])
 
-from app.file_paths import LIBRARY_DB_PATH
-from app.file_paths import DATABASE_PATH
-
 loan_service = LoanService(DATABASE_PATH, LIBRARY_DB_PATH)
-licence_service = LicenceService(DATABASE_PATH, LIBRARY_DB_PATH)
+licence_service = LicenceService(DATABASE_PATH, CATALOGUE_PATH)
 
 
 @router.post("/borrow", response_model=PhysicalCopyData)

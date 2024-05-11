@@ -14,6 +14,8 @@ export class LibraryService {
         method: "GET",
       });
 
+      console.log(books)
+
       return books;
     } catch (error) {
       console.error("Error fetching books:", error);

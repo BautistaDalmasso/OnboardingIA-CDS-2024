@@ -47,6 +47,10 @@ class BrowseCatalogueService(DatabaseUser):
 
         return [create_marc_book_data(book_data) for book_data in result]
 
+    def get_number_of_books(self) -> int:
+
+        return self.query_database("SELECT count(*) FROM book", tuple())[0]
+
 
 def create_marc_book_data(query_result) -> MarcBookData:
     return MarcBookData(

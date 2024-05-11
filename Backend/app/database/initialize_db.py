@@ -43,6 +43,15 @@ def initialize_database(db_path: Path) -> None:
     )
 
     execute_in_database(
+        """CREATE TABLE IF NOT EXISTS bookInventory
+            (isbn TEXT,
+             inventoryNumber INTEGER,
+             PRIMARY KEY (isbn, inventoryNumber))""",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
         """CREATE TABLE IF NOT EXISTS loans
                 (isbn TEXT,
                 copyId TEXT,
