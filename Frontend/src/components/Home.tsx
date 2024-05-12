@@ -13,6 +13,7 @@ import { useContextState } from "../ContexState";
 import { ConnectionService } from "../services/connectionService";
 import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
+import * as ExpoDlib from "expo-dlib";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -188,6 +189,7 @@ const Home = ({ navigation }: Props) => {
               ¡U! no tienes conexion a Internet :'(
             </Text>
             <Text>Por favor verifica tu conexion a Internet.</Text>
+            <Text>{ExpoDlib.hello()}</Text>
             <Text style={styles.noConnSubtitle}>
               {" "}
               Igual puedes Ingresar a SKYNET :D
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   title: {
-    marginTop: 200,
+    marginTop: 300,
     fontSize: 40,
     fontWeight: "bold",
     color: "#48bce4",
