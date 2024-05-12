@@ -24,6 +24,12 @@ def initialize_database(db_path: Path) -> None:
     )
 
     execute_in_database(
+        "CREATE INDEX IF NOT EXISTS email_index ON users(email);",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
         """CREATE TABLE IF NOT EXISTS deviceRSAS
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     email TEXT,
