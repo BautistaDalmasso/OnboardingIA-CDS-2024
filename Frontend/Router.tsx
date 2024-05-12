@@ -20,6 +20,7 @@ import BookList from "./src/components/BookList";
 import ShowLoans from "./src/components/ShowLoans";
 import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
+import CaptureQR from "./src/components/CaptureQR";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -94,6 +95,7 @@ const Router = () => {
             )}
           </>
         )}
+        <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
