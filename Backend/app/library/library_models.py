@@ -1,5 +1,8 @@
+from enum import auto
 from typing import Literal
 from pydantic import BaseModel
+
+from app.models import auto_index
 
 
 class BookData(BaseModel):
@@ -17,6 +20,13 @@ class BookData(BaseModel):
 
 
 class PhysicalCopyData(BaseModel):
+    inventoryNumber: int
     isbn: str
-    copy_id: str
     status: Literal["available"] | Literal["borrowed"]
+
+
+class PCDI(auto_index):
+    "Physical Copy Data Indexes"
+    inventoryNumber = auto()
+    isbn = auto()
+    status = auto()

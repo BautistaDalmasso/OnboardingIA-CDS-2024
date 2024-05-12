@@ -1,5 +1,6 @@
 import pytest
 
+from app.librarian.librarian_service import LibrarianService
 from app.loan_management.book_loans_service import LoanService
 from app.licence_levels.licence_service import LicenceService
 from app.library.library_service import LibraryService
@@ -45,14 +46,14 @@ def licence_req_service():
         TEST_DB_PATH.unlink()
 
 
-@pytest.fixture(scope="module")
-def loan_service():
-
-    initialize_library(LIBRARY_TEST_PATH)
+@pytest.fixture()
+def loan_librarian_service():
     initialize_db.initialize_database(TEST_DB_PATH)
 
     try:
-        yield LoanService(TEST_DB_PATH, LIBRARY_TEST_PATH)
+        yield (
+            LoanService(TEST_DB_PATH, CATALOGUE_PATH),
+            LibrarianService(TEST_DB_PATH),
+        )
     finally:
-        LIBRARY_TEST_PATH.unlink()
         TEST_DB_PATH.unlink()

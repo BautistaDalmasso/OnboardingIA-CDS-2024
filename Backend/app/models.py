@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
@@ -13,3 +14,8 @@ class User(BaseModel):
     faceId: Optional[str] = None
     licenceLevel: Optional[int] = None
     role: Optional[str] = None
+
+
+class auto_index(Enum):
+    def _generate_next_value_(name, start, count, last_values):
+        return count

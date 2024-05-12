@@ -1,6 +1,8 @@
 from enum import Enum, auto
 from pydantic import BaseModel
 
+from app.models import auto_index
+
 
 class MarcBookData(BaseModel):
     isbn: str
@@ -16,12 +18,7 @@ class MarcBookData(BaseModel):
     topics: list[str]
 
 
-class _auto(Enum):
-    def _generate_next_value_(name, start, count, last_values):
-        return count
-
-
-class MBDI(_auto):
+class MBDI(auto_index):
     """Marc Book Data Indices"""
 
     isbn = auto()
