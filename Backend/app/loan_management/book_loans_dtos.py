@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import auto
+from typing import Literal
 from pydantic import BaseModel
 
 from app.models import auto_index
@@ -32,3 +33,16 @@ class LoanDTO(BaseModel):
 class RequestedBookDTO(BaseModel):
     isbn: str
     user_email: str
+
+
+class PhysicalCopyDTO(BaseModel):
+    inventoryNumber: int
+    isbn: str
+    status: Literal["available"] | Literal["borrowed"]
+
+
+class PCDI(auto_index):
+    "Physical Copy Data Indexes"
+    inventoryNumber = auto()
+    isbn = auto()
+    status = auto()

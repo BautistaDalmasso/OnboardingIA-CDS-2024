@@ -1,15 +1,25 @@
 from enum import auto
 import sqlite3
 from app.models import auto_index
-from app.library.library_models import PCDI, PhysicalCopyData
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
-from app.library.library_service import BookNotFound, LibraryService, NoCopiesAvailable
-from .book_loans_dtos import LIDI, LoanDTO, LoanInformationDTO
+from .book_loans_dtos import PCDI, LoanDTO, LoanInformationDTO, PhysicalCopyDTO
 
 from pathlib import Path
 from app.database.database_user import DatabaseUser
 from typing import List
 from typing import Any
+
+
+class BookNotFound(Exception):
+    pass
+
+
+class NoCopiesAvailable(Exception):
+    pass
+
+
+class BookAlreadyReturned(Exception):
+    pass
 
 
 class LoanService(DatabaseUser):
@@ -33,7 +43,7 @@ class LoanService(DatabaseUser):
 
         return copy_data
 
-    def _find_available_copy_data(self, isbn) -> PhysicalCopyData:
+    def _find_available_copy_data(self, isbn) -> PhysicalCopyDTO:
 
         try:
             connection = sqlite3.connect(self._db_path)
@@ -52,7 +62,7 @@ class LoanService(DatabaseUser):
                     f"Book with isbn: {isbn} has no copies available."
                 )
 
-            copy_data = PhysicalCopyData(
+            copy_data = PhysicalCopyDTO(
                 inventoryNumber=data[PCDI.inventoryNumber.value],
                 isbn=data[PCDI.isbn.value],
                 status=data[PCDI.status.value],

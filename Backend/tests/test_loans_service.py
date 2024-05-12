@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from app.library.library_service import NoCopiesAvailable
+from app.loan_management.book_loans_service import NoCopiesAvailable
 from app.loan_management.book_loans_dtos import LoanDTO, RequestedBookDTO
 
 from tests.common_fixtures import loan_librarian_service

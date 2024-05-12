@@ -108,7 +108,6 @@ const BookList = () => {
         accessToken,
       );
       if (!response.detail) {
-        console.log(response);
         handleJSON({
           isbn: book.isbn,
           title: book.title,
