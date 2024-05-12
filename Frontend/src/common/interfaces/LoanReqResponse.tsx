@@ -4,9 +4,9 @@ export interface ILoanRequestResponse {
 }
 
 export interface ILoanInformationResponse {
-    id: number
-    inventory_number: number
-    title: string
-    expiration_date: Date
-    user_email: string
+  id: number;
+  inventory_number: number;
+  title: string;
+  expiration_date: Date;
+  user_email: string;
 }

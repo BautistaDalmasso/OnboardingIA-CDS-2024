@@ -138,18 +138,18 @@ const BookList = () => {
 
   const licenceLevelToStr = (licenceLevel: number) => {
     switch (licenceLevel) {
-        case LicenceLevel.NONE:
-            return LicenceName.NONE;
-        case LicenceLevel.REGULAR:
-            return LicenceName.REGULAR;
-        case LicenceLevel.TRUSTED:
-            return LicenceName.TRUSTED;
-        case LicenceLevel.RESEARCHER:
-            return LicenceName.RESEARCHER;
-        default:
-            return LicenceLevel.REGULAR;
+      case LicenceLevel.NONE:
+        return LicenceName.NONE;
+      case LicenceLevel.REGULAR:
+        return LicenceName.REGULAR;
+      case LicenceLevel.TRUSTED:
+        return LicenceName.TRUSTED;
+      case LicenceLevel.RESEARCHER:
+        return LicenceName.RESEARCHER;
+      default:
+        return LicenceLevel.REGULAR;
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -174,7 +174,9 @@ const BookList = () => {
               disabled={isBookRequested(book.book_data.isbn)}
             >
               <Text style={styles.buttonText}>
-                {isBookRequested(book.book_data.isbn) ? "Solicitado" : "Solicitar"}
+                {isBookRequested(book.book_data.isbn)
+                  ? "Solicitado"
+                  : "Solicitar"}
               </Text>
             </TouchableOpacity>
           </View>
