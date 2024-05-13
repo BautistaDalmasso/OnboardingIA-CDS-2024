@@ -198,15 +198,12 @@ class UserService(DatabaseUser):
         )
         try:
             self.execute_in_database(
-                """UPDATE users SET dni = ?, lastPermissionUpdate = DATETIME('now')
+                """UPDATE users
+                SET dni = ?, lastPermissionUpdate = DATETIME('now'), licenceLevel = ?
                             WHERE email = ?""",
-                (user.dni, token_data.email),
+                (user.dni, LicenceLevel.REGULAR, token_data.email),
             )
-            self.execute_in_database(
-                """UPDATE users SET licenceLevel = ?
-                            WHERE email = ?""",
-                (LicenceLevel.REGULAR, token_data.email),
-            )
+
             return {
                 "dni": user.dni,
                 "access_token": self.create_access_token(access_token_data),
