@@ -21,6 +21,7 @@ import ShowLoans from "./src/components/ShowLoans";
 import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
+import ViewQR from "./src/components/ViewQR";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -70,6 +71,7 @@ const Router = () => {
                     <Stack.Screen name={Routes.Licence} component={Profile} />
                   </>
                 )}
+                <Stack.Screen name={Routes.TempViewQr} component={ViewQR}/>
                 <Stack.Screen name={Routes.BookList} component={BookList} />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Drawer.Screen
