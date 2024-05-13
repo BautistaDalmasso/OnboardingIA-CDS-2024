@@ -5,6 +5,7 @@ import Constants from "expo-constants";
 import { View, Image, StyleSheet, Dimensions } from "react-native";
 import { DownloadQrService } from "../services/downloadQrService";
 import { useContextState } from "../ContexState";
+import { ConnectionType } from "../common/enums/connectionType";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -15,27 +16,31 @@ const UserConfiguration = ({ navigation }: Props) => {
   const { contextState } = useContextState();
 
   useEffect(() => {
-    const downloadQr = async () => {
-      if (contextState.accessToken === null) {
-        throw Error("User not logged in");
+    const getQr = async () => {
+      let uri = "";
+
+      // if the user is online, search for possible updates to its qr code.
+      if (contextState.connectionType === ConnectionType.ONLINE) {
+        if (contextState.accessToken === null) {
+          throw Error("User not logged in");
+        }
+
+        console.log("Updating qr.");
+        await DownloadQrService.updateQrCode(contextState.accessToken);
       }
 
-      const qrDownload = await DownloadQrService.downloadQr(
-        contextState.accessToken,
-      );
+      uri = await DownloadQrService.getQrOffline();
 
-      console.log(qrDownload);
-
-      setQrUri(qrDownload.uri);
+      setQrUri(uri);
     };
 
-    downloadQr();
+    getQr();
   }, []);
 
   return (
     <View style={styles.container}>
       {qrUri !== null && (
-        <Image source={{ uri: qrUri }} style={styles.qrCode} />
+        <Image source={{ uri: qrUri, cache: "reload" }} style={styles.qrCode} />
       )}
     </View>
   );
