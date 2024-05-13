@@ -54,15 +54,7 @@ class UserService(DatabaseUser):
 
         if user:
             if self._pwd_context.verify(password, user.password):
-                return UserDTO(
-                    email=user.email,
-                    firstName=user.firstName,
-                    lastName=user.lastName,
-                    dni=user.dni,
-                    role=user.role,
-                    licenceLevel=user.licenceLevel,
-                    lastPermissionUpdate=user.lastPermissionUpdate,
-                )
+                return create_UserDTO(user)
 
     def create_access_token(self, data: TokenDataDTO):
         expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -210,3 +202,15 @@ class UserService(DatabaseUser):
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
+
+
+def create_UserDTO(user: User) -> UserDTO:
+    return UserDTO(
+        email=user.email,
+        firstName=user.firstName,
+        lastName=user.lastName,
+        dni=user.dni,
+        role=user.role,
+        licenceLevel=user.licenceLevel,
+        lastPermissionUpdate=user.lastPermissionUpdate,
+    )
