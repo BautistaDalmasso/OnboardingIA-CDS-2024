@@ -9,6 +9,7 @@ import { generateKeyPair } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
 import CustomTextInput from "./CustomTextInput";
+import { OfflineStorageService } from "../services/offlineStorageService";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -81,6 +82,7 @@ const Signup = ({ navigation }: Props) => {
         }));
         navigation.navigate(Routes.Home);
         Alert.alert("¡Usted ha sido registrado con exito!.");
+        await OfflineStorageService.storeLastUser(response.user);
 
         setName("");
         setLastName("");

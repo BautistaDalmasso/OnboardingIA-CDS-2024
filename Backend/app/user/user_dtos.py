@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -16,6 +17,7 @@ class UserDTO(BaseModel):
     dni: Optional[str] = None
     licenceLevel: Optional[int] = None
     role: Optional[str] = None
+    lastPermissionUpdate: datetime
 
 
 class LoginDTO(BaseModel):

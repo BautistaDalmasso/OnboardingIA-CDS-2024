@@ -28,8 +28,8 @@ class UserService(DatabaseUser):
 
         try:
             self.execute_in_database(
-                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel)
-                            VALUES (?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel, lastPermissionUpdate)
+                            VALUES (?, ?, ?, ?, ?, ?, DATETIME('now'))""",
                 (
                     user.firstName,
                     user.lastName,
@@ -61,6 +61,7 @@ class UserService(DatabaseUser):
                     dni=user.dni,
                     role=user.role,
                     licenceLevel=user.licenceLevel,
+                    lastPermissionUpdate=user.lastPermissionUpdate,
                 )
 
     def create_access_token(self, data: TokenDataDTO):
@@ -93,6 +94,7 @@ class UserService(DatabaseUser):
                 faceId=user_data[7],
                 licenceLevel=user_data[8],
                 role=user_data[9],
+                lastPermissionUpdate=user_data[10],
             )
             return user
 
@@ -196,7 +198,7 @@ class UserService(DatabaseUser):
         )
         try:
             self.execute_in_database(
-                """UPDATE users SET dni = ?
+                """UPDATE users SET dni = ?, lastPermissionUpdate = DATETIME('now')
                             WHERE email = ?""",
                 (user.dni, token_data.email),
             )

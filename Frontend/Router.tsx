@@ -71,7 +71,7 @@ const Router = () => {
                     <Stack.Screen name={Routes.Licence} component={Profile} />
                   </>
                 )}
-                <Stack.Screen name={Routes.TempViewQr} component={ViewQR}/>
+                <Stack.Screen name={Routes.TempViewQr} component={ViewQR} />
                 <Stack.Screen name={Routes.BookList} component={BookList} />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Drawer.Screen

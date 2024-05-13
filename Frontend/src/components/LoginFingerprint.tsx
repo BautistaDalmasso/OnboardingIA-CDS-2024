@@ -17,6 +17,7 @@ import { useContextState } from "../ContexState";
 import { encryptWithPrivateKey } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
+import { OfflineStorageService } from "../services/offlineStorageService";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -75,7 +76,9 @@ const LoginFingerprint = ({ navigation }: Props) => {
           accessToken: response.access_token,
           messages: [],
         }));
+
         navigation.navigate(Routes.Home);
+        await OfflineStorageService.storeLastUser(response.user);
         setEmail("");
       }
 

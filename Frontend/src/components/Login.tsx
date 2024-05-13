@@ -12,6 +12,7 @@ import { Routes } from "../../src/common/enums/routes";
 import { UserService } from "../services/userService";
 import { useContextState } from "../ContexState";
 import { ConnectionType } from "../common/enums/connectionType";
+import { OfflineStorageService } from "../services/offlineStorageService";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -47,7 +48,9 @@ const Login = ({ navigation }: Props) => {
           accessToken: response.access_token,
           messages: [],
         }));
+
         navigation.navigate(Routes.Home);
+        await OfflineStorageService.storeLastUser(response.user);
 
         setEmail("");
         setPassword("");

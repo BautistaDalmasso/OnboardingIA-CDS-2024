@@ -13,6 +13,7 @@ import {
   Alert,
 } from "react-native";
 import { ConnectionType } from "../common/enums/connectionType";
+import { OfflineStorageService } from "../services/offlineStorageService";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -38,10 +39,11 @@ const LoginFace = ({ navigation }: Props) => {
           accessToken: response.access_token,
           messages: [],
         }));
+
         navigation.navigate(Routes.Home);
+        await OfflineStorageService.storeLastUser(response.user);
 
         setEmail("");
-        navigation.navigate(Routes.Home);
       }
 
       if (response.detail) {

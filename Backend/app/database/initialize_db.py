@@ -18,7 +18,8 @@ def initialize_database(db_path: Path) -> None:
                     dni TEXT,
                     faceID TEXT,
                     licenceLevel INTEGER,
-                    role TEXT)""",
+                    role TEXT,
+                    lastPermissionUpdate DATE)""",
         tuple(),
         db_path,
     )
