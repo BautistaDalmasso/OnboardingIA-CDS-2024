@@ -8,6 +8,10 @@ class CreateUserDTO(BaseModel):
     lastName: str
     email: str
     password: str
+    dni: None = None
+    licenceLevel: None = None
+    role: None = None
+    lastPermissionUpdate: Optional[datetime] = None
 
 
 class UserDTO(BaseModel):

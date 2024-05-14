@@ -32,9 +32,9 @@ async def create_user(user: CreateUserDTO):
 
     access_token = user_service.create_access_token(
         TokenDataDTO(
-            email=result["email"],
-            role=result["role"],
-            licenceLevel=result["licenceLevel"],
+            email=result.email,
+            role=result.role,
+            licenceLevel=result.licenceLevel,
         )
     )
 

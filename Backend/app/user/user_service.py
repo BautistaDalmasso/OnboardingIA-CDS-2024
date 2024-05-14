@@ -14,7 +14,7 @@ from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
-from .user_dtos import TokenDataDTO, UpdateUserDniDTO, UserDTO
+from .user_dtos import CreateUserDTO, TokenDataDTO, UpdateUserDniDTO, UserDTO
 
 
 class UserService(DatabaseUser):
@@ -23,13 +23,14 @@ class UserService(DatabaseUser):
 
         self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    def create_user(self, user: User):
+    def create_user(self, user: CreateUserDTO):
         hashed_password = self._pwd_context.hash(user.password)
+        time = datetime.now()
 
         try:
             self.execute_in_database(
                 """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel, lastPermissionUpdate)
-                            VALUES (?, ?, ?, ?, ?, ?, DATETIME('now'))""",
+                            VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 (
                     user.firstName,
                     user.lastName,
@@ -37,15 +38,12 @@ class UserService(DatabaseUser):
                     hashed_password,
                     "basic",
                     LicenceLevel.NONE,
+                    time,
                 ),
             )
-            return {
-                "email": user.email,
-                "firstName": user.firstName,
-                "lastName": user.lastName,
-                "role": "basic",
-                "licenceLevel": LicenceLevel.NONE,
-            }
+
+            user.lastPermissionUpdate = time
+            return create_UserDTO(user)
         except sqlite3.IntegrityError:
             return {"error": "El email ya está registrado"}
 
@@ -191,9 +189,9 @@ class UserService(DatabaseUser):
         try:
             self.execute_in_database(
                 """UPDATE users
-                SET dni = ?, lastPermissionUpdate = DATETIME('now'), licenceLevel = ?
+                SET dni = ?, lastPermissionUpdate = ?, licenceLevel = ?
                             WHERE email = ?""",
-                (user.dni, LicenceLevel.REGULAR, token_data.email),
+                (user.dni, datetime.now(), LicenceLevel.REGULAR, token_data.email),
             )
 
             return {
