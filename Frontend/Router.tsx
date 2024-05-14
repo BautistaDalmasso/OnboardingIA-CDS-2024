@@ -10,7 +10,7 @@ import { Routes } from "./src/common/enums/routes";
 import ChatHeader from "./src/components/ChatHeader";
 import { useContextState } from "./src/ContexState";
 import Logout from "./src/components/Logout";
-import Profile from "./src/components/Profile";
+import RequestLicence from "./src/components/RequestLicence";
 import LoginFingerPrint from "./src/components/LoginFingerprint";
 import { ConnectionType } from "./src/common/enums/connectionType";
 import RegisterFace from "./src/components/RegisterFace";
@@ -68,7 +68,10 @@ const Router = () => {
                   </>
                 ) : (
                   <>
-                    <Stack.Screen name={Routes.Licence} component={Profile} />
+                    <Stack.Screen
+                      name={Routes.Licence}
+                      component={RequestLicence}
+                    />
                   </>
                 )}
                 <Stack.Screen name={Routes.TempViewQr} component={ViewQR} />

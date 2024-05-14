@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Image, View, Text, StyleSheet, ImageBackground } from "react-native";
 import { useContextState } from "../ContexState";
 
 const Licence = () => {
-  const [dni, setDni] = useState("");
-  const { contextState, setContextState } = useContextState();
+  const { contextState } = useContextState();
   const image = require("../assets/LicenceBack.png");
 
   return (

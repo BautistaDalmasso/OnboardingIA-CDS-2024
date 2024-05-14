@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../common/enums/routes";
 import {
@@ -13,13 +13,12 @@ import {
 import { useContextState } from "../ContexState";
 import { UserService } from "../services/userService";
 import { IUser } from "../common/interfaces/User";
-import Licence from "./Licence";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
-const Profile = ({ navigation }: Props) => {
+const RequestLicence = ({ navigation }: Props) => {
   const [dni, setDni] = useState("");
   const [showDniInput, setShowDniInput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
@@ -241,4 +240,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default RequestLicence;
