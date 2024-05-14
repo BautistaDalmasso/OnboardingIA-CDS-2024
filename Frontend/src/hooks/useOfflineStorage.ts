@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { offlineInformation } from "../common/enums/offlineInformation";
 import { IUser } from "../common/interfaces/User";
-import { IQrCodeInfo } from "../common/interfaces/QrCodeInfo";
+import { IQrCodeInfo, QrToggle } from "../common/interfaces/QrCodeInfo";
 
 const useOfflineStorage = () => {
   const storeLastUser = async (user: IUser) => {
@@ -21,10 +21,11 @@ const useOfflineStorage = () => {
     return null;
   };
 
-  const saveLastQrCodeInfo = async (user: IUser) => {
-    const qrCodeInfo = {
+  const saveLastQrCodeInfo = async (user: IUser, toggle: QrToggle) => {
+    const qrCodeInfo: IQrCodeInfo = {
       lastUpdate: user.lastPermissionUpdate,
       userEmail: user.email,
+      toggle: toggle,
     };
 
     await AsyncStorage.setItem(

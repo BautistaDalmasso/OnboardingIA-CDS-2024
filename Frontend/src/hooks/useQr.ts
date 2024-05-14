@@ -4,13 +4,12 @@ import { useContextState } from "../ContexState";
 import { DownloadQrService } from "../services/downloadQrService";
 import useOfflineStorage from "./useOfflineStorage";
 import { IUser } from "../common/interfaces/User";
+import { QrToggle } from "../common/interfaces/QrCodeInfo";
 
 const useQr = () => {
   const { contextState, setContextState } = useContextState();
   const { getLastQrCodeInfo, saveLastQrCodeInfo, getLastUser } =
     useOfflineStorage();
-
-  const qrCodeURI = FileSystem.documentDirectory + "qr.png";
 
   const getQrURI = async () => {
     const lastUser = await getLastUser();
@@ -26,25 +25,31 @@ const useQr = () => {
       throw new Error("Last user hasn't obtained a qr in this device.");
     }
 
-    return qrCodeURI;
+    return FileSystem.documentDirectory + lastQrCodeInfo.toggle + "qr.png";
   };
 
   const updateQrCode = async (access_token: string, user: IUser) => {
-    console.log(user.dni);
-
     if (user.dni === null) {
       return;
     }
+    let newToggle = QrToggle.A;
+
     const lastQrCodeInfo = await getLastQrCodeInfo();
+
+    if (lastQrCodeInfo !== null) {
+      newToggle =
+        lastQrCodeInfo.toggle === QrToggle.A ? QrToggle.B : QrToggle.A;
+    }
 
     const wasUpdated = await DownloadQrService.updateQrCode(
       user,
       lastQrCodeInfo,
       access_token,
+      newToggle,
     );
 
     if (wasUpdated) {
-      saveLastQrCodeInfo(user);
+      saveLastQrCodeInfo(user, newToggle);
     }
   };
 

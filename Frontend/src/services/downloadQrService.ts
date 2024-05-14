@@ -2,16 +2,16 @@ import * as FileSystem from "expo-file-system";
 
 import { ServerAddress } from "../common/consts/serverAddress";
 import { IUser } from "../common/interfaces/User";
-import { IQrCodeInfo } from "../common/interfaces/QrCodeInfo";
+import { IQrCodeInfo, QrToggle } from "../common/interfaces/QrCodeInfo";
 
 export class DownloadQrService {
   private static baseRoute: string = `${ServerAddress}qr`;
-  private static qrCodeURI = FileSystem.documentDirectory + "qr.png";
 
   static async updateQrCode(
     lastUser: IUser | null,
     lastQrCodeInfo: IQrCodeInfo | null,
     token: string,
+    qrToggle: QrToggle,
   ): Promise<boolean> {
     if (lastUser === null) {
       throw Error("User hasn't logged in properly.");
@@ -24,8 +24,7 @@ export class DownloadQrService {
       lastUser.email !== lastQrCodeInfo.userEmail ||
       lastUser.lastPermissionUpdate !== lastQrCodeInfo.lastUpdate
     ) {
-      console.log("downloading qr");
-      await this.downloadQr(token);
+      await this.downloadQr(token, qrToggle);
 
       return true;
     }
@@ -33,10 +32,10 @@ export class DownloadQrService {
     return false;
   }
 
-  static async downloadQr(token: string) {
+  static async downloadQr(token: string, toggle: QrToggle) {
     return FileSystem.downloadAsync(
       DownloadQrService.baseRoute,
-      DownloadQrService.qrCodeURI,
+      FileSystem.documentDirectory + toggle + "qr.png",
       {
         headers: {
           Authorization: `Bearer ${token}`,

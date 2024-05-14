@@ -71,6 +71,7 @@ const Router = () => {
                     <Stack.Screen name={Routes.Licence} component={Profile} />
                   </>
                 )}
+                <Stack.Screen name={Routes.TempViewQr} component={ViewQR} />
                 <Stack.Screen name={Routes.BookList} component={BookList} />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Drawer.Screen
@@ -90,13 +91,13 @@ const Router = () => {
           <>
             {contextState.connectionType == ConnectionType.OFFLINE && (
               <>
+                <Stack.Screen name={Routes.TempViewQr} component={ViewQR} />
                 <Stack.Screen name={Routes.ShowLoans} component={ShowLoans} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
           </>
         )}
-        <Stack.Screen name={Routes.TempViewQr} component={ViewQR} />
         <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
       </Drawer.Navigator>
     </NavigationContainer>
