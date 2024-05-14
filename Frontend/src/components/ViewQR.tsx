@@ -3,9 +3,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import Constants from "expo-constants";
 import { View, Image, StyleSheet, Dimensions } from "react-native";
-import { DownloadQrService } from "../services/downloadQrService";
-import { useContextState } from "../ContexState";
-import { ConnectionType } from "../common/enums/connectionType";
+import useQr from "../hooks/useQr";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -13,23 +11,11 @@ interface Props {
 
 const UserConfiguration = ({ navigation }: Props) => {
   const [qrUri, setQrUri] = useState<string | null>(null);
-  const { contextState } = useContextState();
+  const { getQrURI } = useQr();
 
   useEffect(() => {
     const getQr = async () => {
-      let uri = "";
-
-      // if the user is online, search for possible updates to its qr code.
-      if (contextState.connectionType === ConnectionType.ONLINE) {
-        if (contextState.accessToken === null) {
-          throw Error("User not logged in");
-        }
-
-        console.log("Updating qr.");
-        await DownloadQrService.updateQrCode(contextState.accessToken);
-      }
-
-      uri = await DownloadQrService.getQrOffline();
+      const uri = await getQrURI();
 
       setQrUri(uri);
     };

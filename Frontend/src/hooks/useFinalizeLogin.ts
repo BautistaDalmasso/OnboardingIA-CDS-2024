@@ -3,10 +3,12 @@ import { useContextState } from "../ContexState";
 import { ILoginResponse, IUser } from "../common/interfaces/User";
 import { ConnectionType } from "../common/enums/connectionType";
 import useOfflineStorage from "./useOfflineStorage";
+import useQr from "./useQr";
 
 const useFinalizeLogin = () => {
   const { setContextState } = useContextState();
   const { storeLastUser } = useOfflineStorage();
+  const { updateQrCode } = useQr();
 
   const finalizeLogin = async (loginResponse: ILoginResponse) => {
     if (loginResponse.access_token) {
@@ -27,16 +29,20 @@ const useFinalizeLogin = () => {
       return false;
     }
 
-    await fetchDataForOfflineUse(loginResponse.user);
+    await fetchDataForOfflineUse(
+      loginResponse.access_token,
+      loginResponse.user,
+    );
     return true;
   };
 
-  const fetchDataForOfflineUse = async (user: IUser) => {
-    await fetchQrCode(user);
+  const fetchDataForOfflineUse = async (access_token: string, user: IUser) => {
+    // TODO: also fetch user loans information.
+    await fetchQrCode(access_token, user);
   };
 
-  const fetchQrCode = async (user: IUser) => {
-    // TODO
+  const fetchQrCode = async (access_token: string, user: IUser) => {
+    await updateQrCode(access_token, user);
   };
 
   return {
