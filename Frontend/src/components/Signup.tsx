@@ -4,12 +4,11 @@ import * as SecureStore from "expo-secure-store";
 import { UserService } from "../services/userService";
 import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../common/enums/routes";
-import { useContextState } from "../ContexState";
 import { generateKeyPair } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
-import { ConnectionType } from "../common/enums/connectionType";
 import CustomTextInput from "./CustomTextInput";
 import { OfflineStorageService } from "../services/offlineStorageService";
+import useFinalizeLogin from "../hooks/useFinalizeLogin";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -21,8 +20,8 @@ const Signup = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { setContextState } = useContextState();
   const { authenticate, isBiometricAvailable } = useBiometrics();
+  const { finalizeLogin } = useFinalizeLogin();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -54,32 +53,11 @@ const Signup = ({ navigation }: Props) => {
         lastName,
       });
 
-      if (response.access_token) {
-        if (isBiometricAvailable) {
-          const autenticated = await authenticate();
-          if (!autenticated) return;
+      const loginSuccess = await finalizeLogin(response);
 
-          const { privateKey, publicKey } = generateKeyPair();
+      if (loginSuccess) {
+        await handleFingerPrintRegistration(response.access_token);
 
-          await UserService.updatePublicKey(
-            JSON.stringify(publicKey),
-            response.access_token,
-            email,
-          );
-
-          await SecureStore.setItemAsync(
-            "privateKey",
-            JSON.stringify(privateKey),
-          );
-        }
-
-        setContextState((state) => ({
-          ...state,
-          user: response.user,
-          connectionType: ConnectionType.ONLINE,
-          accessToken: response.access_token,
-          messages: [],
-        }));
         navigation.navigate(Routes.Home);
         Alert.alert("¡Usted ha sido registrado con exito!.");
         await OfflineStorageService.storeLastUser(response.user);
@@ -89,12 +67,29 @@ const Signup = ({ navigation }: Props) => {
         setEmail("");
         setPassword("");
       }
-
-      if (response.detail) Alert.alert("Error", response.detail);
     } catch (error) {
       console.error("Error saving user data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFingerPrintRegistration = async (access_token: string) => {
+    if (isBiometricAvailable) {
+      const autenticated = await authenticate();
+      if (!autenticated) {
+        return;
+      }
+
+      const { privateKey, publicKey } = generateKeyPair();
+
+      await UserService.updatePublicKey(
+        JSON.stringify(publicKey),
+        access_token,
+        email,
+      );
+
+      await SecureStore.setItemAsync("privateKey", JSON.stringify(privateKey));
     }
   };
 
