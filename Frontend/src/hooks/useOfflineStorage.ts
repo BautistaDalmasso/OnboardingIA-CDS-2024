@@ -3,15 +3,15 @@ import { offlineInformation } from "../common/enums/offlineInformation";
 import { IUser } from "../common/interfaces/User";
 import { IQrCodeInfo } from "../common/interfaces/QrCodeInfo";
 
-export class OfflineStorageService {
-  static async storeLastUser(user: IUser) {
+const useOfflineStorage = () => {
+  const storeLastUser = async (user: IUser) => {
     await AsyncStorage.setItem(
       offlineInformation.LAST_USER,
       JSON.stringify(user),
     );
-  }
+  };
 
-  static async getLastUser(): Promise<IUser | null> {
+  const getLastUser = async (): Promise<IUser | null> => {
     const user = await AsyncStorage.getItem(offlineInformation.LAST_USER);
 
     if (user !== null) {
@@ -19,10 +19,10 @@ export class OfflineStorageService {
     }
 
     return null;
-  }
+  };
 
-  static async saveLastQrCodeInfo(user: IUser) {
-    const qrCodeInfo: IQrCodeInfo = {
+  const saveLastQrCodeInfo = async (user: IUser) => {
+    const qrCodeInfo = {
       lastUpdate: user.lastPermissionUpdate,
       userEmail: user.email,
     };
@@ -31,9 +31,9 @@ export class OfflineStorageService {
       offlineInformation.QR_CODE_INFO,
       JSON.stringify(qrCodeInfo),
     );
-  }
+  };
 
-  static async getLastQrCodeInfo(): Promise<IQrCodeInfo | null> {
+  const getLastQrCodeInfo = async (): Promise<IQrCodeInfo | null> => {
     const qrCodeInfo = await AsyncStorage.getItem(
       offlineInformation.QR_CODE_INFO,
     );
@@ -43,5 +43,14 @@ export class OfflineStorageService {
     }
 
     return null;
-  }
-}
+  };
+
+  return {
+    storeLastUser,
+    getLastUser,
+    saveLastQrCodeInfo,
+    getLastQrCodeInfo,
+  };
+};
+
+export default useOfflineStorage;

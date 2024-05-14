@@ -2,35 +2,17 @@ import * as FileSystem from "expo-file-system";
 
 import { ServerAddress } from "../common/consts/serverAddress";
 import { IUser } from "../common/interfaces/User";
-import { OfflineStorageService } from "./offlineStorageService";
+import { IQrCodeInfo } from "../common/interfaces/QrCodeInfo";
 
 export class DownloadQrService {
   private static baseRoute: string = `${ServerAddress}qr`;
   private static qrCodeURI = FileSystem.documentDirectory + "qr.png";
 
-  static async getQrOffline(): Promise<string> {
-    const lastUser = await OfflineStorageService.getLastUser();
-    const lastQrCodeInfo = await OfflineStorageService.getLastQrCodeInfo();
-
-    if (lastUser === null) {
-      throw new Error("No user has logged in this device.");
-    }
-    if (lastQrCodeInfo === null) {
-      throw new Error("No user has obtained a qr in this device.");
-    }
-    if (lastUser.email !== lastQrCodeInfo.userEmail) {
-      throw new Error("Last user hasn't obtained a qr in this device.");
-    }
-
-    return this.qrCodeURI;
-  }
-
-  static async updateQrCode(token: string): Promise<void> {
-    const lastUser = await OfflineStorageService.getLastUser();
-    const lastQrCodeInfo = await OfflineStorageService.getLastQrCodeInfo();
-
-    console.log(lastUser);
-    console.log(lastQrCodeInfo);
+  static async updateQrCode(
+    lastUser: IUser | null,
+    lastQrCodeInfo: IQrCodeInfo | null,
+    token: string,
+  ): Promise<boolean> {
     if (lastUser === null) {
       throw Error("User hasn't logged in properly.");
     }
@@ -43,9 +25,12 @@ export class DownloadQrService {
       lastUser.lastPermissionUpdate !== lastQrCodeInfo.lastUpdate
     ) {
       console.log("downloading qr");
-      OfflineStorageService.saveLastQrCodeInfo(lastUser);
       await this.downloadQr(token);
+
+      return true;
     }
+
+    return false;
   }
 
   static async downloadQr(token: string) {

@@ -1,11 +1,12 @@
 import { Alert } from "react-native";
 import { useContextState } from "../ContexState";
-import { ILoginResponse } from "../common/interfaces/User";
-import { OfflineStorageService } from "../services/offlineStorageService";
+import { ILoginResponse, IUser } from "../common/interfaces/User";
 import { ConnectionType } from "../common/enums/connectionType";
+import useOfflineStorage from "./useOfflineStorage";
 
 const useFinalizeLogin = () => {
-  const { contextState, setContextState } = useContextState();
+  const { setContextState } = useContextState();
+  const { storeLastUser } = useOfflineStorage();
 
   const finalizeLogin = async (loginResponse: ILoginResponse) => {
     if (loginResponse.access_token) {
@@ -17,7 +18,7 @@ const useFinalizeLogin = () => {
         messages: [],
       }));
 
-      await OfflineStorageService.storeLastUser(loginResponse.user);
+      await storeLastUser(loginResponse.user);
     }
 
     if (loginResponse.detail) {
@@ -26,7 +27,16 @@ const useFinalizeLogin = () => {
       return false;
     }
 
+    await fetchDataForOfflineUse(loginResponse.user);
     return true;
+  };
+
+  const fetchDataForOfflineUse = async (user: IUser) => {
+    await fetchQrCode(user);
+  };
+
+  const fetchQrCode = async (user: IUser) => {
+    // TODO
   };
 
   return {
