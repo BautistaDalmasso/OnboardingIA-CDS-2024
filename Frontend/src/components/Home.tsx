@@ -11,7 +11,6 @@ import {
 import { Routes } from "../common/enums/routes";
 import { useContextState } from "../ContexState";
 import { ConnectionService } from "../services/connectionService";
-import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
 import useOfflineAuth from "../hooks/useOfflineAuth";
 
@@ -21,7 +20,6 @@ interface Props {
 
 const Home = ({ navigation }: Props) => {
   const { contextState, setContextState } = useContextState();
-  const { authenticate } = useBiometrics();
   const { offlineAuthenticate } = useOfflineAuth();
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
@@ -80,10 +78,14 @@ const Home = ({ navigation }: Props) => {
 
     const successReconnect = await setConnection();
 
-    if (successReconnect) {
-      navigation.navigate(Routes.Logout);
-    } else {
+    if (!successReconnect) {
       Alert.alert("Reconexión fallida.");
+    }
+    if (
+      successReconnect &&
+      contextState.connectionType === ConnectionType.OFFLINE
+    ) {
+      navigation.navigate(Routes.Logout);
     }
     setLoading(false);
   };
