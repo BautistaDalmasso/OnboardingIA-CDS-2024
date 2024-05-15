@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -7,6 +8,10 @@ class CreateUserDTO(BaseModel):
     lastName: str
     email: str
     password: str
+    dni: None = None
+    licenceLevel: int = 0
+    role: str = "basic"
+    lastPermissionUpdate: Optional[datetime] = None
 
 
 class UserDTO(BaseModel):
@@ -15,7 +20,8 @@ class UserDTO(BaseModel):
     email: str
     dni: Optional[str] = None
     licenceLevel: Optional[int] = None
-    role: Optional[str] = None
+    role: Optional[str] = "basic"
+    lastPermissionUpdate: datetime
 
 
 class LoginDTO(BaseModel):
@@ -41,4 +47,4 @@ class UpdateUserDniDTO(BaseModel):
 class TokenDataDTO(BaseModel):
     email: str
     role: Optional[str] = "basic"
-    licenceLevel: Optional[int] = 0
+    licenceLevel: int = 0

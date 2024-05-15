@@ -10,8 +10,7 @@ import {
 import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../../src/common/enums/routes";
 import { UserService } from "../services/userService";
-import { useContextState } from "../ContexState";
-import { ConnectionType } from "../common/enums/connectionType";
+import useFinalizeLogin from "../hooks/useFinalizeLogin";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -21,7 +20,7 @@ const Login = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { setContextState } = useContextState();
+  const { finalizeLogin } = useFinalizeLogin();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -39,29 +38,15 @@ const Login = ({ navigation }: Props) => {
 
       const response = await UserService.login(email, password);
 
-      if (response.access_token) {
-        setContextState((state) => ({
-          ...state,
-          user: response.user,
-          connectionType: ConnectionType.ONLINE,
-          accessToken: response.access_token,
-          messages: [],
-        }));
-        navigation.navigate(Routes.Home);
+      const loginSuccess = await finalizeLogin(response);
 
+      if (loginSuccess) {
+        navigation.navigate(Routes.Home);
         setEmail("");
         setPassword("");
-        return response.access_token;
       }
-
-      if (response.detail) {
-        Alert.alert("Error", response.detail);
-      }
-
-      return null;
     } catch (error) {
       console.error("Error logging in:", error);
-      return null;
     } finally {
       setLoading(false);
     }

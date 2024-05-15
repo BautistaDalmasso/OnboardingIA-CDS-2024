@@ -14,7 +14,7 @@ from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
-from .user_dtos import TokenDataDTO, UpdateUserDniDTO, UserDTO
+from .user_dtos import CreateUserDTO, TokenDataDTO, UpdateUserDniDTO, UserDTO
 
 
 class UserService(DatabaseUser):
@@ -23,13 +23,14 @@ class UserService(DatabaseUser):
 
         self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    def create_user(self, user: User):
+    def create_user(self, user: CreateUserDTO):
         hashed_password = self._pwd_context.hash(user.password)
+        time = datetime.now()
 
         try:
             self.execute_in_database(
-                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel)
-                            VALUES (?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel, lastPermissionUpdate)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 (
                     user.firstName,
                     user.lastName,
@@ -37,15 +38,12 @@ class UserService(DatabaseUser):
                     hashed_password,
                     "basic",
                     LicenceLevel.NONE,
+                    time,
                 ),
             )
-            return {
-                "email": user.email,
-                "firstName": user.firstName,
-                "lastName": user.lastName,
-                "role": "basic",
-                "licenceLevel": LicenceLevel.NONE,
-            }
+
+            user.lastPermissionUpdate = time
+            return create_UserDTO(user)
         except sqlite3.IntegrityError:
             return {"error": "El email ya está registrado"}
 
@@ -54,14 +52,7 @@ class UserService(DatabaseUser):
 
         if user:
             if self._pwd_context.verify(password, user.password):
-                return UserDTO(
-                    email=user.email,
-                    firstName=user.firstName,
-                    lastName=user.lastName,
-                    dni=user.dni,
-                    role=user.role,
-                    licenceLevel=user.licenceLevel,
-                )
+                return create_UserDTO(user)
 
     def create_access_token(self, data: TokenDataDTO):
         expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -93,6 +84,7 @@ class UserService(DatabaseUser):
                 faceId=user_data[7],
                 licenceLevel=user_data[8],
                 role=user_data[9],
+                lastPermissionUpdate=user_data[10],
             )
             return user
 
@@ -196,18 +188,27 @@ class UserService(DatabaseUser):
         )
         try:
             self.execute_in_database(
-                """UPDATE users SET dni = ?
+                """UPDATE users
+                SET dni = ?, lastPermissionUpdate = ?, licenceLevel = ?
                             WHERE email = ?""",
-                (user.dni, token_data.email),
+                (user.dni, datetime.now(), LicenceLevel.REGULAR, token_data.email),
             )
-            self.execute_in_database(
-                """UPDATE users SET licenceLevel = ?
-                            WHERE email = ?""",
-                (LicenceLevel.REGULAR, token_data.email),
-            )
+
             return {
                 "dni": user.dni,
                 "access_token": self.create_access_token(access_token_data),
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
+
+
+def create_UserDTO(user: User) -> UserDTO:
+    return UserDTO(
+        email=user.email,
+        firstName=user.firstName,
+        lastName=user.lastName,
+        dni=user.dni,
+        role=user.role,
+        licenceLevel=user.licenceLevel,
+        lastPermissionUpdate=user.lastPermissionUpdate,
+    )

@@ -9,7 +9,10 @@ export interface IUser {
   firstName: string;
   lastName: string;
   email: string;
-  dni?: string;
+  dni: null | string;
+  licenceLevel: null | number;
+  role: null | string;
+  lastPermissionUpdate: Date;
 }
 
 export interface ILoginResponse {
