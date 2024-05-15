@@ -13,6 +13,7 @@ import { useContextState } from "../ContexState";
 import { ConnectionService } from "../services/connectionService";
 import useBiometrics from "../hooks/useBiometrics";
 import { ConnectionType } from "../common/enums/connectionType";
+import useOfflineAuth from "../hooks/useOfflineAuth";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -21,6 +22,7 @@ interface Props {
 const Home = ({ navigation }: Props) => {
   const { contextState, setContextState } = useContextState();
   const { authenticate } = useBiometrics();
+  const { offlineAuthenticate } = useOfflineAuth();
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -33,8 +35,11 @@ const Home = ({ navigation }: Props) => {
         ...state,
         isConnected: response,
       }));
+
+      return response;
     } catch (error) {
       console.error("Error:", error);
+      return false;
     }
   };
 
@@ -72,8 +77,12 @@ const Home = ({ navigation }: Props) => {
 
   const handleReconnect = async () => {
     setLoading(true);
-    await setConnection();
-    if (!contextState.isConnected) {
+
+    const successReconnect = await setConnection();
+
+    if (successReconnect) {
+      navigation.navigate(Routes.Logout);
+    } else {
       Alert.alert("Reconexión fallida.");
     }
     setLoading(false);
@@ -82,14 +91,10 @@ const Home = ({ navigation }: Props) => {
   const handleOfflineAuth = async () => {
     setLoading(true);
 
-    const successBiometric = await authenticate();
+    const successOfflineAuth = await offlineAuthenticate();
 
-    if (successBiometric) {
-      setContextState((state) => ({
-        ...state,
-        connectionType: ConnectionType.OFFLINE,
-        userOffline: true,
-      }));
+    if (successOfflineAuth) {
+      // TODO: make a nicer offline home screen instead.
       navigation.navigate(Routes.ShowLoans);
     }
 

@@ -9,7 +9,6 @@ interface State {
   accessToken: string | null;
   messages: IMessage[];
   isConnected: boolean;
-  updateQr: boolean;
 }
 
 const defaultState: State = {
@@ -18,7 +17,6 @@ const defaultState: State = {
   accessToken: null,
   messages: [],
   isConnected: false,
-  updateQr: false,
 };
 
 const ContextState = createContext({});

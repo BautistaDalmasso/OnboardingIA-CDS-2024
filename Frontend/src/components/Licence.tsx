@@ -1,10 +1,27 @@
 import React from "react";
-import { Image, View, Text, StyleSheet, ImageBackground } from "react-native";
+import {
+  Image,
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
 import { useContextState } from "../ContexState";
+import { NavigationProp } from "@react-navigation/native";
+import { Routes } from "../common/enums/routes";
 
-const Licence = () => {
+interface Props {
+  navigation: NavigationProp<any, any>;
+}
+
+const Licence = ({ navigation }: Props) => {
   const { contextState } = useContextState();
   const image = require("../assets/LicenceBack.png");
+
+  function handleNavigateQR(): void {
+    navigation.navigate(Routes.ViewQr);
+  }
 
   return (
     <View style={styles.containerBack}>
@@ -13,6 +30,7 @@ const Licence = () => {
           <View style={styles.header}>
             <Text style={styles.title}>CARNET VIRTUAL</Text>
           </View>
+
           <View style={styles.containerLicence}>
             <View style={styles.containerProfile}>
               <View style={styles.containerData}>
@@ -53,6 +71,14 @@ const Licence = () => {
               </View>
             </View>
           </View>
+
+          {/* TODO: prettier button. */}
+          <TouchableOpacity
+            onPress={handleNavigateQR}
+            style={styles.linkContainer}
+          >
+            <Text style={styles.linkText}>Ver QR</Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </View>
@@ -199,6 +225,16 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 10,
     padding: 10,
+  },
+  linkContainer: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignSelf: "center",
+  },
+  linkText: {
+    color: "blue",
+    textDecorationLine: "underline",
+    fontSize: 16,
   },
 });
 
