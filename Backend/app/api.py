@@ -8,11 +8,12 @@ from app.loan_management.books_router import router as books_router
 from app.database.initialize_db import initialize_database
 from app.server_config import ServerConfig
 from app.user.user_router import router as user_router
-from app.file_paths import DATABASE_PATH, LIBRARY_DB_PATH
+from app.file_paths import DATABASE_PATH
 from app.facial_recognition.facial_recognition_router import (
     router as facial_recognition_router,
 )
 from app.qr_code.qr_code_router import router as qr_code_router
+from app.librarian.librarian_router import router as librarian_router
 
 
 class QuestionRequest(BaseModel):
@@ -38,6 +39,7 @@ app.include_router(facial_recognition_router)
 app.include_router(books_router)
 app.include_router(book_loans_router)
 app.include_router(qr_code_router)
+app.include_router(librarian_router)
 
 
 @app.get("/ping")
