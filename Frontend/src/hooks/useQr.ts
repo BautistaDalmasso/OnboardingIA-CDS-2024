@@ -53,9 +53,28 @@ const useQr = () => {
     }
   };
 
+  const forceUpdateQr = async (access_token: string, user: IUser | null) => {
+    if (user === null) {
+      throw new Error("User is not properly logged in.");
+    }
+    let newToggle = QrToggle.A;
+
+    const lastQrCodeInfo = await getLastQrCodeInfo();
+
+    if (lastQrCodeInfo !== null) {
+      newToggle =
+        lastQrCodeInfo.toggle === QrToggle.A ? QrToggle.B : QrToggle.A;
+    }
+
+    await DownloadQrService.downloadQr(access_token, newToggle);
+
+    saveLastQrCodeInfo(user, newToggle);
+  };
+
   return {
     getQrURI,
     updateQrCode,
+    forceUpdateQr,
   };
 };
 

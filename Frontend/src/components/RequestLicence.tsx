@@ -13,6 +13,7 @@ import {
 import { useContextState } from "../ContexState";
 import { UserService } from "../services/userService";
 import { IUser } from "../common/interfaces/User";
+import useQr from "../hooks/useQr";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -23,6 +24,7 @@ const RequestLicence = ({ navigation }: Props) => {
   const [showDniInput, setShowDniInput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const { contextState, setContextState } = useContextState();
+  const { forceUpdateQr } = useQr();
 
   const handleLicenceNavigation = () => {
     navigation.navigate(Routes.Carnet);
@@ -49,6 +51,7 @@ const RequestLicence = ({ navigation }: Props) => {
         dni,
         contextState.accessToken as string,
       );
+
       setContextState((state) => ({
         ...state,
         accessToken: result.access_token,
@@ -57,6 +60,9 @@ const RequestLicence = ({ navigation }: Props) => {
           dni,
         } as IUser,
       }));
+
+      await forceUpdateQr(result.access_token, contextState.user);
+
       setShowDniInput(false);
       Keyboard.dismiss();
       Alert.alert("¡Felicidades!", "A solicitado su carnet con exito");
