@@ -14,6 +14,7 @@ from app.file_paths import DATABASE_PATH, LIBRARY_DB_PATH
 from app.facial_recognition.facial_recognition_router import (
     router as facial_recognition_router,
 )
+from app.qr_code.qr_code_router import router as qr_code_router
 from app.library import library_db
 
 
@@ -39,6 +40,7 @@ app.include_router(user_router)
 app.include_router(facial_recognition_router)
 app.include_router(library_router)
 app.include_router(book_loans_router)
+app.include_router(qr_code_router)
 
 
 @app.get("/ping")

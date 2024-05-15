@@ -16,7 +16,7 @@ import { UserService } from "../services/userService";
 import { useContextState } from "../ContexState";
 import { encryptWithPrivateKey } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
-import { ConnectionType } from "../common/enums/connectionType";
+import useFinalizeLogin from "../hooks/useFinalizeLogin";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -27,6 +27,7 @@ const LoginFingerprint = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(false);
   const { setContextState } = useContextState();
   const { authenticate } = useBiometrics();
+  const { finalizeLogin } = useFinalizeLogin();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -67,20 +68,11 @@ const LoginFingerprint = ({ navigation }: Props) => {
         challengeResult,
       );
 
-      if (response.access_token) {
-        setContextState((state) => ({
-          ...state,
-          user: response.user,
-          connectionType: ConnectionType.ONLINE,
-          accessToken: response.access_token,
-          messages: [],
-        }));
-        navigation.navigate(Routes.Home);
-        setEmail("");
-      }
+      const loginSuccess = await finalizeLogin(response);
 
-      if (response.detail) {
-        Alert.alert("Error", response.detail);
+      if (loginSuccess) {
+        setEmail("");
+        navigation.navigate(Routes.Home);
       }
     } catch (error) {
       console.error("Error logging in:", error);

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
-from app.user.user_service import UserService
+from app.user.user_service import UserService, create_UserDTO
 from app.file_paths import DATABASE_PATH
 
 
@@ -32,9 +32,9 @@ async def create_user(user: CreateUserDTO):
 
     access_token = user_service.create_access_token(
         TokenDataDTO(
-            email=result["email"],
-            role=result["role"],
-            licenceLevel=result["licenceLevel"],
+            email=result.email,
+            role=result.role,
+            licenceLevel=result.licenceLevel,
         )
     )
 
@@ -93,14 +93,10 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
     access_token = user_service.create_access_token(
         TokenDataDTO(email=user.email, role=user.role, licenceLevel=user.licenceLevel)
     )
+
     return {
         "access_token": access_token,
-        "user": {
-            "email": user.email,
-            "firstName": user.firstName,
-            "lastName": user.lastName,
-            "dni": user.dni,
-        },
+        "user": create_UserDTO(user),
     }
 
 
@@ -108,11 +104,7 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
     user_data: TokenDataDTO = await verify_token(token.credentials)
 
-    print(user)
-
     result = user_service.upgrade_to_regular_licence(user, user_data)
-
-    print(result)
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])

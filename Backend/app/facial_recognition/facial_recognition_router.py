@@ -39,4 +39,4 @@ async def login_face_recognition(user_email: str, face: UploadFile):
                 email=user.email, role=user.role, licenceLevel=user.licenceLevel
             )
         )
-        return {"access_token": access_token, "user": user}
+        return {"access_token": access_token, "user": user_service.create_UserDTO(user)}

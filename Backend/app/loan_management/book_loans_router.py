@@ -6,7 +6,6 @@ from app.loan_management.book_loans_service import LoanService
 from app.loan_management.book_loans_dtos import (
     LoanDTO,
     LoanInformationDTO,
-    RequestedBookDTO,
 )
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
