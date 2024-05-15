@@ -1,7 +1,7 @@
 import requests
 from lxml import etree
 
-from app.catalogue.book_models import MarcBookData
+from app.catalogue.book_models import BookContributor, MarcBookData
 
 
 class ReadMod:
@@ -79,15 +79,25 @@ class ReadMod:
 
         return self._query_xml("//mods:classification/text()")[0]
 
-    def _get_authors(self) -> list[str]:
+    def _get_authors(self) -> list[BookContributor]:
         authors = []
 
         author_elements = self._query_xml("//mods:name")
 
         for author_element in author_elements:
-            name_parts = self._query_xml("./mods:namePart/text()", author_element)
-            author_name = " ".join(name_parts)
-            authors.append(author_name)
+            name_parts = self._query_xml("./mods:namePart/text()", author_element)[0]
+            role_parts = self._query_xml(
+                "./mods:role/mods:roleTerm/text()", author_element
+            )
+
+            if len(role_parts) == 0:
+                role = None
+            else:
+                role = role_parts[0]
+
+            book_contributor = BookContributor(name=name_parts, role=role)
+
+            authors.append(book_contributor)
 
         return authors
 

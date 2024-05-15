@@ -1,4 +1,4 @@
-from app.catalogue.book_models import MBDI, MarcBookData
+from app.catalogue.book_models import MBDI, BookContributor, MarcBookData
 from app.database.database_user import DatabaseUser
 
 
@@ -9,7 +9,7 @@ class BrowseCatalogueService(DatabaseUser):
             """
             SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                 book.edition, book.abstract, book.description, book.ddcClass,
-                GROUP_CONCAT(DISTINCT bookAuthor.authorName) AS authors,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '')) AS authors,
                 GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
@@ -34,7 +34,7 @@ class BrowseCatalogueService(DatabaseUser):
             f"""
             SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                 book.edition, book.abstract, book.description, book.ddcClass,
-                GROUP_CONCAT(DISTINCT bookAuthor.authorName) AS authors,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '')) AS authors,
                 GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
@@ -70,12 +70,19 @@ def create_marc_book_data(query_result) -> MarcBookData:
     )
 
 
-def split_authors(authors_string: str) -> list[str]:
+def split_authors(authors_string: str) -> list[BookContributor]:
     authors = authors_string.split(",")
 
     grouped_authors = [",".join(authors[i : i + 2]) for i in range(0, len(authors), 2)]
 
-    return grouped_authors
+    book_contributors = []
+
+    for author_info in grouped_authors:
+        name_role = author_info.split("~~")
+        role = None if name_role[1] == "" else name_role[1]
+        book_contributors.append(BookContributor(name=name_role[0], role=name_role[1]))
+
+    return book_contributors
 
 
 def split_topics(topics_string: str) -> list[str]:

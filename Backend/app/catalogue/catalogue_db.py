@@ -27,10 +27,12 @@ def initialize_database(db_path: Path):
         db_path,
     )
 
+    # TODO: authors can have multiple roles (specially in cases like "creator-edition" or "creator-compilation")
     execute_in_database(
         """CREATE TABLE IF NOT EXISTS bookAuthor
                             (isbn TEXT,
                              authorName TEXT,
+                             role TEXT,
                              FOREIGN KEY (isbn) REFERENCES book(isbn),
                              FOREIGN KEY (authorName) REFERENCES author(name),
                              PRIMARY KEY (isbn, authorName))""",

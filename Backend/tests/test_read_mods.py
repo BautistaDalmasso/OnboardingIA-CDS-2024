@@ -55,7 +55,17 @@ def test_read_ddc_class(alf_read_mod):
 def test_multiple_authors(alf_read_mod):
     authors = alf_read_mod._get_authors()
 
-    assert set(authors) == set(
+    author_names = []
+
+    for author in authors:
+        if author.name == "Borges, Jorge Luis":
+            assert author.role == "creator"
+        elif author.name in ("Bioy Casares, Adolfo", "Ocampo, Silvina"):
+            assert author.role == None
+
+        author_names.append(author.name)
+
+    assert set(author_names) == set(
         ["Borges, Jorge Luis", "Bioy Casares, Adolfo", "Ocampo, Silvina"]
     )
 

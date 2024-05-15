@@ -4,6 +4,11 @@ from pydantic import BaseModel
 from app.models import auto_index
 
 
+class BookContributor(BaseModel):
+    name: str
+    role: str | None
+
+
 class MarcBookData(BaseModel):
     isbn: str
     title: str
@@ -14,7 +19,7 @@ class MarcBookData(BaseModel):
     abstract: str | None
     description: str
     ddc_class: str
-    authors: list[str]
+    authors: list[BookContributor]
     topics: list[str]
 
 

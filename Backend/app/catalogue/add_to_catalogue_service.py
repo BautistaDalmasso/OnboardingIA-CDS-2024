@@ -1,6 +1,6 @@
 from app.file_paths import CATALOGUE_PATH
 from app.catalogue.read_mods import ReadMod
-from app.catalogue.book_models import MarcBookData
+from app.catalogue.book_models import BookContributor, MarcBookData
 from app.database.database_user import DatabaseUser
 
 
@@ -41,17 +41,17 @@ class AddToCatalogueService(DatabaseUser):
             ),
         )
 
-    def _insert_authors(self, isbn: str, authors: list[str]) -> None:
+    def _insert_authors(self, isbn: str, authors: list[BookContributor]) -> None:
 
         for author in authors:
             self.execute_in_database(
                 "INSERT OR IGNORE INTO author (name) VALUES (?)",
-                (author,),
+                (author.name,),
             )
 
             self.execute_in_database(
-                """INSERT INTO bookAuthor (isbn, authorName) VALUES (?, ?)""",
-                (isbn, author),
+                """INSERT INTO bookAuthor (isbn, authorName, role) VALUES (?, ?, ?)""",
+                (isbn, author.name, author.role),
             )
 
     def _insert_publisher(self, isbn: str, publisher: str) -> None:
