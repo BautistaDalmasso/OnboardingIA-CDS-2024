@@ -14,6 +14,7 @@ class AddToCatalogueService(DatabaseUser):
     def add_book(self, book_data: MarcBookData) -> None:
         self._insert_book(book_data)
         self._insert_authors(book_data.isbn, book_data.authors)
+        self._insert_publisher(book_data.isbn, book_data.publisher)
         self._insert_topics(book_data.isbn, book_data.topics)
 
     def _insert_book(self, book_data: MarcBookData) -> None:
@@ -22,18 +23,16 @@ class AddToCatalogueService(DatabaseUser):
                     (isbn,
                     title,
                     place,
-                    publisher,
                     dateIssued,
                     edition,
                     abstract,
                     description,
                     ddcClass)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 book_data.isbn,
                 book_data.title,
                 book_data.place,
-                book_data.publisher,
                 book_data.date_issued,
                 book_data.edition,
                 book_data.abstract,
@@ -54,6 +53,18 @@ class AddToCatalogueService(DatabaseUser):
                 """INSERT INTO bookAuthor (isbn, authorName) VALUES (?, ?)""",
                 (isbn, author),
             )
+
+    def _insert_publisher(self, isbn: str, publisher: str) -> None:
+
+        self.execute_in_database(
+            """INSERT OR IGNORE INTO publisher (publisherName) VALUES (?)""",
+            (publisher,),
+        )
+        self.execute_in_database(
+            """INSERT OR IGNORE INTO bookPublisher (isbn, publisher)
+                            VALUES (?, ?)""",
+            (isbn, publisher),
+        )
 
     def _insert_topics(self, isbn: str, topics: list[str]) -> None:
 

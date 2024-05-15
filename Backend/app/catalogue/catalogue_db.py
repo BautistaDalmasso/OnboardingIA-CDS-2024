@@ -11,7 +11,6 @@ def initialize_database(db_path: Path):
                            (isbn TEXT PRIMARY KEY,
                             title TEXT,
                             place TEXT,
-                            publisher TEXT,
                             dateIssued TEXT,
                             edition TEXT,
                             abstract TEXT,
@@ -39,12 +38,42 @@ def initialize_database(db_path: Path):
         db_path,
     )
     execute_in_database(
-        "CREATE INDEX idx_bookAuthor_isbn_authorName ON bookAuthor (isbn, authorName)",
+        "CREATE INDEX IF NOT EXISTS idx_bookAuthor_isbn_authorName ON bookAuthor (isbn, authorName)",
         tuple(),
         db_path,
     )
     execute_in_database(
-        "CREATE INDEX idx_bookAuthor_authorName_isbn ON bookAuthor (authorName, isbn)",
+        "CREATE INDEX IF NOT EXISTS idx_bookAuthor_authorName_isbn ON bookAuthor (authorName, isbn)",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
+        """CREATE TABLE IF NOT EXISTS publisher
+                            (publisherName TEXT PRIMARY KEY)""",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
+        """CREATE TABLE IF NOT EXISTS bookPublisher
+                            (isbn TEXT,
+                             publisher TEXT,
+                             FOREIGN KEY (isbn) REFERENCES book(isbn),
+                             FOREIGN KEY (publisher) REFERENCES publisher(publisherName),
+                             PRIMARY KEY (isbn, publisher))""",
+        tuple(),
+        db_path,
+    )
+    execute_in_database(
+        """CREATE INDEX IF NOT EXISTS idx_bookPublisher_isbn_publisher
+                            ON bookPublisher (isbn, publisher)""",
+        tuple(),
+        db_path,
+    )
+    execute_in_database(
+        """CREATE INDEX IF NOT EXISTS idx_bookPublisher_publisher_isbn
+                            ON bookPublisher (publisher, isbn)""",
         tuple(),
         db_path,
     )
@@ -67,12 +96,12 @@ def initialize_database(db_path: Path):
         db_path,
     )
     execute_in_database(
-        "CREATE INDEX idx_bookTopic_isbn_topic ON bookTopic (isbn, topic)",
+        "CREATE INDEX IF NOT EXISTS idx_bookTopic_isbn_topic ON bookTopic (isbn, topic)",
         tuple(),
         db_path,
     )
     execute_in_database(
-        "CREATE INDEX idx_bookTopic_topic_isbn ON bookTopic (topic, isbn)",
+        "CREATE INDEX IF NOT EXISTS idx_bookTopic_topic_isbn ON bookTopic (topic, isbn)",
         tuple(),
         db_path,
     )

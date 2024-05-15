@@ -7,15 +7,16 @@ class BrowseCatalogueService(DatabaseUser):
     def browse_by_isbn(self, isbn: str) -> MarcBookData | None:
         result = self.query_database(
             """
-            SELECT book.isbn, book.title, book.place, book.publisher, book.dateIssued,
+            SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                 book.edition, book.abstract, book.description, book.ddcClass,
                 GROUP_CONCAT(DISTINCT bookAuthor.authorName) AS authors,
                 GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
                 LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
             WHERE book.isbn = ?
-            GROUP BY book.isbn, book.title, book.place, book.publisher, book.dateIssued,
+            GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                     book.edition, book.abstract, book.description, book.ddcClass;
             """,
             (isbn,),
@@ -31,14 +32,15 @@ class BrowseCatalogueService(DatabaseUser):
     ) -> list[MarcBookData]:
         result = self.query_multiple_rows(
             f"""
-            SELECT book.isbn, book.title, book.place, book.publisher, book.dateIssued,
+            SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                 book.edition, book.abstract, book.description, book.ddcClass,
                 GROUP_CONCAT(DISTINCT bookAuthor.authorName) AS authors,
                 GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
                 LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
-            GROUP BY book.isbn, book.title, book.place, book.publisher, book.dateIssued,
+            GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                     book.edition, book.abstract, book.description, book.ddcClass
             LIMIT {page_size} OFFSET {page_number*page_size};
             """,
