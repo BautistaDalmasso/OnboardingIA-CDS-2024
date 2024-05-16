@@ -1,5 +1,8 @@
-from app.library.library_service import LibraryService
-from .book_loans_dtos import LoanDTO, LoanInformationDTO
+from enum import auto
+import sqlite3
+from app.models import auto_index
+from app.catalogue.browse_catalogue_service import BrowseCatalogueService
+from .book_loans_dtos import PCDI, LoanDTO, LoanInformationDTO, PhysicalCopyDTO
 
 from pathlib import Path
 from app.database.database_user import DatabaseUser
@@ -7,21 +10,32 @@ from typing import List
 from typing import Any
 
 
+class BookNotFound(Exception):
+    pass
+
+
+class NoCopiesAvailable(Exception):
+    pass
+
+
+class BookAlreadyReturned(Exception):
+    pass
+
+
 class LoanService(DatabaseUser):
-    def __init__(self, db_path: Path, library_path: Path) -> None:
+    def __init__(self, db_path: Path, catalogue_path: Path) -> None:
         super().__init__(db_path)
-        self._library_service = LibraryService(library_path)
+        self._catalogue_service = BrowseCatalogueService(catalogue_path)
 
     def add_loan(self, book_request: LoanDTO):
         """Add a loan without requiring any confirmation."""
-        copy_data = self._library_service.borrow_book(book_request.isbn)
+        copy_data = self._find_available_copy_data(book_request.isbn)
 
         self.execute_in_database(
-            """INSERT INTO loans ( isbn, copyId, expirationDate, userEmail)
-                        VALUES (?, ?, ?, ?)""",
+            """INSERT INTO loan (inventoryNumber, expirationDate, userEmail)
+                        VALUES (?, ?, ?)""",
             (
-                copy_data.isbn,
-                copy_data.copy_id,
+                copy_data.inventoryNumber,
                 book_request.expiration_date,
                 book_request.user_email,
             ),
@@ -29,19 +43,76 @@ class LoanService(DatabaseUser):
 
         return copy_data
 
+    def _find_available_copy_data(self, isbn) -> PhysicalCopyDTO:
+
+        try:
+            connection = sqlite3.connect(self._db_path)
+            cursor = connection.cursor()
+
+            connection.execute("BEGIN")
+            cursor.execute(
+                """SELECT * FROM bookInventory
+                WHERE isbn = ? AND status = ?""",
+                (isbn, "available"),
+            )
+            data = cursor.fetchone()
+
+            if data is None:
+                raise NoCopiesAvailable(
+                    f"Book with isbn: {isbn} has no copies available."
+                )
+
+            copy_data = PhysicalCopyDTO(
+                inventoryNumber=data[PCDI.inventoryNumber.value],
+                isbn=data[PCDI.isbn.value],
+                status=data[PCDI.status.value],
+            )
+
+            cursor.execute(
+                """UPDATE bookInventory SET status = ? WHERE inventoryNumber = ?""",
+                ("borrowed", copy_data.inventoryNumber),
+            )
+
+            connection.commit()
+
+            copy_data.status = "borrowed"
+            return copy_data
+        except Exception as e:
+            connection.rollback()
+            print("Transaction rolled back due to error:", e)
+            raise e
+        finally:
+            cursor.close()
+            connection.close()
+
     def consult_book_loans_by_user_email(self, email: str) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(
-            """SELECT * FROM loans WHERE userEmail =?""",
+            """SELECT loan.*, bookInventory.isbn
+            FROM loan
+            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
+            WHERE loan.userEmail = ?""",
             (email,),
         )
+
         return [self.create_loan_data(entry) for entry in loans]
 
     def create_loan_data(self, db_entry: list[Any]) -> LoanInformationDTO:
-        book = self._library_service.consult_book_data(db_entry[0])
+        book = self._catalogue_service.browse_by_isbn(db_entry[CLBEI.isbn.value])
+
         return LoanInformationDTO(
-            isbn=db_entry[0],
+            id=db_entry[CLBEI.id.value],
             title=book.title,
-            copy_id=db_entry[1],
-            expiration_date=db_entry[2],
-            user_email=db_entry[3],
+            inventory_number=db_entry[CLBEI.inventory_number.value],
+            expiration_date=db_entry[CLBEI.expiration_date.value],
+            user_email=db_entry[CLBEI.user_email.value],
         )
+
+
+class CLBEI(auto_index):
+    """Consult Loans By Email Indexes"""
+
+    id = auto()
+    inventory_number = auto()
+    expiration_date = auto()
+    user_email = auto()
+    isbn = auto()

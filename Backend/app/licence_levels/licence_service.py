@@ -1,24 +1,35 @@
 from collections import defaultdict
 from pathlib import Path
-import random
 
-from app.licence_levels.licence_level import LicenceLevel, default_licence
-from app.library.library_models import BookData
-from app.library.library_service import LibraryService
+from pydantic import BaseModel
+
+from app.catalogue.book_models import MarcBookData
+from app.catalogue.browse_catalogue_service import BrowseCatalogueService
+from app.licence_levels.licence_level import default_licence
 from app.database.database_user import DatabaseUser
 
 
-class BookDataWithLicence(BookData):
+class BookDataWithLicence(BaseModel):
+    book_data: MarcBookData
     licence_required: int
+
+    def __hash__(self) -> int:
+        return hash(self.book_data.isbn)
+
+    def __eq__(self, other: "BookDataWithLicence") -> bool:
+        return (
+            isinstance(other, BookDataWithLicence)
+            and self.book_data.isbn == other.book_data.isbn
+        )
 
 
 class LicenceService(DatabaseUser):
-    def __init__(self, db_path: Path, library_db_path: Path) -> None:
+    def __init__(self, db_path: Path, catalogue_db: Path) -> None:
         super().__init__(db_path)
-        self._library_service = LibraryService(library_db_path)
+        self._catalogue_service = BrowseCatalogueService(catalogue_db)
 
     def consult_book_data(self, isbn: str) -> BookDataWithLicence | None:
-        book = self._library_service.consult_book_data(isbn)
+        book = self._catalogue_service.browse_by_isbn(isbn)
 
         if book is None:
             return None
@@ -42,7 +53,7 @@ class LicenceService(DatabaseUser):
         self, page_size: int, page_number: int
     ) -> list[BookDataWithLicence]:
         """Page numbering should start at 0"""
-        consulted_books = self._library_service.consult_books_by_page(
+        consulted_books = self._catalogue_service.browse_books_by_page(
             page_size, page_number
         )
         consulted_isbns = [book.isbn for book in consulted_books]
@@ -57,7 +68,7 @@ class LicenceService(DatabaseUser):
         ]
 
     def get_number_of_books(self) -> int:
-        return self._library_service.get_number_of_books()
+        return self._catalogue_service.get_number_of_books()
 
     def _query_multiple_isbns(self, isbns: list[str]):
         if len(isbns) == 0:
@@ -74,46 +85,11 @@ class LicenceService(DatabaseUser):
         )
         return consulted_licences
 
-    def fill_with_random_entries(self):
-        """
-        Not meant for production, very hacky, DELETES ALL ROWS FROM licenceRequirements,
-        fills all entries of the licenceRequirements with random licence levels.
 
-        Kill after a better solution has been found.
-        """
-        all_books = self._library_service.consult_all_books()
-        all_licences = self.query_multiple_rows(
-            """SELECT * FROM licenceRequirements""", tuple()
-        )
-
-        if len(all_books) != all_licences:
-            self.execute_in_database(
-                """DELETE FROM licenceRequirements""",
-                tuple(),
-            )
-            for book in all_books:
-                # Adjust weights for random selection
-                random_value = random.randint(
-                    1, 10
-                )  # Choose a random number between 1 and 10
-                if random_value <= 7:  # 70% chance for 1
-                    licence_level = 1
-                elif random_value <= 9:  # 20% chance for 2
-                    licence_level = 2
-                else:  # 10% chance for 3
-                    licence_level = 3
-
-                self.execute_in_database(
-                    """INSERT INTO licenceRequirements (isbn, licenceLevel)
-                      VALUES (?, ?)""",
-                    (book.isbn, licence_level),
-                )
-
-
-def create_book_with_licence(book: BookData, licence_level: int) -> BookDataWithLicence:
+def create_book_with_licence(
+    book_data: MarcBookData, licence_level: int
+) -> BookDataWithLicence:
     return BookDataWithLicence(
-        isbn=book.isbn,
-        title=book.title,
-        available_copies=book.available_copies,
+        book_data=book_data,
         licence_required=licence_level,
     )

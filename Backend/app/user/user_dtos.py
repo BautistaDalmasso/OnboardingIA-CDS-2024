@@ -9,8 +9,8 @@ class CreateUserDTO(BaseModel):
     email: str
     password: str
     dni: None = None
-    licenceLevel: None = None
-    role: None = None
+    licenceLevel: int = 0
+    role: str = "basic"
     lastPermissionUpdate: Optional[datetime] = None
 
 
@@ -20,7 +20,7 @@ class UserDTO(BaseModel):
     email: str
     dni: Optional[str] = None
     licenceLevel: Optional[int] = None
-    role: Optional[str] = None
+    role: Optional[str] = "basic"
     lastPermissionUpdate: datetime
 
 
@@ -47,4 +47,4 @@ class UpdateUserDniDTO(BaseModel):
 class TokenDataDTO(BaseModel):
     email: str
     role: Optional[str] = "basic"
-    licenceLevel: Optional[int] = 0
+    licenceLevel: int = 0

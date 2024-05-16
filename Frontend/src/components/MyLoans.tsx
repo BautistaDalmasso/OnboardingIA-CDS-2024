@@ -55,7 +55,7 @@ const MyLoans = () => {
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             {bookList.map((book) => (
               <BookCard
-                key={book.isbn}
+                key={book.inventory_number}
                 title={book.title}
                 dueDate={book.expiration_date}
               />

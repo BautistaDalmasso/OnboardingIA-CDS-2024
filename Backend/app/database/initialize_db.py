@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from app.librarian.librarian_service import LibrarianService
 from app.database.database_actions import execute_in_database
 
 
@@ -50,22 +51,47 @@ def initialize_database(db_path: Path) -> None:
     )
 
     execute_in_database(
-        """CREATE TABLE IF NOT EXISTS loans
-                (isbn TEXT,
-                copyId TEXT,
+        """CREATE TABLE IF NOT EXISTS bookInventory
+            (inventoryNumber INTEGER PRIMARY KEY AUTOINCREMENT,
+             isbn TEXT,
+             status TEXT)""",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
+        """CREATE INDEX IF NOT EXISTS idx_bookInventory_isbn
+        ON bookInventory (isbn)""",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
+        """CREATE TABLE IF NOT EXISTS loan
+                (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                inventoryNumber INTEGER,
                 expirationDate DATE,
                 userEmail TEXT,
-                PRIMARY KEY (isbn, expirationDate))""",
+                FOREIGN KEY (inventoryNumber) REFERENCES bookInventory(inventoryNumber),
+                FOREIGN KEY (userEmail) REFERENCES users(Email),
+                UNIQUE(inventoryNumber, expirationDate));""",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
+        """CREATE INDEX IF NOT EXISTS idx_loan_userEmail ON loan (userEmail);""",
         tuple(),
         db_path,
     )
 
     execute_in_database(
         """CREATE TABLE IF NOT EXISTS requested_books
-                (isbn TEXT,
-                copyId TEXT,
+                (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                inventoryNumber INTEGER,
                 userEmail TEXT,
-                PRIMARY KEY (isbn, userEmail))""",
+                FOREIGN KEY (inventoryNumber) REFERENCES bookInventory(inventoryNumber),
+                FOREIGN KEY (userEmail) REFERENCES users(Email))""",
         tuple(),
         db_path,
     )

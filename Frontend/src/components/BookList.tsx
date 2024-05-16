@@ -19,6 +19,7 @@ import {
 } from "../common/interfaces/Book";
 import { useContextState } from "../ContexState";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LicenceLevel, LicenceName } from "../common/enums/licenceLevels";
 
 //TODO: refactor
 const BookList = () => {
@@ -62,10 +63,10 @@ const BookList = () => {
       throw Error("User email is undefined.");
     }
     const requestData = {
-      isbn: book.isbn,
-      copy_id: book.available_copies.toString(),
+      isbn: book.book_data.isbn,
+      copy_id: 1,
       user_email: contextState.user?.email,
-      title: book.title,
+      title: book.book_data.title,
     };
 
     try {
@@ -77,7 +78,7 @@ const BookList = () => {
       if (response.detail) {
         Alert.alert("Error: diferente nivel de carnet");
       } else {
-        handleRequestButton(book.isbn);
+        handleRequestButton(book.book_data.isbn);
       }
     } catch {
       setRequestState("Error");
@@ -135,30 +136,47 @@ const BookList = () => {
     }
   };
 
+  const licenceLevelToStr = (licenceLevel: number) => {
+    switch (licenceLevel) {
+      case LicenceLevel.NONE:
+        return LicenceName.NONE;
+      case LicenceLevel.REGULAR:
+        return LicenceName.REGULAR;
+      case LicenceLevel.TRUSTED:
+        return LicenceName.TRUSTED;
+      case LicenceLevel.RESEARCHER:
+        return LicenceName.RESEARCHER;
+      default:
+        return LicenceLevel.REGULAR;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Libros</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {books.map((book) => (
-          <View key={book.isbn} style={styles.bookContainer}>
-            <Text style={styles.bookTitle}>{book.title}</Text>
+          <View key={book.book_data.isbn} style={styles.bookContainer}>
+            <Text style={styles.bookTitle}>{book.book_data.title}</Text>
             <Text style={styles.cardLevel}>
-              Carnet: {book.licence_required}
+              Carnet: {licenceLevelToStr(book.licence_required)}
             </Text>
             <TouchableOpacity
               style={[
                 styles.button,
                 {
-                  backgroundColor: isBookRequested(book.isbn)
+                  backgroundColor: isBookRequested(book.book_data.isbn)
                     ? "#ccc"
                     : "#007bff",
                 },
               ]}
               onPress={() => handleLoanRequest(book)}
-              disabled={isBookRequested(book.isbn)}
+              disabled={isBookRequested(book.book_data.isbn)}
             >
               <Text style={styles.buttonText}>
-                {isBookRequested(book.isbn) ? "Solicitado" : "Solicitar"}
+                {isBookRequested(book.book_data.isbn)
+                  ? "Solicitado"
+                  : "Solicitar"}
               </Text>
             </TouchableOpacity>
           </View>
