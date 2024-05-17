@@ -1,6 +1,5 @@
 import { NavigationProp } from "@react-navigation/native";
 import { FacialRecognitionService } from "../services/facialRecognitionService";
-import { useContextState } from "../ContexState";
 import Capture from "./Capture";
 import React, { useState } from "react";
 import { Routes } from "../common/enums/routes";
@@ -12,16 +11,16 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { ConnectionType } from "../common/enums/connectionType";
+import useFinalizeLogin from "../hooks/useFinalizeLogin";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const LoginFace = ({ navigation }: Props) => {
-  const { contextState, setContextState } = useContextState();
   const [email, setEmail] = useState("");
   const [capturing, setCapturing] = useState(false);
+  const { finalizeLogin } = useFinalizeLogin();
 
   const sendRegister = async (imageURI: string) => {
     try {
@@ -30,22 +29,12 @@ const LoginFace = ({ navigation }: Props) => {
         imageURI,
       );
 
-      if (response.access_token) {
-        setContextState((state) => ({
-          ...state,
-          user: response.user,
-          connectionType: ConnectionType.ONLINE,
-          accessToken: response.access_token,
-          messages: [],
-        }));
+      const loginSuccess = await finalizeLogin(response);
+
+      if (loginSuccess) {
         navigation.navigate(Routes.Home);
 
         setEmail("");
-        navigation.navigate(Routes.Home);
-      }
-
-      if (response.detail) {
-        Alert.alert("Error", response.detail);
       }
     } catch (error) {
       console.error("Error logging in:", error);

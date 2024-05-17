@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../common/enums/routes";
 import {
@@ -13,17 +13,18 @@ import {
 import { useContextState } from "../ContexState";
 import { UserService } from "../services/userService";
 import { IUser } from "../common/interfaces/User";
-import Licence from "./Licence";
+import useQr from "../hooks/useQr";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
-const Profile = ({ navigation }: Props) => {
+const RequestLicence = ({ navigation }: Props) => {
   const [dni, setDni] = useState("");
   const [showDniInput, setShowDniInput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const { contextState, setContextState } = useContextState();
+  const { forceUpdateQr } = useQr();
 
   const handleLicenceNavigation = () => {
     navigation.navigate(Routes.Carnet);
@@ -50,6 +51,7 @@ const Profile = ({ navigation }: Props) => {
         dni,
         contextState.accessToken as string,
       );
+
       setContextState((state) => ({
         ...state,
         accessToken: result.access_token,
@@ -58,6 +60,9 @@ const Profile = ({ navigation }: Props) => {
           dni,
         } as IUser,
       }));
+
+      await forceUpdateQr(result.access_token, contextState.user);
+
       setShowDniInput(false);
       Keyboard.dismiss();
       Alert.alert("¡Felicidades!", "A solicitado su carnet con exito");
@@ -241,4 +246,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default RequestLicence;

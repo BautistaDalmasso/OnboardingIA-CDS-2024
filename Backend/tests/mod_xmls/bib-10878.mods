@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.1" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-1.xsd">
+  <titleInfo>
+    <title>Antología de la literatura fantástica</title>
+  </titleInfo>
+  <name type="personal">
+    <namePart>Borges, Jorge Luis</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="text">creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Bioy Casares, Adolfo</namePart>
+  </name>
+  <name type="personal">
+    <namePart>Ocampo, Silvina</namePart>
+  </name>
+  <typeOfResource>text</typeOfResource>
+  <originInfo>
+    <place>
+      <placeTerm type="code" authority="marccountry">ag</placeTerm>
+    </place>
+    <place>
+      <placeTerm type="text">Buenos Aires</placeTerm>
+    </place>
+    <publisher>Debolsillo</publisher>
+    <dateIssued>2014</dateIssued>
+    <edition>9na. ed.</edition>
+    <issuance>monographic</issuance>
+  </originInfo>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+  </language>
+  <physicalDescription>
+    <extent>407 p. : il.</extent>
+  </physicalDescription>
+  <subject>
+    <topic>ARGENTINA</topic>
+  </subject>
+  <subject>
+    <topic>CUENTOS</topic>
+  </subject>
+  <subject>
+    <topic>LITERATURA</topic>
+  </subject>
+  <subject>
+    <geographic>DOCUMENTOS TEORICOS O METODOLOGICOS</geographic>
+  </subject>
+  <subject>
+    <topic>LITERATURA ARGENTINA</topic>
+  </subject>
+  <classification authority="ddc">A863 732ant</classification>
+  <identifier type="isbn">9789875662445</identifier>
+  <recordInfo>
+    <recordContentSource authority="marcorg">AR-LpoUNG</recordContentSource>
+    <recordCreationDate encoding="marc">191001</recordCreationDate>
+    <recordChangeDate encoding="iso8601">20210131231600.0</recordChangeDate>
+    <recordIdentifier source="AR-LpoUNG">PT53566</recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>

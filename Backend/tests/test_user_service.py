@@ -4,6 +4,9 @@ from app.user.user_dtos import CreateUserDTO
 
 from tests.common_fixtures import user_service
 
+# TODO: DeprecationWarning: The default datetime adapter is deprecated as of Python 3.12; see the sqlite3 documentation for suggested replacement recipes
+pytestmark = pytest.mark.filterwarnings("ignore")
+
 
 def test_user_is_created(user_service, user_1):
     user_service.create_user(user_1)

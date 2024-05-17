@@ -1,7 +1,19 @@
-export interface IBookWithLicence {
+export interface IMarcBook {
   isbn: string;
   title: string;
-  available_copies: number;
+  place: string;
+  publisher: string;
+  date_issued: string;
+  edition?: string;
+  abstract?: string;
+  description: string;
+  ddc_class: string;
+  authors: string[];
+  topics: string[];
+}
+
+export interface IBookWithLicence {
+  book_data: IMarcBook;
   licence_required: number;
 }
 

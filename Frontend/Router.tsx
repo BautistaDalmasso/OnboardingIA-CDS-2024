@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -10,15 +10,18 @@ import { Routes } from "./src/common/enums/routes";
 import ChatHeader from "./src/components/ChatHeader";
 import { useContextState } from "./src/ContexState";
 import Logout from "./src/components/Logout";
-import Profile from "./src/components/Profile";
+import RequestLicence from "./src/components/RequestLicence";
 import LoginFingerPrint from "./src/components/LoginFingerprint";
 import { ConnectionType } from "./src/common/enums/connectionType";
 import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
 import MyLoans from "./src/components/MyLoans";
-import BookList from "./src/components/BookList";
+import RequestLoans from "./src/components/RequestLoans";
 import ShowLoans from "./src/components/ShowLoans";
 import Licence from "./src/components/Licence";
+import UserConfiguration from "./src/components/UserConfiguration";
+import CaptureQR from "./src/components/CaptureQR";
+import ViewQR from "./src/components/ViewQR";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -62,17 +65,30 @@ const Router = () => {
                 {contextState.user.dni ? (
                   <>
                     <Stack.Screen name={Routes.Carnet} component={Licence} />
+                    <Drawer.Screen
+                      name={Routes.ViewQr}
+                      component={ViewQR}
+                      options={{ drawerItemStyle: { display: "none" } }}
+                    />
                   </>
                 ) : (
                   <>
-                    <Stack.Screen name={Routes.Licence} component={Profile} />
+                    <Stack.Screen
+                      name={Routes.Licence}
+                      component={RequestLicence}
+                    />
                   </>
                 )}
-                <Stack.Screen name={Routes.BookList} component={BookList} />
+                <Stack.Screen name={Routes.RequestLoans} component={RequestLoans} />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
-                <Stack.Screen
+                <Drawer.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}
+                  options={{ drawerItemStyle: { display: "none" } }}
+                />
+                <Stack.Screen
+                  name={Routes.UserConfiguration}
+                  component={UserConfiguration}
                 />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
@@ -82,12 +98,23 @@ const Router = () => {
           <>
             {contextState.connectionType == ConnectionType.OFFLINE && (
               <>
+                {contextState.user !== null && contextState.user.dni && (
+                  <>
+                    <Stack.Screen name={Routes.Carnet} component={Licence} />
+                    <Drawer.Screen
+                      name={Routes.ViewQr}
+                      component={ViewQR}
+                      options={{ drawerItemStyle: { display: "none" } }}
+                    />
+                  </>
+                )}
                 <Stack.Screen name={Routes.ShowLoans} component={ShowLoans} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
           </>
         )}
+        <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

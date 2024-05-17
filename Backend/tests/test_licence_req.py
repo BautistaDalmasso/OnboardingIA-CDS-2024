@@ -4,13 +4,13 @@ from tests.common_fixtures import licence_req_service
 
 
 def test_default_licence(licence_req_service):
-    book = licence_req_service.consult_book_data("978-987-8266-77-0")
+    book = licence_req_service.consult_book_data("9789875662445")
 
     assert book.licence_required == 1
 
 
 def test_correct_licence_fetched(licence_req_service):
-    isbn = "978-987-8266-77-0"
+    isbn = "9789875662445"
     execute_in_database(
         """INSERT INTO licenceRequirements (isbn, licenceLevel)
                       VALUES (?, ?)""",

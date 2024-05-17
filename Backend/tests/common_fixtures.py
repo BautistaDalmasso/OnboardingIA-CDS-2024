@@ -1,13 +1,12 @@
 import pytest
 
+from app.librarian.librarian_service import LibrarianService
 from app.loan_management.book_loans_service import LoanService
 from app.licence_levels.licence_service import LicenceService
-from app.library.library_service import LibraryService
 from app.facial_recognition.facial_recognition_service import FacialRecognitionService
 from app.user.user_service import UserService
 from app.database import initialize_db
-from app.file_paths import TEST_DB_PATH, LIBRARY_TEST_PATH
-from app.library.library_db import initialize_database as initialize_library
+from app.file_paths import CATALOGUE_PATH, TEST_DB_PATH, LIBRARY_TEST_PATH
 
 
 @pytest.fixture
@@ -26,35 +25,23 @@ def fr_service():
 
 
 @pytest.fixture
-def library_service():
-    initialize_library(LIBRARY_TEST_PATH)
-
-    try:
-        yield LibraryService(LIBRARY_TEST_PATH)
-    finally:
-        LIBRARY_TEST_PATH.unlink()
-
-
-@pytest.fixture
 def licence_req_service():
-    initialize_library(LIBRARY_TEST_PATH)
     initialize_db.initialize_database(TEST_DB_PATH)
 
     try:
-        yield LicenceService(TEST_DB_PATH, LIBRARY_TEST_PATH)
+        yield LicenceService(TEST_DB_PATH, CATALOGUE_PATH)
     finally:
-        LIBRARY_TEST_PATH.unlink()
         TEST_DB_PATH.unlink()
 
 
-@pytest.fixture(scope="module")
-def loan_service():
-
-    initialize_library(LIBRARY_TEST_PATH)
+@pytest.fixture()
+def loan_librarian_service():
     initialize_db.initialize_database(TEST_DB_PATH)
 
     try:
-        yield LoanService(TEST_DB_PATH, LIBRARY_TEST_PATH)
+        yield (
+            LoanService(TEST_DB_PATH, CATALOGUE_PATH),
+            LibrarianService(TEST_DB_PATH),
+        )
     finally:
-        LIBRARY_TEST_PATH.unlink()
         TEST_DB_PATH.unlink()
