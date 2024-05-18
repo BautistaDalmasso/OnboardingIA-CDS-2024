@@ -17,7 +17,6 @@ import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
 import MyLoans from "./src/components/MyLoans";
 import RequestLoans from "./src/components/RequestLoans";
-import ShowLoans from "./src/components/ShowLoans";
 import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
@@ -79,7 +78,10 @@ const Router = () => {
                     />
                   </>
                 )}
-                <Stack.Screen name={Routes.RequestLoans} component={RequestLoans} />
+                <Stack.Screen
+                  name={Routes.RequestLoans}
+                  component={RequestLoans}
+                />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Drawer.Screen
                   name={Routes.RegisterFace}
@@ -108,7 +110,7 @@ const Router = () => {
                     />
                   </>
                 )}
-                <Stack.Screen name={Routes.ShowLoans} component={ShowLoans} />
+                <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Stack.Screen name={Routes.Logout} component={Logout} />
               </>
             )}
