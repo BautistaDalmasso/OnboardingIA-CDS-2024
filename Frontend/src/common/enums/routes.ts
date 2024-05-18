@@ -11,7 +11,7 @@ export enum Routes {
   RegisterFace = "Registrar Rostro",
   MyLoans = "Préstamos solicitados",
   Carnet = "Mi Carnet",
-  BookList = "Solicitar préstamo",
+  RequestLoans = "Solicitar préstamo",
   ShowLoans = "Mis Préstamos",
   UserConfiguration = "Configuración",
   TempQr = "Escanear QR",

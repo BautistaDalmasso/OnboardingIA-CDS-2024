@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Button,
   Alert,
 } from "react-native";
 import { LibraryService } from "../services/LibraryService";
@@ -13,22 +12,22 @@ import { LoanService } from "../services/LoanManagementService";
 import {
   IRequestedBook,
   IBookWithLicence,
-  IBook,
-  ILoan,
   ILoanWithTitle,
 } from "../common/interfaces/Book";
 import { useContextState } from "../ContexState";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LicenceLevel, LicenceName } from "../common/enums/licenceLevels";
+import SearchBarComponent from "./SearchBar";
 
 //TODO: refactor
-const BookList = () => {
+const RequestLoans = () => {
   const [books, setBooks] = useState<IBookWithLicence[]>([]);
   const { contextState } = useContextState();
   const [requestState, setRequestState] = useState("");
-  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [requestedButton, setRequestedButton] = useState<string[]>([]);
-  const [requestedBooks, setRequestedBooks] = useState<ILoanWithTitle[]>([]);
+  const [requestedBooks] = useState<ILoanWithTitle[]>([]);
+  const [search, setSearch] = useState("");
+  const [searchPicker, setSearchPicker] = useState("title");
 
   const handleRequestedBook = (book: ILoanWithTitle) => {
     requestedBooks.push(book);
@@ -123,8 +122,6 @@ const BookList = () => {
     }
   };
 
-  /*
-   */
   const handleJSON = async (requestData: ILoanWithTitle) => {
     try {
       handleRequestedBook(requestData);
@@ -151,11 +148,32 @@ const BookList = () => {
     }
   };
 
+  const filteredBooks = books.filter((book) => {
+    switch (searchPicker) {
+      case "isbn":
+        return book.book_data.isbn.toLowerCase().includes(search.toLowerCase());
+      case "title":
+        return book.book_data.title
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      case "authors":
+        return book.book_data.authors.includes(search);
+      default:
+        return false;
+    }
+  });
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Libros</Text>
+      <SearchBarComponent
+        search={search}
+        setSearch={setSearch}
+        searchPicker={searchPicker}
+        setSearchPicker={setSearchPicker}
+      />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {books.map((book) => (
+        {filteredBooks.map((book) => (
           <View key={book.book_data.isbn} style={styles.bookContainer}>
             <Text style={styles.bookTitle}>{book.book_data.title}</Text>
             <Text style={styles.cardLevel}>
@@ -235,15 +253,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   scrollContent: {
-    paddingBottom: 80,
-  },
-  paginationContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 20,
-    paddingHorizontal: 10,
+    paddingBottom: 200,
   },
 });
 
-export default BookList;
+export default RequestLoans;

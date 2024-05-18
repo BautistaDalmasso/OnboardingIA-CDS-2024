@@ -11,8 +11,7 @@ import BookCard from "./BookCard";
 import { RequestedLoansService } from "../services/requestedLoansService";
 import { useContextState } from "../ContexState";
 import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
-
-//TODO: Loan interface
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Loan {
   isbn: string;
@@ -43,9 +42,28 @@ const MyLoans = () => {
     }
   };
 
+  const loadBooksFromAsyncStorage = async () => {
+    try {
+      const jsonData = await AsyncStorage.getItem("Loans");
+      if (!jsonData) {
+        console.log("No hay datos guardados en AsyncStorage.");
+        return;
+      }
+
+      const data = JSON.parse(jsonData);
+      setBookList(data);
+    } catch (error) {
+      console.error("Error al cargar los datos desde AsyncStorage:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchLoans();
-  }, []);
+    if (contextState.isConnected) {
+      fetchLoans();
+    } else {
+      loadBooksFromAsyncStorage();
+    }
+  }, [contextState.isConnected]);
 
   return (
     <View style={styles.container1}>
