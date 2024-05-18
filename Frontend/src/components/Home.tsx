@@ -97,7 +97,7 @@ const Home = ({ navigation }: Props) => {
 
     if (successOfflineAuth) {
       // TODO: make a nicer offline home screen instead.
-      navigation.navigate(Routes.ShowLoans);
+      navigation.navigate(Routes.MyLoans);
     }
 
     setLoading(false);
