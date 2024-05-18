@@ -18,6 +18,7 @@ import { useContextState } from "../ContexState";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LicenceLevel, LicenceName } from "../common/enums/licenceLevels";
 import SearchBarComponent from "./SearchBar";
+import BookListItem from "./BookListItem";
 
 //TODO: refactor
 const RequestLoans = () => {
@@ -133,21 +134,6 @@ const RequestLoans = () => {
     }
   };
 
-  const licenceLevelToStr = (licenceLevel: number) => {
-    switch (licenceLevel) {
-      case LicenceLevel.NONE:
-        return LicenceName.NONE;
-      case LicenceLevel.REGULAR:
-        return LicenceName.REGULAR;
-      case LicenceLevel.TRUSTED:
-        return LicenceName.TRUSTED;
-      case LicenceLevel.RESEARCHER:
-        return LicenceName.RESEARCHER;
-      default:
-        return LicenceLevel.REGULAR;
-    }
-  };
-
   const filteredBooks = books.filter((book) => {
     switch (searchPicker) {
       case "isbn":
@@ -174,29 +160,12 @@ const RequestLoans = () => {
       />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {filteredBooks.map((book) => (
-          <View key={book.book_data.isbn} style={styles.bookContainer}>
-            <Text style={styles.bookTitle}>{book.book_data.title}</Text>
-            <Text style={styles.cardLevel}>
-              Carnet: {licenceLevelToStr(book.licence_required)}
-            </Text>
-            <TouchableOpacity
-              style={[
-                styles.button,
-                {
-                  backgroundColor: isBookRequested(book.book_data.isbn)
-                    ? "#ccc"
-                    : "#007bff",
-                },
-              ]}
-              onPress={() => handleLoanRequest(book)}
-              disabled={isBookRequested(book.book_data.isbn)}
-            >
-              <Text style={styles.buttonText}>
-                {isBookRequested(book.book_data.isbn)
-                  ? "Solicitado"
-                  : "Solicitar"}
-              </Text>
-            </TouchableOpacity>
+          <View style={styles.bookContainer} key={book.book_data.isbn}>
+            <BookListItem
+              book={book}
+              isBookRequested={isBookRequested}
+              handleLoanRequest={handleLoanRequest}
+            />
           </View>
         ))}
       </ScrollView>
@@ -231,18 +200,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
+    width: "100%",
   },
   bookTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   cardLevel: {
     fontSize: 16,
     marginBottom: 10,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   button: {
-    backgroundColor: "#007bff",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
