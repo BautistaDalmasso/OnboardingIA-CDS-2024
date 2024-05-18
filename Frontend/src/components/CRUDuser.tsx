@@ -33,7 +33,6 @@ const CRUDuser = () => {
     { label: "Nombre", value: "Nombre" },
     { label: "Apellido", value: "Apellido" },
     { label: "DNI", value: "DNI" },
-    { label: "email", value: "email" },
   ];
 
   useFocusEffect(
@@ -128,14 +127,7 @@ const CRUDuser = () => {
       }
       await LibrarianService.updateDNI(email, inputValue);
     }
-    if (selectedValue === options[3].label) {
-      if (!emailRegex.test(inputValue)) {
-        Alert.alert("Error", "Por favor ingrese un correo valido.");
-        setInputValue("");
-        return;
-      }
-      await LibrarianService.updateEmail(email, inputValue);
-    }
+
     Alert.alert(
       "",
       "Se cambio el " + selectedValue + " del usuario exitosamente."

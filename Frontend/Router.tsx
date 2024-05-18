@@ -77,12 +77,15 @@ const Router = () => {
                       name={Routes.Licence}
                       component={RequestLicence}
                     />
+                    {contextState.user.role!='basic'&&
+                    <Stack.Screen name={Routes.CRUDuser} component={CRUDuser} />}
                   </>
                 )}
                 <Stack.Screen
                   name={Routes.RequestLoans}
                   component={RequestLoans}
                 />
+
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Drawer.Screen
                   name={Routes.RegisterFace}
@@ -118,7 +121,7 @@ const Router = () => {
           </>
         )}
         <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
-        <Stack.Screen name={Routes.CRUDuser} component={CRUDuser} />
+
       </Drawer.Navigator>
     </NavigationContainer>
   );

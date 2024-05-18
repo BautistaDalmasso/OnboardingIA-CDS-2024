@@ -52,13 +52,5 @@ export class LibrarianService {
     });
   }
 
-  static async updateEmail(
-    email: string,
-    new_email: string
-  ): Promise<IUserDTOs> {
-    return baseFetch<void, IUserDTOs>({
-      url: `${this.baseRoute}/librarian_update_email?user_email=${email}&new_user_email=${new_email}`,
-      method: "GET",
-    });
-  }
+
 }
