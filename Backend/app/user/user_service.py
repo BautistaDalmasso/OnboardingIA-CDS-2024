@@ -201,6 +201,69 @@ class UserService(DatabaseUser):
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
 
+    # -------------------------------------------
+    def delete_user(self, user_email: str) -> User:
+        try:
+            books_no_returned = self.query_database(
+                """SELECT * FROM loan WHERE userEmail = ? AND expirationDate >= date('now')""",
+                (user_email,),
+            )
+            queries = [
+                f"DELETE FROM users WHERE email = ?",
+                f"DELETE FROM deviceRSAS WHERE email = ?",
+                f"DELETE FROM requested_books WHERE userEmail = ?",
+            ]
+            if not books_no_returned:
+                for query in queries:
+                    self.execute_in_database(query, (user_email,))
+                return self.get_user_by_email(user_email)
+        except sqlite3.IntegrityError:
+            return {
+                "error": "No se pudo dar de baja el usuario, tiene que devolver libros prestados."
+            }
+
+    def update_licence(self, user_email: str, level: int) -> User:
+        try:
+            self.execute_in_database(
+                """UPDATE users SET licenceLevel = ? WHERE email = ?""",
+                (level, user_email),
+            )
+            return self.get_user_by_email(user_email)
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo actualizar el usuario"}
+
+    def update_name(self, user_email: str, new_user_name: str) -> User:
+        try:
+            self.execute_in_database(
+                """UPDATE users SET firstName = ? WHERE email = ?""",
+                (new_user_name, user_email),
+            )
+            return self.get_user_by_email(user_email)
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo actualizar el usuario"}
+
+    def update_lastName(self, user_email: str, new_user_lastName: str) -> User:
+        try:
+            self.execute_in_database(
+                """UPDATE users SET lastName = ? WHERE email = ?""",
+                (new_user_lastName, user_email),
+            )
+            return self.get_user_by_email(user_email)
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo actualizar el usuario"}
+
+    def update_dni(self, user_email: str, new_user_dni: str) -> User:
+        try:
+            self.execute_in_database(
+                """UPDATE users SET dni = ? WHERE email = ?""",
+                (new_user_dni, user_email),
+            )
+            return self.get_user_by_email(
+                user_email,
+            )
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo actualizar el usuario"}
+
 
 def create_UserDTO(user: User) -> UserDTO:
     return UserDTO(

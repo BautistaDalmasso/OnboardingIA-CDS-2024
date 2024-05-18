@@ -117,3 +117,42 @@ async def generate_device_UID(user_email: str):
     result = user_service.generate_new_uid(user_email)
 
     return result
+
+
+# ------------------------------------------------------------------------------
+@router.get("/librarian_consult_user")
+def consult_user_by_email(user_email: str):
+    user = user_service.get_user_by_email(user_email)
+    if not user:
+        raise HTTPException(status_code=401, detail="No es usuario")
+    return user
+
+
+@router.get("/librarian_delete_user")
+def delete_user_by_email(user_email: str):
+    return user_service.delete_user(user_email)
+
+
+@router.get("/librarian_update_license")
+async def update_license(user_email: str, level: int):
+    return user_service.update_licence(user_email, level)
+
+
+@router.get("/librarian_update_name")
+async def update_name(user_email: str, new_user_name: str):
+    return user_service.update_name(user_email, new_user_name)
+
+
+@router.get("/librarian_update_lastName")
+async def update_lastname(user_email: str, new_user_last_name: str):
+    return user_service.update_lastName(user_email, new_user_last_name)
+
+
+@router.get("/librarian_update_dni")
+async def update_dni(user_email: str, new_user_dni: str):
+    return user_service.update_dni(user_email, new_user_dni)
+
+
+@router.get("/librarian_update_email")
+async def update_email(user_email: str, new_user_email: str):
+    return user_service.update_email(user_email, new_user_email)
