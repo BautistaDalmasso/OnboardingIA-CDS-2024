@@ -34,7 +34,6 @@ const Router = () => {
         screenOptions={{ headerTitle: "", headerTransparent: true }}
       >
         <Drawer.Screen name={Routes.Home} component={Home} />
-
         {contextState.isConnected ? (
           <>
             <Stack.Screen
