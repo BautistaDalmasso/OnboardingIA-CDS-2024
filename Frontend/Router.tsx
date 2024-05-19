@@ -17,6 +17,7 @@ import RegisterFace from "./src/components/RegisterFace";
 import LoginFace from "./src/components/LoginFace";
 import MyLoans from "./src/components/MyLoans";
 import RequestLoans from "./src/components/RequestLoans";
+import LibrarianLoans from "./src/components/LibrarianLoans";
 import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
@@ -33,6 +34,7 @@ const Router = () => {
         screenOptions={{ headerTitle: "", headerTransparent: true }}
       >
         <Drawer.Screen name={Routes.Home} component={Home} />
+
         {contextState.isConnected ? (
           <>
             <Stack.Screen
@@ -83,6 +85,7 @@ const Router = () => {
                   component={RequestLoans}
                 />
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
+                <Stack.Screen name={Routes.LibrarianLoans} component={LibrarianLoans} />
                 <Drawer.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}

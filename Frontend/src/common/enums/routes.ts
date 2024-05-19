@@ -16,4 +16,5 @@ export enum Routes {
   UserConfiguration = "Configuración",
   TempQr = "Escanear QR",
   ViewQr = "Ver QR",
+  LibrarianLoans = "Prestamos solicitados por usuarios"
 }
