@@ -58,7 +58,11 @@ class BrowseCatalogueService(DatabaseUser):
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
                 LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
                 LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
-            WHERE bookAuthor.authorName = ?
+            WHERE book.isbn IN (
+                SELECT bookAuthor.isbn
+                FROM bookAuthor
+                WHERE bookAuthor.authorName = ?
+            )
             GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                     book.edition, book.abstract, book.description, book.ddcClass;
             """,
@@ -98,7 +102,11 @@ class BrowseCatalogueService(DatabaseUser):
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
                 LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
                 LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
-            WHERE bookTopic.topic = ?
+            WHERE book.isbn IN (
+                SELECT bookTopic.isbn
+                FROM bookTopic
+                WHERE bookTopic.topic = ?
+            )
             GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                     book.edition, book.abstract, book.description, book.ddcClass;
             """,

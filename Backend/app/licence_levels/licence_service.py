@@ -9,6 +9,9 @@ from app.licence_levels.licence_level import default_licence
 from app.database.database_user import DatabaseUser
 
 
+class UnkwnownFilter(Exception): ...
+
+
 class BookDataWithLicence(BaseModel):
     book_data: MarcBookData
     licence_required: int
@@ -56,6 +59,33 @@ class LicenceService(DatabaseUser):
         consulted_books = self._catalogue_service.browse_books_by_page(
             page_size, page_number
         )
+
+        return self._consult_multiple_books(consulted_books)
+
+    def consult_filtered_books(
+        self, filter_category: str, filter_value: str
+    ) -> list[BookDataWithLicence]:
+
+        match filter_category:
+            case "author":
+                consulted_books = self._catalogue_service.browse_by_author(filter_value)
+            case "title":
+                consulted_books = self._catalogue_service.browse_by_title(filter_value)
+            case "publisher":
+                consulted_books = self._catalogue_service.browse_by_publisher(
+                    filter_value
+                )
+            case "topic":
+                consulted_books = self._catalogue_service.browse_by_topic(filter_value)
+            case _:
+                raise UnkwnownFilter(f'Unkwnown filter: "{filter_category}".')
+
+        return self._consult_multiple_books(consulted_books)
+
+    def _consult_multiple_books(
+        self,
+        consulted_books: list[MarcBookData],
+    ) -> list[BookDataWithLicence]:
         consulted_isbns = [book.isbn for book in consulted_books]
 
         consulted_licences = self._query_multiple_isbns(consulted_isbns)
