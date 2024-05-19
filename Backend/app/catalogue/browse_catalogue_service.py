@@ -27,6 +27,26 @@ class BrowseCatalogueService(DatabaseUser):
 
         return create_marc_book_data(result)
 
+    def browse_by_title(self, book_title: str) -> list[MarcBookData]:
+        results = self.query_multiple_rows(
+            """
+            SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '') || '|') AS authors,
+                GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
+            FROM book
+                LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
+                LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
+            WHERE book.title LIKE ?
+            GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                    book.edition, book.abstract, book.description, book.ddcClass;
+            """,
+            (f"%{book_title}%",),
+        )
+
+        return [create_marc_book_data(row) for row in results]
+
     def browse_by_author(self, author_name: str) -> list[MarcBookData]:
         results = self.query_multiple_rows(
             """

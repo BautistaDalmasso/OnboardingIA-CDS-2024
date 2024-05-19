@@ -54,6 +54,14 @@ def test_book_with_single_word_author_name(bc_service):
     assert_authors_with_roles(result.authors, author_roles)
 
 
+def test_browse_by_title(bc_service):
+    isbns = ["9789875662445", "9789501303445"]
+
+    result = bc_service.browse_by_title("Antología")
+
+    assert_isbns_in_result(isbns, result)
+
+
 def test_browse_by_author(bc_service):
     isbns = [
         "9500420457",
