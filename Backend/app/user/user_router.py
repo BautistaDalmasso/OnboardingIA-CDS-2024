@@ -151,8 +151,3 @@ async def update_lastname(user_email: str, new_user_last_name: str):
 @router.get("/librarian_update_dni")
 async def update_dni(user_email: str, new_user_dni: str):
     return user_service.update_dni(user_email, new_user_dni)
-
-
-@router.get("/librarian_update_email")
-async def update_email(user_email: str, new_user_email: str):
-    return user_service.update_email(user_email, new_user_email)

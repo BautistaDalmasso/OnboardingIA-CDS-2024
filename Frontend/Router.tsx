@@ -21,7 +21,8 @@ import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
 import ViewQR from "./src/components/ViewQR";
-import CRUDuser from "./src/components/UDuser";
+import UDuser from "./src/components/UDuser";
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -121,7 +122,7 @@ const Router = () => {
           </>
         )}
         <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
-
+        <Stack.Screen name={Routes.UDuser} component={UDuser}/>
       </Drawer.Navigator>
     </NavigationContainer>
   );
