@@ -1,7 +1,10 @@
 # TODO: temp router development only, add access token requirements that check for librarian status.
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer
 
+from Backend.app.middlewares import verify_token
+from Backend.app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO
 from app.librarian.librarian_service import LibrarianService
 from app.catalogue import catalogue_db
 from app.catalogue.add_to_catalogue_service import AddToCatalogueService

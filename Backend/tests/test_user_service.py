@@ -1,5 +1,7 @@
 import pytest
 
+from app.database.database_user import DatabaseUser
+from app.user.user_service import UserService
 from app.user.user_dtos import CreateUserDTO
 
 from tests.common_fixtures import user_service
@@ -100,6 +102,12 @@ def test_generate_new_uid_with_a_previous_uid(
     assert user_service.generate_new_uid(user_1.email) == {"deviceUID": 1}
 
 
+def test_browse_by_page(bu_service):
+    result = bu_service.get_all_users(4, 0)
+
+    assert len(result) == 4
+
+
 @pytest.fixture
 def user_1():
     """Creates CreateUserDTO of User "Joaquin Enriquez"."""
@@ -120,3 +128,8 @@ def public_key_1():
 @pytest.fixture
 def public_key_2():
     return '{"e":7,"n":3599}'
+
+
+@pytest.fixture
+def bu_service():
+    return UserService(DatabaseUser)

@@ -54,3 +54,8 @@ export interface IUpgradeBasicResponse {
 export interface IDeviceUIDResponse {
   deviceUID: number;
 }
+
+export interface IUpgradeRoleResponse {
+  role: string;
+  access_token: string;
+}

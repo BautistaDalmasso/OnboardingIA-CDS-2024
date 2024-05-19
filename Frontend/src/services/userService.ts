@@ -12,6 +12,7 @@ import {
   IVerifyChallenge,
   IDeviceUIDResponse,
   IUpgradeBasicResponse,
+  IUpgradeRoleResponse,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
 
@@ -100,5 +101,27 @@ export class UserService {
       url: `${this.baseRoute}/deviceUID?user_email=${email}`,
       method: "GET",
     });
+  }
+
+  static async addLibrarian(token: string): Promise<IUpgradeRoleResponse> {
+    return baseFetch<void, IUpgradeRoleResponse>({
+      url: `${this.baseRoute}/role`,
+      method: "PATCH",
+      token,
+    });
+  }
+
+  static async getAllUsers(): Promise<IUser[]> {
+    try {
+      const users = await baseFetch<void, IUser[]>({
+        url: `${this.baseRoute}/get_all_users`,
+        method: "GET",
+      });
+
+      return users;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw error;
+    }
   }
 }

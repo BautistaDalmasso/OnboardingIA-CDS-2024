@@ -14,6 +14,8 @@ from .user_dtos import (
     TokenDataDTO,
     UpdateRSADTO,
     UpdateUserDniDTO,
+    UpdateUserRoleDTO,
+    UserDTO,
 )
 
 user_service = UserService(DATABASE_PATH)
@@ -116,4 +118,22 @@ async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
 async def generate_device_UID(user_email: str):
     result = user_service.generate_new_uid(user_email)
 
+    return result
+
+
+@router.patch("/loan")
+async def add_librarian(user: UpdateUserRoleDTO, token=Depends(HTTPBearer())):
+    user_data: TokenDataDTO = await verify_token(token.credentials)
+
+    result = user_service.upgrade_role_to_librarian(user, user_data)
+
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    return result
+
+
+@router.get("/get_all_users", response_model=list[UserDTO])
+async def get_all_users(page_size: int = 6, page_number: int = 0):
+    result = user_service.get_all_users(page_size, page_number)
     return result

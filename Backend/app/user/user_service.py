@@ -5,6 +5,7 @@ import sqlite3
 import string
 from datetime import datetime, timedelta
 from typing import Any
+from unittest import result
 
 import jwt
 from passlib.context import CryptContext
@@ -14,7 +15,14 @@ from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
-from .user_dtos import CreateUserDTO, TokenDataDTO, UpdateUserDniDTO, UserDTO
+from .user_dtos import (
+    UDI,
+    CreateUserDTO,
+    TokenDataDTO,
+    UpdateUserDniDTO,
+    UpdateUserRoleDTO,
+    UserDTO,
+)
 
 
 class UserService(DatabaseUser):
@@ -200,6 +208,55 @@ class UserService(DatabaseUser):
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
+
+    def upgrade_role_to_librarian(
+        self, user: UpdateUserRoleDTO, token_data: TokenDataDTO
+    ):
+
+        access_token_data = TokenDataDTO(
+            email=token_data.email,
+            role="librarian",
+            licenceLevel=token_data.licenceLevel,
+        )
+
+        try:
+            self.execute_in_database(
+                """UPDATE users
+                SET role = ? WHERE email = ?""",
+                ("librarian", token_data.email),
+            )
+
+            return {
+                "role": user.role,
+                "access_token": self.create_access_token(access_token_data),
+            }
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo agregar bibliotecario"}
+
+    def get_all_users(self, page_size: int, page_number: int) -> list[UserDTO]:
+        """Page numbering should start at 0"""
+        self.query_multiple_rows(
+            f"""
+            SELECT *
+            FROM users
+            LIMIT {page_size} OFFSET {page_number*page_size};
+            """,
+            tuple(),
+        )
+
+        return [create_user_data(user_data) for user_data in result]
+
+
+def create_user_data(query_result) -> UserDTO:
+    return UserDTO(
+        first_name=query_result[UDI.firstName.value],
+        last_name=query_result[UDI.lastName.value],
+        email=query_result[UDI.email.value],
+        dni=query_result[UDI.dni.value],
+        licence_level=query_result[UDI.licenceLevel.value],
+        role=query_result[UDI.role.value],
+        last_permission_update=query_result[UDI.lastPermissionUpdate.value],
+    )
 
 
 def create_UserDTO(user: User) -> UserDTO:
