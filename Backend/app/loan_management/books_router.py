@@ -19,3 +19,14 @@ async def consult_filtered_books(filter_category: str, filter_value: str):
     books = licence_service.consult_filtered_books(filter_category, filter_value)
 
     return books
+
+
+@router.get("/show_books/isbn", response_model=list[BookDataWithLicence])
+async def consult_book_by_isbn(isbn: str):
+    book = licence_service.consult_book_data(isbn)
+
+    if book is None:
+        return []
+    return [
+        book,
+    ]

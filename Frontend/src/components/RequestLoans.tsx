@@ -128,15 +128,26 @@ const RequestLoans = () => {
 
   const conductSearch = async () => {
     try {
-      const books = await LibraryService.getFilteredBooks(
-        filterCategory,
-        searchValue,
-      );
+      let books: IBookWithLicence[] = [];
+
+      if (filterCategory === "isbn") {
+        books = await conductSearchByIsbn();
+      } else {
+        books = await conductSearchByFilter();
+      }
 
       setBooks(books);
     } catch (error) {
       console.error("Error al obtener libros:", error);
     }
+  };
+
+  const conductSearchByIsbn = async () => {
+    return await LibraryService.getBookByISBN(searchValue);
+  };
+
+  const conductSearchByFilter = async () => {
+    return await LibraryService.getFilteredBooks(filterCategory, searchValue);
   };
 
   const conductSearchByButton = async (
