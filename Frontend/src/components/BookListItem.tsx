@@ -170,7 +170,10 @@ const BookListItem = ({
 
       <View style={styles.mixedTextContainer}>
         <Text style={styles.label}>Nivel de Carnet Requerido:</Text>
-        <Text style={styles.licenceLevel}> {licenceLevelToStr(book.licence_required)} </Text>
+        <Text style={styles.licenceLevel}>
+          {" "}
+          {licenceLevelToStr(book.licence_required)}{" "}
+        </Text>
       </View>
 
       <TouchableOpacity

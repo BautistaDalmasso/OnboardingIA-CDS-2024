@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
 import { LibraryService } from "../services/LibraryService";
 import { LoanService } from "../services/LoanManagementService";
 import {
@@ -16,7 +9,6 @@ import {
 } from "../common/interfaces/Book";
 import { useContextState } from "../ContexState";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LicenceLevel, LicenceName } from "../common/enums/licenceLevels";
 import SearchBarComponent from "./SearchBar";
 import BookListItem from "./BookListItem";
 
@@ -27,8 +19,8 @@ const RequestLoans = () => {
   const [requestState, setRequestState] = useState("");
   const [requestedButton, setRequestedButton] = useState<string[]>([]);
   const [requestedBooks] = useState<ILoanWithTitle[]>([]);
-  const [search, setSearch] = useState("");
-  const [searchPicker, setSearchPicker] = useState("title");
+  const [searchValue, setSearchValue] = useState("");
+  const [filterCategory, setFilterCategory] = useState("title");
 
   const handleRequestedBook = (book: ILoanWithTitle) => {
     requestedBooks.push(book);
@@ -42,16 +34,16 @@ const RequestLoans = () => {
     return requestedButton.includes(isbn);
   };
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const books = await LibraryService.getBooks();
-        setBooks(books);
-      } catch (error) {
-        console.error("Error al obtener libros:", error);
-      }
-    };
+  const fetchBooks = async () => {
+    try {
+      const books = await LibraryService.getBooks();
+      setBooks(books);
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchBooks();
   }, []);
 
@@ -134,30 +126,32 @@ const RequestLoans = () => {
     }
   };
 
-  const filteredBooks = books.filter((book) => {
-    switch (searchPicker) {
-      case "isbn":
-        return book.book_data.isbn.toLowerCase().includes(search.toLowerCase());
-      case "title":
-        return book.book_data.title
-          .toLowerCase()
-          .includes(search.toLowerCase());
-      default:
-        return false;
+  const conductSearch = async () => {
+    try {
+      const books = await LibraryService.getFilteredBooks(
+        filterCategory,
+        searchValue,
+      );
+      console.log(books);
+      setBooks(books);
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
     }
-  });
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Libros</Text>
       <SearchBarComponent
-        search={search}
-        setSearch={setSearch}
-        searchPicker={searchPicker}
-        setSearchPicker={setSearchPicker}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        filterCategory={filterCategory}
+        setFilterCategory={setFilterCategory}
+        onSearch={conductSearch}
+        onClear={fetchBooks}
       />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {filteredBooks.map((book) => (
+        {books.map((book) => (
           <View style={styles.bookContainer} key={book.book_data.isbn}>
             <BookListItem
               book={book}
