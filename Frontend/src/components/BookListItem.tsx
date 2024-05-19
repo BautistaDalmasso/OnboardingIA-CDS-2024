@@ -8,12 +8,14 @@ interface BookListItemProps {
   book: IBookWithLicence;
   isBookRequested: (isbn: string) => boolean;
   handleLoanRequest: (book: IBookWithLicence) => void;
+  handleButtonSearch: (filterCategory: string, searchValue: string) => void;
 }
 
 const BookListItem = ({
   book,
   isBookRequested,
   handleLoanRequest,
+  handleButtonSearch,
 }: BookListItemProps) => {
   const [creator, setCreator] = useState<IAuthor | null>(null);
   const [otherContributors, setOtherContributors] = useState<IAuthor[]>([]);
@@ -53,21 +55,6 @@ const BookListItem = ({
     }
   };
 
-  const handleAuthorPress = (name: string) => {
-    // TODO
-    console.log(`Author pressed: ${name}`);
-  };
-
-  const handlePublisherPress = (publisher: string) => {
-    // TODO
-    console.log(`Publisher pressed: ${publisher}`);
-  };
-
-  const handleTopicPress = (topic: string) => {
-    // TODO
-    console.log(`Topic pressed: ${topic}`);
-  };
-
   const contributorsSubComponent = () => {
     return (
       <View style={styles.mixedTextContainer}>
@@ -76,7 +63,7 @@ const BookListItem = ({
           <React.Fragment key={index}>
             <LinkButton
               text={contributorText(contributor)}
-              onPress={() => handleAuthorPress(contributor.name)}
+              onPress={() => handleButtonSearch("author", contributor.name)}
             />
             {index < otherContributors.length - 1 && (
               <Text style={styles.separator}>|</Text>
@@ -101,7 +88,10 @@ const BookListItem = ({
         <Text style={styles.label}>Tema(s): </Text>
         {book.book_data.topics.map((topic, index) => (
           <React.Fragment key={index}>
-            <LinkButton text={topic} onPress={() => handleTopicPress(topic)} />
+            <LinkButton
+              text={topic}
+              onPress={() => handleButtonSearch("topic", topic)}
+            />
             {index < book.book_data.topics.length - 1 && (
               <Text style={styles.separator}>|</Text>
             )}
@@ -120,7 +110,7 @@ const BookListItem = ({
           <Text style={styles.label}>Por: </Text>
           <LinkButton
             text={creator.name}
-            onPress={() => handleAuthorPress(creator.name)}
+            onPress={() => handleButtonSearch("author", creator.name)}
           />
         </View>
       )}
@@ -132,7 +122,9 @@ const BookListItem = ({
         <Text style={styles.publisher}> {book.book_data.place} : </Text>
         <LinkButton
           text={book.book_data.publisher}
-          onPress={() => handlePublisherPress(book.book_data.publisher)}
+          onPress={() =>
+            handleButtonSearch("publisher", book.book_data.publisher)
+          }
         />
         <Text style={styles.publisher}>, {book.book_data.date_issued}</Text>
       </View>

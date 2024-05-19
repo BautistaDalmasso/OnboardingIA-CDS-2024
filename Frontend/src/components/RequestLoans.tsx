@@ -132,7 +132,23 @@ const RequestLoans = () => {
         filterCategory,
         searchValue,
       );
-      console.log(books);
+
+      setBooks(books);
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
+    }
+  };
+
+  const conductSearchByButton = async (
+    filterCategory: string,
+    searchValue: string,
+  ) => {
+    try {
+      const books = await LibraryService.getFilteredBooks(
+        filterCategory,
+        searchValue,
+      );
+
       setBooks(books);
     } catch (error) {
       console.error("Error al obtener libros:", error);
@@ -157,6 +173,7 @@ const RequestLoans = () => {
               book={book}
               isBookRequested={isBookRequested}
               handleLoanRequest={handleLoanRequest}
+              handleButtonSearch={conductSearchByButton}
             />
           </View>
         ))}
