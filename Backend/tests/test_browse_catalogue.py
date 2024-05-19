@@ -30,21 +30,38 @@ def test_book_with_different_author_roles(bc_service):
 
     result = bc_service.browse_by_isbn(isbn)
 
+    author_roles = {
+        "Vedda, Miguel": "creator",
+        "Burello, Marcelo Gabriel": "int.",
+        "Setton, Román": "col.",
+    }
+
+    assert_authors_with_roles(result.authors, author_roles)
+
+
+def test_book_with_single_word_author_name(bc_service):
+    isbn = "9789870409229"
+
+    result = bc_service.browse_by_isbn(isbn)
+
+    author_roles = {
+        "Saki": "creator",
+        "Piñeiro, Claudia": "pról.",
+        "Sordi, Fabiana A.": "sel.",
+    }
+
+    assert_authors_with_roles(result.authors, author_roles)
+
+
+def assert_authors_with_roles(authors, author_roles: dict[str, str]):
     author_names = []
 
-    for author in result.authors:
-        if author.name == "Vedda, Miguel":
-            assert author.role == "creator"
-        elif author.name == "Burello, Marcelo Gabriel":
-            assert author.role == "int."
-        elif author.name == "Setton, Román":
-            assert author.role == "col."
-
+    for author in authors:
         author_names.append(author.name)
 
-    assert set(author_names) == set(
-        ["Vedda, Miguel", "Burello, Marcelo Gabriel", "Setton, Román"]
-    )
+        assert author.role == author_roles[author.name]
+
+    assert set(author_names) == author_roles.keys()
 
 
 def compare_with_file(result, read_from_file):
