@@ -13,4 +13,12 @@ export class RequestedLoansService {
 
     return result;
   }
+  static async getAllLoans() {
+    const result = await baseFetch<void, ILoanInformationResponse[]>({
+      url: `${this.baseRoute}/all_loans`,
+      method: `GET`,
+    });
+
+    return result;
+  }
 }
