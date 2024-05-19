@@ -4,12 +4,17 @@ export interface IMarcBook {
   place: string;
   publisher: string;
   date_issued: string;
-  edition?: string;
-  abstract?: string;
+  edition: string | null;
+  abstract: string | null;
   description: string;
   ddc_class: string;
-  authors: string[];
+  authors: IAuthor[];
   topics: string[];
+}
+
+export interface IAuthor {
+  name: string;
+  role: string | null;
 }
 
 export interface IBookWithLicence {

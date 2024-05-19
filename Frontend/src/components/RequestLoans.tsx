@@ -142,8 +142,6 @@ const RequestLoans = () => {
         return book.book_data.title
           .toLowerCase()
           .includes(search.toLowerCase());
-      case "authors":
-        return book.book_data.authors.includes(search);
       default:
         return false;
     }
