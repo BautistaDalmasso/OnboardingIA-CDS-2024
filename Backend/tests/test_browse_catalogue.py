@@ -1,5 +1,6 @@
 import pytest
 
+from app.catalogue.book_models import MarcBookData
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
 from app.file_paths import CATALOGUE_PATH
 
@@ -53,6 +54,38 @@ def test_book_with_single_word_author_name(bc_service):
     assert_authors_with_roles(result.authors, author_roles)
 
 
+def test_browse_by_author(bc_service):
+    isbns = [
+        "9500420457",
+        "9500506626",
+        "9789501303445",
+    ]
+    result = bc_service.browse_by_author("Borges, Jorge Luis")
+
+    assert_isbns_in_result(isbns, result)
+
+
+def test_browse_by_publisher(bc_service):
+    isbns = [
+        "9789875662834",
+        "9789875662445",
+    ]
+    result = bc_service.browse_by_publisher("Debolsillo")
+
+    assert_isbns_in_result(isbns, result)
+
+
+def test_browse_by_topic(bc_service):
+    isbns = [
+        "9789875662445",
+        "9789501303445",
+        "9789875662834",
+    ]
+    result = bc_service.browse_by_topic("LITERATURA")
+
+    assert_isbns_in_result(isbns, result)
+
+
 def assert_authors_with_roles(authors, author_roles: dict[str, str]):
     author_names = []
 
@@ -62,6 +95,13 @@ def assert_authors_with_roles(authors, author_roles: dict[str, str]):
         assert author.role == author_roles[author.name]
 
     assert set(author_names) == author_roles.keys()
+
+
+def assert_isbns_in_result(expected_isbns: list[str], result: list[MarcBookData]):
+    result_isbns = [book.isbn for book in result]
+
+    for isbn in expected_isbns:
+        assert isbn in result_isbns
 
 
 def compare_with_file(result, read_from_file):
