@@ -21,6 +21,7 @@ import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
 import ViewQR from "./src/components/ViewQR";
+import AddLibrarian from "./src/components/AddLibriarian";
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -76,6 +77,8 @@ const Router = () => {
                       name={Routes.Licence}
                       component={RequestLicence}
                     />
+                    {contextState.user.role!='basic'&&
+                    <Stack.Screen name={Routes.AddLibrarian} component={AddLibrarian} />}
                   </>
                 )}
                 <Stack.Screen

@@ -9,11 +9,11 @@ export enum Routes {
   LoginFace = "Iniciar Sesión con Reconocimiento Facial",
   Loans = "Préstamos",
   RegisterFace = "Registrar Rostro",
-  MyLoans = "Préstamos solicitados",
+  MyLoans = "Mis préstamos",
   Carnet = "Mi Carnet",
   RequestLoans = "Solicitar préstamo",
-  ShowLoans = "Mis Préstamos",
   UserConfiguration = "Configuración",
   TempQr = "Escanear QR",
   ViewQr = "Ver QR",
+  AddLibrarian = "Alta de bibliotecarios",
 }
