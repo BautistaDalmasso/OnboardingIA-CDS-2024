@@ -4,7 +4,6 @@ import { SearchBar } from "@rneui/themed";
 import { Picker } from "@react-native-picker/picker";
 
 interface SearchBarComponentProps {
-  pickerItems: { label: string; value: string }[];
   searchValue: string;
   setSearchValue: (searchValue: string) => void;
   filterCategory: string;
@@ -14,7 +13,6 @@ interface SearchBarComponentProps {
 }
 
 const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
-  pickerItems,
   searchValue,
   setSearchValue,
   filterCategory,
@@ -22,15 +20,18 @@ const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
   onSearch,
   onClear,
 }) => {
-  const labelToPlaceholder = (
-    filterCategory: string,
-    pickerItems: { label: string; value: string }[],
-  ) => {
-    const item = pickerItems.find((item) => item.value === filterCategory);
-    if (item) {
-      return ` ${item.label}`;
-    } else {
-      return filterCategory;
+  const labelToPlaceholder = () => {
+    switch (filterCategory) {
+      case "isbn":
+        return "Buscar por ISBN";
+      case "title":
+        return "Buscar por Título";
+      case "author":
+        return "Buscar por Autor";
+      case "topic":
+        return "Buscar por Tema";
+      default:
+        return filterCategory;
     }
   };
 
@@ -41,13 +42,17 @@ const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
         style={styles.picker}
         onValueChange={(itemValue: string) => setFilterCategory(itemValue)}
       >
-        {pickerItems.map((item) => (
-          <Picker.Item key={item.value} label={item.label} value={item.value} />
-        ))}
+        <Picker.Item label="ISBN (sin guiones)" value="isbn" />
+        <Picker.Item label="Título" value="title" />
+        <Picker.Item
+          label="Autor ([apellido(s)], [nombre(s)])"
+          value="author"
+        />
+        <Picker.Item label="Tema" value="topic" />
       </Picker>
       <View style={styles.searchContainer}>
         <SearchBar
-          placeholder={labelToPlaceholder(filterCategory, pickerItems)}
+          placeholder={labelToPlaceholder()}
           onChangeText={(value) => setSearchValue(value)}
           onClear={onClear}
           value={searchValue}
@@ -71,7 +76,6 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   picker: {
-    backgroundColor: "#EAEAEA",
     height: 50,
     width: "100%",
   },

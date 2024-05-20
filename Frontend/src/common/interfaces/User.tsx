@@ -75,7 +75,8 @@ export interface IDowngradeUserRole {
   email: string;
 }
 
-export interface IUserDTOs {
+
+export interface IUserDTO {
   firstName: string;
   lastName: string;
   email: string;

@@ -3,22 +3,50 @@ import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
 import { baseFetch } from "./fetch";
 
 export class RequestedLoansService {
-  private static baseRoute = `${ServerAddress}loans`;
+  private static loansRoute = `${ServerAddress}loans`;
 
-  static async getLoans(userEmail: string) {
-    const result = await baseFetch<void, ILoanInformationResponse[]>({
-      url: `${this.baseRoute}/user_loans?user_email=${userEmail}`,
-      method: `GET`,
-    });
+  static async getLoansByEmail(email: string, token: string) {
+    try {
+      const loans = await baseFetch<void, ILoanInformationResponse[]>({
+        token: token,
+        url: `${this.loansRoute}/loan_by_email?user_email=${email}`,
+        method: "GET",
+      });
 
-    return result;
+      return loans;
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      throw error;
+    }
   }
-  static async getAllLoans() {
-    const result = await baseFetch<void, ILoanInformationResponse[]>({
-      url: `${this.baseRoute}/all_loans`,
-      method: `GET`,
-    });
 
-    return result;
+  static async getLoansByTitle(title: string, token: string) {
+    try {
+      const loans = await baseFetch<void, ILoanInformationResponse[]>({
+        token: token,
+        url: `${this.loansRoute}/loans_by_title?title=${title}`,
+        method: "GET",
+      });
+
+      return loans;
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      throw error;
+    }
+  }
+
+  static async getAllLoans(token: string) {
+    try {
+      const loans = await baseFetch<void, ILoanInformationResponse[]>({
+        token: token,
+        url: `${this.loansRoute}/all_loans`,
+        method: "GET",
+      });
+
+      return loans;
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      throw error;
+    }
   }
 }

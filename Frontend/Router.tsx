@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -87,9 +87,6 @@ const Router = () => {
                       name={Routes.Licence}
                       component={RequestLicence}
                     />
-                    {contextState.user.role != "basic" && (
-                      <Stack.Screen name={Routes.UDuser} component={UDuser} />
-                    )}
                   </>
                 )}
                 <Stack.Screen
@@ -98,10 +95,18 @@ const Router = () => {
                 />
 
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
-                <Stack.Screen
-                  name={Routes.LibrarianLoans}
-                  component={LibrarianLoans}
-                />
+
+                {/* Librarian components */}
+                {contextState.user.role === "librarian" && (
+                  <>
+                    <Stack.Screen
+                      name={Routes.LibrarianLoans}
+                      component={LibrarianLoans}
+                    />
+                    <Stack.Screen name={Routes.UDuser} component={UDuser} />
+                  </>
+                )}
+
                 <Drawer.Screen
                   name={Routes.RegisterFace}
                   component={RegisterFace}
