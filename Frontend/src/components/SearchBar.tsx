@@ -22,7 +22,10 @@ const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
   onSearch,
   onClear,
 }) => {
-  const labelToPlaceholder = (filterCategory: string, pickerItems: { label: string; value: string }[]) => {
+  const labelToPlaceholder = (
+    filterCategory: string,
+    pickerItems: { label: string; value: string }[],
+  ) => {
     const item = pickerItems.find((item) => item.value === filterCategory);
     if (item) {
       return ` ${item.label}`;
@@ -38,10 +41,9 @@ const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
         style={styles.picker}
         onValueChange={(itemValue: string) => setFilterCategory(itemValue)}
       >
-         {pickerItems.map((item) => (
+        {pickerItems.map((item) => (
           <Picker.Item key={item.value} label={item.label} value={item.value} />
         ))}
-
       </Picker>
       <View style={styles.searchContainer}>
         <SearchBar
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   picker: {
-    backgroundColor:"#EAEAEA",
+    backgroundColor: "#EAEAEA",
     height: 50,
     width: "100%",
   },

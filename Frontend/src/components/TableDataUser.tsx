@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React from "react";
+import { StyleSheet, View, Text } from "react-native";
 
 type Props = {
   name: string;
@@ -9,14 +9,14 @@ type Props = {
   licence: string;
 };
 
-const App: React.FC<Props> = ({ name, lastName, email, dni , licence }) => {
-  const tableHead = ['Datos del usuario'];
+const App: React.FC<Props> = ({ name, lastName, email, dni, licence }) => {
+  const tableHead = ["Datos del usuario"];
   const tableData = [
-    ['  Nombre ', name],
-    ['  Apellido ', lastName],
-    ['  email      ', email],
-    ['  DNI         ', dni],
-    ['  carnet    ', licence],
+    ["  Nombre ", name],
+    ["  Apellido ", lastName],
+    ["  email      ", email],
+    ["  DNI         ", dni],
+    ["  carnet    ", licence],
   ];
 
   return (
@@ -27,7 +27,7 @@ const App: React.FC<Props> = ({ name, lastName, email, dni , licence }) => {
       {tableData.map((row, index) => (
         <View style={styles.row} key={index}>
           <Text style={styles.text}>{row[0]}</Text>
-          <Text style={styles.text}>{row[1]+"   "}</Text>
+          <Text style={styles.text}>{row[1] + "   "}</Text>
         </View>
       ))}
     </View>
@@ -37,33 +37,32 @@ const App: React.FC<Props> = ({ name, lastName, email, dni , licence }) => {
 const styles = StyleSheet.create({
   container: {
     margin: 20,
-    justifyContent: 'center',
-
+    justifyContent: "center",
   },
   head: {
     height: 40,
-    backgroundColor: '#48bce4',
+    backgroundColor: "#48bce4",
   },
   textHead: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   row: {
     height: 40,
-    backgroundColor: '#F5FCFF',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-     borderWidth:2,
-     borderColor:'white',
+    backgroundColor: "#F5FCFF",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "white",
   },
   text: {
     margin: 6,
-    borderRightWidth:4,
-     borderRightColor:'white',
-     fontSize: 10,
+    borderRightWidth: 4,
+    borderRightColor: "white",
+    fontSize: 10,
   },
 });
 
