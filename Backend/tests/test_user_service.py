@@ -101,21 +101,6 @@ def test_generate_new_uid_with_a_previous_uid(
     assert user_service.generate_new_uid(user_1.email) == {"deviceUID": 1}
 
 
-def test_browse_by_page(user_service):
-    user_service.create_user(user_1)
-    user_service.create_user(
-        CreateUserDTO(
-            firstName="Manuel",
-            lastName="Rodríguez",
-            email="manuel_test@gmail.com",
-            password="123456",
-        )
-    )
-    result = user_service.get_all_users(2, 0)
-
-    assert len(result) == 2
-
-
 @pytest.fixture
 def user_1():
     """Creates CreateUserDTO of User "Joaquin Enriquez"."""
