@@ -11,57 +11,104 @@ import SearchBarComponent from "./SearchBar";
 
 const LibrarianLoans = () => {
     const [loans, setLoans] = useState<ILoanInformationResponse[]>([]);
-    const [search, setSearch] = useState("");
-    const [searchPicker, setSearchPicker] = useState("user_email");
+    const [searchValue, setSearchValue] = useState("");
+    const [filterCategory, setFilterCategory] = useState("user_email");
     const [pickerItems, setPickerItems ] = useState< {label: string ; value: string }[]>([]);
-
-    useEffect(() => {
-      const fetchBooks = async () => {
-        try {
-          const loans = await RequestedLoansService.getAllLoans();
+    const [requestedButton, setRequestedButton] = useState<string[]>([]);
+    const [showAlert, setShowAlert] = useState(false);
+  useEffect(() => {
+     const fetchLoans = async () => {
+       try {
+        const loans = await RequestedLoansService.getAllLoans();
           setLoans(loans);
+
           setPickerItems( [
-            { label: "E-mail del usuario", value: "user_email" },
-            { label: "Título del libro", value: "title" },
+            { label: "Buscar por E-mail", value: "user_email" },
+            { label: "Bucar por Título", value: "title" },
           ]);
         } catch (error) {
           console.error("An error occurred, loans could not be retrieved:", error);
         }
       };
 
-      fetchBooks();
+      fetchLoans();
     }, []);
 
-    const filteredLoans = loans.filter((loan) => {
-      switch (searchPicker) {
-        case "title":
-          return loan.title.toLowerCase().includes(search.toLowerCase());
-        case "user_email":
-          return loan.user_email.toLowerCase().includes(search.toLowerCase());
-        default:
-          return false;
+    const [fetchLoans, setFetchLoans] = useState(() => async () => {
+      try {
+        const loans = await RequestedLoansService.getAllLoans();
+        setLoans(loans);
+        setShowAlert(false);
+        setSearchValue ("");
+        setPickerItems([
+          { label: "Buscar por E-mail", value: "user_email" },
+          { label: "Bucar por Título", value: "title" },
+        ]);
+      } catch (error) {
+        console.error("An error occurred, loans could not be retrieved:", error);
       }
     });
 
+    const clearLoans = () => {
+      fetchLoans();
+    };
+
+
+    const conductSearch = async () => {
+        try {
+          let loans: ILoanInformationResponse[] = [];
+
+          if (filterCategory === "user_email") {
+            loans = await conductSearchByEmail();
+            }
+          else if (filterCategory === "title") {
+            loans = await conductSearchByTitle();
+
+          }
+          if (loans.length === 0) {
+            setShowAlert(true);
+          }
+        setLoans(loans);
+        } catch (error) {
+          console.error("Error al obtener Prestamos:", error);
+        }
+      };
+
+      const conductSearchByEmail = async () => {
+        return await RequestedLoansService.getLoans(searchValue);
+      };
+      const conductSearchByTitle = async () => {
+        return await RequestedLoansService.getLoansByTitle(searchValue);
+      };
+
     return (
+
       <View style={styles.container}>
         <Text style={styles.header}>Lista de Prestamos</Text>
         <SearchBarComponent
           pickerItems={pickerItems}
-          search={search}
-          setSearch={setSearch}
-          searchPicker={searchPicker}
-          setSearchPicker={setSearchPicker}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          filterCategory={filterCategory}
+          setFilterCategory={setFilterCategory}
+          onSearch={conductSearch}
+          onClear={clearLoans}
 
         />
+        {showAlert && (
+          <View style={styles.alertContainer}>
+            <Text style={styles.alertText}>No se encontraron préstamos para la búsqueda realizada.</Text>
+          </View>
+         )}
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {filteredLoans.map((Loan) => (
-            <View key={Loan.id} style={styles.bookContainer}>
-              <Text style={styles.bookTitle}>{Loan.title}</Text>
+        {loans.map((Loan) => (
+          <View style={styles.bookContainer} key={Loan.id}>
+           <Text style={styles.bookTitle}>{Loan.title}</Text>
               <Text style={styles.bookTitle}>{Loan.user_email}</Text>
               <Text style={styles.cardLevel}>
                 Vencimiento: {new Date(Loan.expiration_date).toLocaleDateString()}
               </Text>
+
             </View>
           ))}
         </ScrollView>
@@ -78,6 +125,16 @@ const LibrarianLoans = () => {
       borderColor: "#ddd",
       borderRadius: 8,
       overflow: "hidden",
+    },
+    alertContainer: {
+      backgroundColor: "red",
+      padding: 10,
+      margin: 10,
+      borderRadius: 5,
+    },
+    alertText: {
+      color: "white",
+      fontWeight: "bold",
     },
     header: {
       fontSize: 24,

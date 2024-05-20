@@ -1,5 +1,4 @@
 from enum import auto
-import json
 import sqlite3
 from app.models import auto_index
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
@@ -21,6 +20,9 @@ class NoCopiesAvailable(Exception):
 
 class BookAlreadyReturned(Exception):
     pass
+
+
+class UnkwnownFilter(Exception): ...
 
 
 class LoanService(DatabaseUser):
@@ -96,6 +98,20 @@ class LoanService(DatabaseUser):
         )
 
         return [self.create_loan_data(entry) for entry in loans]
+
+    def consult_book_loans_by_title(self, title: str) -> List[LoanInformationDTO]:
+        print("entra en consult book by tittle ")
+        loans = self.query_multiple_rows(
+            """SELECT loan.*, bookInventory.isbn
+            FROM loan
+            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber""",
+            tuple(),
+        )
+        query_result: List[LoanInformationDTO] = [
+            self.create_loan_data(entry) for entry in loans
+        ]
+        filtered_result = list(filter(lambda x: x.title == title, query_result))
+        return filtered_result
 
     def consult_all_book_loans(self) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(
