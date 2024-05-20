@@ -62,6 +62,12 @@ const Router = () => {
             )}
             {contextState.user !== null && (
               <>
+                {contextState.user.role != "basic" && (
+                  <Stack.Screen
+                    name={Routes.AddLibrarian}
+                    component={AddLibrarian}
+                  />
+                )}
                 {contextState.user.dni ? (
                   <>
                     <Stack.Screen name={Routes.Carnet} component={Licence} />
@@ -77,8 +83,6 @@ const Router = () => {
                       name={Routes.Licence}
                       component={RequestLicence}
                     />
-                    {contextState.user.role!='basic'&&
-                    <Stack.Screen name={Routes.AddLibrarian} component={AddLibrarian} />}
                   </>
                 )}
                 <Stack.Screen

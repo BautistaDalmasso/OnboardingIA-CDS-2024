@@ -13,6 +13,9 @@ import {
   IDeviceUIDResponse,
   IUpgradeBasicResponse,
   IUpgradeRoleResponse,
+  IUpgradeUserRole,
+  IDowngradeRoleResponse,
+  IDowngradeUserRole,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
 
@@ -103,18 +106,34 @@ export class UserService {
     });
   }
 
-  static async addLibrarian(token: string): Promise<IUpgradeRoleResponse> {
-    return baseFetch<void, IUpgradeRoleResponse>({
-      url: `${this.baseRoute}/role`,
+  static async addLibrarian(
+    email: string,
+    token: string,
+  ): Promise<IUpgradeRoleResponse> {
+    return baseFetch<IUpgradeUserRole, IUpgradeRoleResponse>({
+      url: `${this.baseRoute}/update_role_to_librarian`,
       method: "PATCH",
+      data: { role: "librarian", email },
       token,
     });
   }
 
-  static async getAllUsers(): Promise<IUser[]> {
+  static async deleteLibrarian(
+    email: string,
+    token: string,
+  ): Promise<IDowngradeRoleResponse> {
+    return baseFetch<IDowngradeUserRole, IDowngradeRoleResponse>({
+      url: `${this.baseRoute}/downgrade_role_to_user`,
+      method: "PATCH",
+      data: { role: "basic", email },
+      token,
+    });
+  }
+
+  static async getAllUsers(page_number: number): Promise<IUser[]> {
     try {
       const users = await baseFetch<void, IUser[]>({
-        url: `${this.baseRoute}/get_all_users`,
+        url: `${this.baseRoute}/get_all_users?page_size=2&page_number=${page_number}`,
         method: "GET",
       });
 

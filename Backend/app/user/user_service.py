@@ -1,11 +1,11 @@
+from enum import Enum, auto
 import json
 import random
 from pathlib import Path
 import sqlite3
 import string
 from datetime import datetime, timedelta
-from typing import Any
-from unittest import result
+from typing import Any, List
 
 import jwt
 from passlib.context import CryptContext
@@ -14,9 +14,8 @@ from app.licence_levels.licence_level import LicenceLevel
 from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
-from ..models import User
+from ..models import User, auto_index
 from .user_dtos import (
-    UDI,
     CreateUserDTO,
     TokenDataDTO,
     UpdateUserDniDTO,
@@ -209,21 +208,19 @@ class UserService(DatabaseUser):
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
 
-    def upgrade_role_to_librarian(
-        self, user: UpdateUserRoleDTO, token_data: TokenDataDTO
-    ):
+    # TODO: move to librarian_service.py
+    def upgrade_role_to_librarian(self, user: UpdateUserRoleDTO):
 
         access_token_data = TokenDataDTO(
-            email=token_data.email,
+            email=user.email,
             role="librarian",
-            licenceLevel=token_data.licenceLevel,
         )
 
         try:
             self.execute_in_database(
                 """UPDATE users
                 SET role = ? WHERE email = ?""",
-                ("librarian", token_data.email),
+                ("librarian", user.email),
             )
 
             return {
@@ -233,30 +230,50 @@ class UserService(DatabaseUser):
         except sqlite3.IntegrityError:
             return {"error": "No se pudo agregar bibliotecario"}
 
-    def get_all_users(self, page_size: int, page_number: int) -> list[UserDTO]:
+    def get_all_users(self, page_size: int, page_number: int) -> List[UserDTO]:
         """Page numbering should start at 0"""
-        self.query_multiple_rows(
-            f"""
-            SELECT *
+        offset = page_number * page_size
+        query = """
+            SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
             FROM users
-            LIMIT {page_size} OFFSET {page_number*page_size};
-            """,
-            tuple(),
+            LIMIT ? OFFSET ?;
+        """
+        result = self.query_multiple_rows(query, (page_size, offset))
+
+        return [self.create_user_data(user_data) for user_data in result]
+
+    # TODO: move to librarian_service.py
+    def downgrade_role_to_user(self, user: UpdateUserRoleDTO):
+
+        access_token_data = TokenDataDTO(
+            email=user.email,
+            role="basic",
         )
 
-        return [create_user_data(user_data) for user_data in result]
+        try:
+            self.execute_in_database(
+                """UPDATE users
+                SET role = ? WHERE email = ?""",
+                ("basic", user.email),
+            )
 
+            return {
+                "role": user.role,
+                "access_token": self.create_access_token(access_token_data),
+            }
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo agregar bibliotecario"}
 
-def create_user_data(query_result) -> UserDTO:
-    return UserDTO(
-        first_name=query_result[UDI.firstName.value],
-        last_name=query_result[UDI.lastName.value],
-        email=query_result[UDI.email.value],
-        dni=query_result[UDI.dni.value],
-        licence_level=query_result[UDI.licenceLevel.value],
-        role=query_result[UDI.role.value],
-        last_permission_update=query_result[UDI.lastPermissionUpdate.value],
-    )
+    def create_user_data(self, query_result) -> UserDTO:
+        return UserDTO(
+            firstName=query_result[0],
+            lastName=query_result[1],
+            email=query_result[2],
+            dni=query_result[3],
+            licenceLevel=query_result[4],
+            role=query_result[5],
+            lastPermissionUpdate=query_result[6],
+        )
 
 
 def create_UserDTO(user: User) -> UserDTO:

@@ -3,7 +3,7 @@ from enum import auto
 from typing import Optional
 from pydantic import BaseModel
 
-from Backend.app.models import auto_index
+from app.models import auto_index
 
 
 class CreateUserDTO(BaseModel):
@@ -49,21 +49,10 @@ class UpdateUserDniDTO(BaseModel):
 
 class UpdateUserRoleDTO(BaseModel):
     role: str
+    email: str
 
 
 class TokenDataDTO(BaseModel):
     email: str
     role: Optional[str] = "basic"
     licenceLevel: int = 0
-
-
-class UDI(auto_index):
-    """User Data Indices"""
-
-    firstName = auto()
-    lastName = auto()
-    email = auto()
-    dni = auto()
-    licenceLevel = auto()
-    role = auto()
-    lastPermissionUpdate = auto()

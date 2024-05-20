@@ -13,75 +13,98 @@ import { UserService } from "../services/userService";
 
 const AddLibrarian = () => {
   const [users, setUsers] = useState<IUser[]>([]);
-  const { contextState, setContextState } = useContextState();
-  const [requestedButton, setRequestedButton] = useState<string[]>([]);
-
-  const handleRequestButton = (email: string) => {
-    setRequestedButton([...requestedButton, email]);
-  };
-
-  const isUserLibrarian = (email: string) => {
-    return requestedButton.includes(email);
-  };
+  const { contextState } = useContextState();
+  const [requestedButtons, setRequestedButtons] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await UserService.getAllUsers();
+        const data = await UserService.getAllUsers(currentPage);
         setUsers(data);
+
+        const librarianEmails = data
+          .filter((user) => user.role !== "basic")
+          .map((user) => user.email);
+        setRequestedButtons(librarianEmails);
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [currentPage]);
 
   const handleAddLibrarian = async (user: IUser) => {
     try {
       const response = await UserService.addLibrarian(
+        user.email,
         contextState.accessToken as string,
       );
-
-      setContextState((state) => ({
-        ...state,
-        accessToken: response.access_token,
-        user: {
-          ...state.user,
-          role: "librarian",
-        } as IUser,
-      }));
-
-      handleRequestButton(user.email);
-      Alert.alert(`Bibiotecario ${user.email} agregado con éxito`);
+      if (response.role !== "basic") {
+        setRequestedButtons([...requestedButtons, user.email]);
+        Alert.alert(`Bibliotecario ${user.email} agregado con éxito`);
+      }
     } catch (error) {
       console.log(error);
       Alert.alert(`${error}`);
     }
   };
 
+  const handleDeleteLibrarian = async (user: IUser) => {
+    try {
+      const response = await UserService.deleteLibrarian(
+        user.email,
+        contextState.accessToken as string,
+      );
+      if (response.role === "basic") {
+        setRequestedButtons([...requestedButtons, user.email]);
+        Alert.alert(`Bibliotecario ${user.email} eliminado con éxito`);
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(`${error}`);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Lista de Libros</Text>
+      <Text style={styles.header}>Usuarios</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {users.map((user) => (
           <View key={user.email} style={styles.bookContainer}>
-            <Text style={styles.bookTitle}>{user.firstName}</Text>
-            <Text style={styles.cardLevel}>Rol: {user.role}</Text>
+            <Text style={styles.bookTitle}>
+              {user.firstName.toUpperCase() + " " + user.lastName.toUpperCase()}
+            </Text>
+            <Text style={styles.cardLevel}>Email: {user.email}</Text>
+            <Text style={styles.cardLevel}>{user.role?.toUpperCase()}</Text>
             <TouchableOpacity
               style={[
                 styles.button,
                 {
-                  backgroundColor: isUserLibrarian(user.email)
-                    ? "#ccc"
+                  backgroundColor: requestedButtons.includes(user.email)
+                    ? "red"
                     : "#007bff",
                 },
               ]}
-              onPress={() => handleAddLibrarian(user)}
-              disabled={isUserLibrarian(user.email) && user.role != "basic"}
+              onPress={() =>
+                user.role !== "basic"
+                  ? handleDeleteLibrarian(user)
+                  : handleAddLibrarian(user)
+              }
             >
               <Text style={styles.buttonText}>
-                {isUserLibrarian(user.email) && user.role != "basic"
+                {requestedButtons.includes(user.email)
                   ? "Bibliotecario"
                   : "Agregar"}
               </Text>
@@ -89,6 +112,18 @@ const AddLibrarian = () => {
           </View>
         ))}
       </ScrollView>
+      <View style={styles.pageContainer}>
+        <TouchableOpacity
+          style={styles.pageButton}
+          onPress={goToPreviousPage}
+          disabled={currentPage === 0}
+        >
+          <Text style={styles.pageButtonText}>{"<<"} Página anterior</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.pageButton} onPress={goToNextPage}>
+          <Text style={styles.pageButtonText}>Siguiente página {">>"}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -102,6 +137,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 8,
     overflow: "hidden",
+    position: "relative",
   },
   header: {
     fontSize: 24,
@@ -131,7 +167,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: "#007bff",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -143,6 +178,23 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 200,
+  },
+  pageContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    right: 10,
+  },
+  pageButton: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: "center",
+  },
+  pageButtonText: {
+    color: "#000",
   },
 });
 
