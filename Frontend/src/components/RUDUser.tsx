@@ -9,203 +9,150 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { LibrarianService } from "../services/librarianService";
 import CustomTextInput from "./CustomTextInput";
 import TableDataUser from "./TableDataUser";
 import Dropdown from "./Dropdown";
 import { useContextState } from "../ContexState";
 import useRegexChecks from "../hooks/useInputChecks";
+import useRUDUsers from "../hooks/useRUDUsers";
+import { IUserDTO } from "../common/interfaces/User";
+import { LicenceLevel, licenceLevelToStr } from "../common/enums/licenceLevels";
+import { Picker } from "@react-native-picker/picker";
+import LinkButton from "./LinkButton";
+
+enum fieldOptions {
+  FIRST_NAME = "Nombre",
+  LAST_NAME = "Apellido",
+  DNI = "DNI",
+}
+
+enum pages {
+  USER_SELECT = 0,
+  USER_DATA = 1,
+  UPDATE_DATA = 2,
+  UPGRADE_LICENCE = 3,
+}
 
 const RUDUser = () => {
+  const {
+    consultUser,
+    updateUsersName,
+    updateUsersLastName,
+    updateUsersDni,
+    updateUsersLicence,
+  } = useRUDUsers();
   const { contextState } = useContextState();
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const { isValidEmail, isValidDni } = useRegexChecks();
-  const [selectedValue, setSelectedValue] = useState(
+  const [fieldToUpdate, setFieldToUpdate] = useState(
     "Seleccione dato a actualizar >>",
   );
-  const [name, setname] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [dni, setDni] = useState("");
-  const [licence, setLicence] = useState("");
+  const [user, setUser] = useState<IUserDTO | null>(null);
   const options = [
-    { label: "Nombre", value: "Nombre" },
-    { label: "Apellido", value: "Apellido" },
-    { label: "DNI", value: "DNI" },
+    { label: fieldOptions.FIRST_NAME, value: fieldOptions.FIRST_NAME },
+    { label: fieldOptions.LAST_NAME, value: fieldOptions.LAST_NAME },
+    { label: fieldOptions.DNI, value: fieldOptions.DNI },
   ];
 
   useFocusEffect(
     React.useCallback(() => {
       return () => {
-        setInputValue("");
-        handleNextPage(0);
+        handleChangePage(pages.USER_SELECT);
       };
     }, []),
   );
 
-  const handleNextPage = (pageIndex: number) => {
+  const handleChangePage = (pageIndex: number) => {
+    setInputValue("");
+
     scrollViewRef.current?.scrollTo({
       y: pageIndex * Dimensions.get("window").height,
       animated: true,
     });
   };
 
-  const upgradeLicenseLevel = async () => {
-    if (dni == "NO registrado") {
+  const gotoUpgradeLicenceLevel = async () => {
+    if (!user?.dni) {
       Alert.alert(
         "Error",
         "El usuario NO tiene carnet regular ni dni registrados.",
       );
       return;
     }
-    handleNextPage(3);
+    handleChangePage(pages.UPGRADE_LICENCE);
   };
 
-  const gotoUpdatingUserData = async () => {
-    setInputValue("");
-    handleNextPage(2);
-  };
-
-  const handleLevel = async (level: number) => {
-    await LibrarianService.updateLicense(
-      email,
-      level,
-      contextState.accessToken as string,
-    );
-
-    Alert.alert("", "¡Actualizacion de nivel de canet exitosa!");
-
-    handleNextPage(1);
-    handleLoadingData();
-  };
-
-  const unsubscribeUser = async () => {
-    try {
-      setLoading(true);
-      const response = await LibrarianService.deleteUser(
-        inputValue,
-        contextState.accessToken as string,
-      );
-
-      if (!response) {
-        Alert.alert("", "¡Usuario dado de baja exitosamente!");
-        setInputValue("");
-        handleNextPage(0);
-      }
-    } catch (error) {
-      console.error("Error in:", error);
-      return null;
-    } finally {
-      setLoading(false);
+  const handleLevel = async (level: LicenceLevel) => {
+    if (!user) {
+      throw Error("No user selected.");
     }
+
+    updateUsersLicence(user.email, level);
+
+    Alert.alert("", "¡Actualizacion de nivel de carnet exitosa!");
+
+    handleChangePage(pages.USER_DATA);
+    handleLoadingData();
   };
 
   const upgradeData = async () => {
     setInputValue(inputValue.trim());
-    if (!inputValue) {
+    if (inputValue === "") {
       Alert.alert(
         "Error",
-        "Por favor ingrese un " + selectedValue + " valido.",
+        "Por favor ingrese un " + fieldToUpdate + " valido.",
       );
-      setInputValue("");
       return;
     }
 
-    if (selectedValue === options[0].label) {
-      await LibrarianService.updateName(
-        email,
-        inputValue,
-        contextState.accessToken as string,
-      );
-    }
-    if (selectedValue === options[1].label) {
-      await LibrarianService.updateLastName(
-        email,
-        inputValue,
-        contextState.accessToken as string,
-      );
-    }
-    if (selectedValue === options[2].label) {
-      if (dni === "NO registrado") {
-        Alert.alert(
-          "Error",
-          "El usuario no registro su DNI, ni solicito su carnet.",
-        );
-        setInputValue("");
-        return;
-      }
-      if (!isValidDni(inputValue)) {
-        Alert.alert("Error", "Por favor ingrese un dni valido");
-        setInputValue("");
-        return;
-      }
-      await LibrarianService.updateDNI(
-        email,
-        inputValue,
-        contextState.accessToken as string,
-      );
+    if (!user) {
+      throw Error("User wasn't selected.");
     }
 
-    Alert.alert(
-      "",
-      "Se cambio el " + selectedValue + " del usuario exitosamente.",
-    );
-    setInputValue("");
-    handleNextPage(0);
+    switch (fieldToUpdate) {
+      case fieldOptions.FIRST_NAME:
+        await updateUsersName(user.email, inputValue);
+        break;
+      case fieldOptions.LAST_NAME:
+        await updateUsersLastName(user.email, inputValue);
+        break;
+      case fieldOptions.DNI:
+        const wasUpdated = await updateUsersDni(
+          user.email,
+          inputValue,
+          user.dni,
+        );
+
+        if (!wasUpdated) {
+          setInputValue("");
+          return;
+        }
+      default:
+        break;
+    }
+
+    Alert.alert("Se cambio el " + fieldToUpdate + " del usuario exitosamente.");
+    handleChangePage(pages.USER_SELECT);
   };
 
   const handleLoadingData = async () => {
     try {
       setLoading(true);
-      if (!isValidEmail(inputValue)) {
-        Alert.alert("Por favor", "Ingrese un correo valido.");
-        setLoading(false);
-        setInputValue("");
-        return;
-      }
-      const response = await LibrarianService.consultUser(
-        inputValue,
-        contextState.accessToken as string,
-      );
 
-      if (!response.email) {
+      const user = await consultUser(inputValue);
+
+      if (user == null) {
         Alert.alert("Error", "Usuario NO registrado");
-        setLoading(false);
-        setInputValue("");
         return;
       }
 
-      handleNextPage(1);
-      console.log(response);
-      const userData = [
-        response.email || "NO registrado",
-        response.dni || "NO registrado",
-        response.firstName || "NO registrado",
-        response.lastName || "NO registrado",
-      ];
+      handleChangePage(pages.USER_DATA);
 
-      setname(userData[2]);
-      setLastName(userData[3]);
-      setEmail(userData[0]);
-      setDni(userData[1]);
-
-      if (response.licenceLevel === 0) {
-        setLicence("Sin Carnet");
-      }
-      if (response.licenceLevel === 1) {
-        setLicence("Regular");
-      }
-      if (response.licenceLevel === 2) {
-        setLicence("Confiado");
-      }
-      if (response.licenceLevel === 3) {
-        setLicence("Investigador");
-      }
+      setUser(user);
     } catch (error) {
       console.error("Error in:", error);
-      return null;
     } finally {
       setLoading(false);
     }
@@ -221,7 +168,8 @@ const RUDUser = () => {
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
       >
-        <View key={0} style={styles.page}>
+        {/* Select user page. */}
+        <View key={pages.USER_SELECT} style={styles.page}>
           <Text style={styles.instruction}>
             Ingrese el email del usuario registrado o ingrese el QR.
           </Text>
@@ -235,49 +183,71 @@ const RUDUser = () => {
             <Text style={styles.buttonText}>Buscar Usuario</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.buttonQR} onPress={handleLoadingData}>
-            <Text style={styles.buttonText}>Ingresar QR</Text>
+          {/* TODO */}
+          <TouchableOpacity
+            style={styles.buttonQR}
+            onPress={() => console.log("TODO")}
+          >
+            <Text style={styles.buttonText}>Escanear QR</Text>
           </TouchableOpacity>
         </View>
-        <View key={1} style={styles.page}>
-          <TableDataUser
-            name={name}
-            lastName={lastName}
-            email={email}
-            dni={dni}
-            licence={licence}
-          ></TableDataUser>
+
+        {/* View user's data page. */}
+        <View key={pages.USER_DATA} style={styles.page}>
+          {user && (
+            <TableDataUser
+              name={user.firstName}
+              lastName={user.lastName}
+              email={user.email}
+              dni={user.dni ? user.dni : "NO Registrado"}
+              licence={licenceLevelToStr(user.licenceLevel as LicenceLevel)}
+            />
+          )}
           <TouchableOpacity
             style={styles.button}
-            onPress={gotoUpdatingUserData}
+            onPress={() => handleChangePage(pages.UPDATE_DATA)}
           >
             <Text style={styles.buttonText}>Modificar datos</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={upgradeLicenseLevel}>
-            <Text style={styles.buttonText}>Mejorar nivel de carnet</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={unsubscribeUser}>
-            <Text style={styles.buttonText}>Dar de baja</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => (handleNextPage(0), setInputValue(""))}
-          >
-            <Text
-              style={{
-                color: "#3369FF",
-                fontSize: 14,
-                textDecorationLine: "underline",
-              }}
+          {(user as IUserDTO).dni && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={gotoUpgradeLicenceLevel}
             >
-              {"Buscar otro usuario >>"}{" "}
-            </Text>
-          </TouchableOpacity>
+              <Text style={styles.buttonText}>Mejorar nivel de carnet</Text>
+            </TouchableOpacity>
+          )}
+          <LinkButton
+            text="Buscar otro usuario"
+            onPress={() => (
+              handleChangePage(pages.USER_SELECT), setInputValue("")
+            )}
+          />
         </View>
-        <View key={2} style={styles.page}>
-          <Text>Ingrese el nuevo dato del usuario: </Text>
+
+        {/* Update user's data page. */}
+        <View key={pages.UPDATE_DATA} style={styles.page}>
+          <Picker
+            selectedValue={fieldToUpdate}
+            style={styles.picker}
+            onValueChange={(itemValue: string) => setFieldToUpdate(itemValue)}
+          >
+            <Picker.Item
+              label="Actualizar Nombre"
+              value={fieldOptions.FIRST_NAME}
+            />
+            <Picker.Item
+              label="Actualizar Apellido"
+              value={fieldOptions.LAST_NAME}
+            />
+            {(user as IUserDTO).dni && (
+              <Picker.Item label="Actualizar DNI" value={fieldOptions.DNI} />
+            )}
+          </Picker>
+
           <View style={styles.inputContainer}>
             <CustomTextInput
-              placeholder={selectedValue}
+              placeholder={`Ingrese nuevo ${fieldToUpdate}`}
               value={inputValue}
               onChangeText={(text) => setInputValue(text)}
             />
@@ -289,43 +259,41 @@ const RUDUser = () => {
               <Text style={styles.textButtonUpdateData}>Actualizar</Text>
             </TouchableOpacity>
           </View>
-          <Dropdown
-            options={options}
-            onValueChange={(value: string) => setSelectedValue(value)}
-            selectedValue={selectedValue}
+
+          <LinkButton
+            text="Volver a datos del usuario >>"
+            onPress={() => handleChangePage(pages.USER_DATA)}
           />
         </View>
-        <View key={3} style={styles.page}>
+
+        {/* Upgrade user's licence page */}
+        <View key={pages.UPGRADE_LICENCE} style={styles.page}>
           <Text style={styles.instruction}>
             Cambiar nivel de carnet del usuario a{" "}
           </Text>
+
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => handleLevel(2)}
+              onPress={() => handleLevel(LicenceLevel.TRUSTED)}
               disabled={loading}
             >
               <Text style={styles.buttonText}>Confiado</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.button}
-              onPress={() => handleLevel(3)}
+              onPress={() => handleLevel(LicenceLevel.RESEARCHER)}
               disabled={loading}
             >
               <Text style={styles.buttonText}>Investigador</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => handleNextPage(1)}>
-            <Text
-              style={{
-                color: "#3369FF",
-                fontSize: 14,
-                textDecorationLine: "underline",
-              }}
-            >
-              {"Actualizar otros datos o dar de baja>>"}{" "}
-            </Text>
-          </TouchableOpacity>
+
+          <LinkButton
+            text="Volver a datos del usuario >>"
+            onPress={() => handleChangePage(pages.USER_DATA)}
+          />
         </View>
       </ScrollView>
     </View>
@@ -420,5 +388,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  picker: {
+    height: 50,
+    width: "100%",
+    borderRadius: 5,
+    backgroundColor: "#E6E6E6",
+    marginBottom: 10,
+  },
 });
+
 export default RUDUser;
