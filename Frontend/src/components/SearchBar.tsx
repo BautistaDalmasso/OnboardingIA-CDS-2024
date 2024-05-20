@@ -29,7 +29,7 @@ const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
         ))}
       </Picker>
       <SearchBar
-        placeholder="Buscar Prestamo"
+        placeholder="Buscar"
         onChangeText={(value) => setSearch(value)}
         value={search}
         platform="android"
