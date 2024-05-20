@@ -22,7 +22,7 @@ const CRUDuser = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const dniRegex = /^\d{11}$/;
   const [selectedValue, setSelectedValue] = useState(
-    "Seleccione dato a actualizar >>"
+    "Seleccione dato a actualizar >>",
   );
   const [name, setname] = useState("");
   const [lastName, setLastName] = useState("");
@@ -41,7 +41,7 @@ const CRUDuser = () => {
         setInputValue("");
         handleNextPage(0);
       };
-    }, [])
+    }, []),
   );
 
   const handleNextPage = (pageIndex: number) => {
@@ -55,7 +55,7 @@ const CRUDuser = () => {
     if (dni == "NO registra") {
       Alert.alert(
         "Error",
-        "El usuario NO tiene carnet regular ni dni registrados."
+        "El usuario NO tiene carnet regular ni dni registrados.",
       );
       return;
     }
@@ -99,7 +99,7 @@ const CRUDuser = () => {
     if (!inputValue) {
       Alert.alert(
         "Error",
-        "Por favor ingrese un " + selectedValue + " valido."
+        "Por favor ingrese un " + selectedValue + " valido.",
       );
       setInputValue("");
       return;
@@ -115,7 +115,7 @@ const CRUDuser = () => {
       if (dni === "NO registra") {
         Alert.alert(
           "Error",
-          "El usuario no registro su DNI, ni solicito su carnet."
+          "El usuario no registro su DNI, ni solicito su carnet.",
         );
         setInputValue("");
         return;
@@ -130,7 +130,7 @@ const CRUDuser = () => {
 
     Alert.alert(
       "",
-      "Se cambio el " + selectedValue + " del usuario exitosamente."
+      "Se cambio el " + selectedValue + " del usuario exitosamente.",
     );
     setInputValue("");
     handleNextPage(0);
@@ -142,7 +142,7 @@ const CRUDuser = () => {
       if (!emailRegex.test(inputValue)) {
         Alert.alert(
           "Por favor",
-          "Ingrese un correo valido y una contraseña de más de 6 caracteres."
+          "Ingrese un correo valido y una contraseña de más de 6 caracteres.",
         );
         setLoading(false);
         setInputValue("");

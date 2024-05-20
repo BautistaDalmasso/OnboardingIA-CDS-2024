@@ -37,7 +37,7 @@ export class LibrarianService {
 
   static async updateLastName(
     email: string,
-    new_last_name: string
+    new_last_name: string,
   ): Promise<IUserDTOs> {
     return baseFetch<void, IUserDTOs>({
       url: `${this.baseRoute}/update_lastName_user?user_email=${email}&new_user_last_name=${new_last_name}`,
@@ -51,6 +51,4 @@ export class LibrarianService {
       method: "GET",
     });
   }
-
-
 }

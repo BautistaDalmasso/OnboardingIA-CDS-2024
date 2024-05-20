@@ -18,6 +18,7 @@ import {
   IDowngradeUserRole,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
+import { ShowUserPage } from "../common/enums/Page";
 
 export class UserService {
   private static baseRoute: string = `${ServerAddress}users`;
@@ -130,16 +131,33 @@ export class UserService {
     });
   }
 
-  static async getAllUsers(page_number: number): Promise<IUser[]> {
+  static async getAllUsersByRole(
+    role: string,
+    page_number: number,
+  ): Promise<IUser[]> {
     try {
       const users = await baseFetch<void, IUser[]>({
-        url: `${this.baseRoute}/get_all_users?page_size=2&page_number=${page_number}`,
+        url: `${this.baseRoute}/get_all_users?page_size=${ShowUserPage.PAGE_SIZE}&page_number=${page_number}&role=${role}`,
         method: "GET",
       });
 
       return users;
     } catch (error) {
       console.error("Error fetching users:", error);
+      throw error;
+    }
+  }
+
+  static async getTotalUsers(role: string): Promise<IUser[]> {
+    try {
+      const value = await baseFetch<void, IUser[]>({
+        url: `${this.baseRoute}/users_length?role=${role}`,
+        method: "GET",
+      });
+
+      return value;
+    } catch (error) {
+      console.error("Error fetching users length:", error);
       throw error;
     }
   }

@@ -230,15 +230,18 @@ class UserService(DatabaseUser):
         except sqlite3.IntegrityError:
             return {"error": "No se pudo agregar bibliotecario"}
 
-    def get_all_users(self, page_size: int, page_number: int) -> List[UserDTO]:
+    def get_all_users(
+        self, page_size: int, page_number: int, role: str
+    ) -> List[UserDTO]:
         """Page numbering should start at 0"""
         offset = page_number * page_size
         query = """
             SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
             FROM users
+            WHERE role = ?
             LIMIT ? OFFSET ?;
         """
-        result = self.query_multiple_rows(query, (page_size, offset))
+        result = self.query_multiple_rows(query, (role, page_size, offset))
 
         return [self.create_user_data(user_data) for user_data in result]
 
@@ -274,6 +277,17 @@ class UserService(DatabaseUser):
             role=query_result[5],
             lastPermissionUpdate=query_result[6],
         )
+
+    def get_users_length(self, role: string) -> List[UserDTO]:
+        """Page numbering should start at 0"""
+        query = """
+                SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
+                FROM users
+                WHERE role = ?;
+            """
+        result = self.query_multiple_rows(query, (role,))
+
+        return [self.create_user_data(user_data) for user_data in result]
 
 
 def create_UserDTO(user: User) -> UserDTO:

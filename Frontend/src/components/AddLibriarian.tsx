@@ -10,30 +10,34 @@ import {
 import { useContextState } from "../ContexState";
 import { IUser } from "../common/interfaces/User";
 import { UserService } from "../services/userService";
+import { UserRole } from "../common/enums/user";
+import { Picker } from "@react-native-picker/picker";
+import { SearchBar } from "@rneui/themed";
+import { ShowUserPage } from "../common/enums/Page";
 
 const AddLibrarian = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const { contextState } = useContextState();
   const [requestedButtons, setRequestedButtons] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedRole, setSelectedRole] = useState(UserRole.BASIC);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data = await UserService.getAllUsers(currentPage);
-        setUsers(data);
+  const fetchUsers = async (role: string, page: number) => {
+    try {
+      const data = await UserService.getAllUsersByRole(role, page);
+      setUsers(data);
 
-        const librarianEmails = data
-          .filter((user) => user.role !== "basic")
-          .map((user) => user.email);
-        setRequestedButtons(librarianEmails);
-      } catch (error) {
-        console.error("Error al obtener usuarios:", error);
-      }
-    };
-
-    fetchUsers();
-  }, [currentPage]);
+      const librarianEmails = data
+        .filter((user) => user.role !== UserRole.BASIC)
+        .map((user) => user.email);
+      setRequestedButtons(librarianEmails);
+      getTotalUsers();
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+    }
+  };
 
   const handleAddLibrarian = async (user: IUser) => {
     try {
@@ -41,7 +45,7 @@ const AddLibrarian = () => {
         user.email,
         contextState.accessToken as string,
       );
-      if (response.role !== "basic") {
+      if (response.role !== UserRole.BASIC) {
         setRequestedButtons([...requestedButtons, user.email]);
         Alert.alert(`Bibliotecario ${user.email} agregado con éxito`);
       }
@@ -57,8 +61,10 @@ const AddLibrarian = () => {
         user.email,
         contextState.accessToken as string,
       );
-      if (response.role === "basic") {
-        setRequestedButtons([...requestedButtons, user.email]);
+      if (response.role === UserRole.BASIC) {
+        setRequestedButtons(
+          requestedButtons.filter((email) => email !== user.email),
+        );
         Alert.alert(`Bibliotecario ${user.email} eliminado con éxito`);
       }
     } catch (error) {
@@ -67,6 +73,32 @@ const AddLibrarian = () => {
     }
   };
 
+  const getTotalUsers = async () => {
+    try {
+      const response = await UserService.getTotalUsers(selectedRole);
+      const total = Math.ceil(response.length / ShowUserPage.PAGE_SIZE);
+      setTotalPages(total - 1);
+    } catch (error) {
+      console.log(error);
+      Alert.alert(`${error}`);
+    }
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.role === selectedRole &&
+      user.email.includes(searchTerm.toLowerCase()),
+  );
+
+  useEffect(() => {
+    fetchUsers(selectedRole, currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+    fetchUsers(selectedRole, 0);
+  }, [selectedRole]);
+
   const goToPreviousPage = () => {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
@@ -74,14 +106,31 @@ const AddLibrarian = () => {
   };
 
   const goToNextPage = () => {
-    setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages && filteredUsers.length > 0) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Usuarios</Text>
+      <Picker
+        selectedValue={selectedRole}
+        style={styles.picker}
+        onValueChange={(itemValue) => setSelectedRole(itemValue)}
+      >
+        <Picker.Item label="Básico" value={UserRole.BASIC} />
+        <Picker.Item label="Bibliotecario" value={UserRole.LIBRARIAN} />
+      </Picker>
+      <SearchBar
+        placeholder="Buscar por nombre"
+        onChangeText={(text) => setSearchTerm(text)}
+        value={searchTerm}
+        containerStyle={styles.searchBarContainer}
+        inputContainerStyle={styles.searchBarInputContainer}
+      />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <View key={user.email} style={styles.bookContainer}>
             <Text style={styles.bookTitle}>
               {user.firstName.toUpperCase() + " " + user.lastName.toUpperCase()}
@@ -93,20 +142,20 @@ const AddLibrarian = () => {
                 styles.button,
                 {
                   backgroundColor: requestedButtons.includes(user.email)
-                    ? "red"
+                    ? "#0047ab"
                     : "#007bff",
                 },
               ]}
               onPress={() =>
-                user.role !== "basic"
+                requestedButtons.includes(user.email)
                   ? handleDeleteLibrarian(user)
                   : handleAddLibrarian(user)
               }
             >
               <Text style={styles.buttonText}>
                 {requestedButtons.includes(user.email)
-                  ? "Bibliotecario"
-                  : "Agregar"}
+                  ? "Cambiar a básico"
+                  : "Cambiar a bibliotecario"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -118,10 +167,14 @@ const AddLibrarian = () => {
           onPress={goToPreviousPage}
           disabled={currentPage === 0}
         >
-          <Text style={styles.pageButtonText}>{"<<"} Página anterior</Text>
+          <Text style={styles.pageButtonText}>
+            {"<<"} Pág {currentPage}{" "}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.pageButton} onPress={goToNextPage}>
-          <Text style={styles.pageButtonText}>Siguiente página {">>"}</Text>
+          <Text style={styles.pageButtonText}>
+            Pág {currentPage + 1} {">>"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -131,7 +184,7 @@ const AddLibrarian = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f0f0f0",
     padding: 10,
     borderWidth: 1,
     borderColor: "#ddd",
@@ -177,24 +230,46 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   scrollContent: {
-    paddingBottom: 200,
+    paddingBottom: 50,
   },
   pageContainer: {
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
     justifyContent: "space-between",
-    position: "absolute",
-    bottom: 10,
-    left: 10,
-    right: 10,
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: "auto",
   },
   pageButton: {
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 5,
-    alignSelf: "center",
+    position: "static",
+    marginVertical: "auto",
   },
   pageButtonText: {
     color: "#000",
+  },
+  picker: {
+    backgroundColor: "#fff",
+    height: 50,
+    width: "auto",
+    alignSelf: "stretch",
+    marginBottom: 0,
+  },
+  searchBarContainer: {
+    backgroundColor: "transparent",
+    borderBottomColor: "transparent",
+    borderTopColor: "transparent",
+    paddingHorizontal: 0,
+    marginBottom: 0,
+  },
+  searchBarInputContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 5,
   },
 });
 

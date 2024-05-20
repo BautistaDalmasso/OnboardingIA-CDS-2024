@@ -165,6 +165,14 @@ async def delete_librarian(user: UpdateUserRoleDTO):
 
 
 @router.get("/get_all_users", response_model=List[UserDTO])
-async def get_all_users(page_size: int = Query(...), page_number: int = Query(...)):
-    result = user_service.get_all_users(page_size, page_number)
+async def get_all_users(
+    page_size: int = Query(...), page_number: int = Query(...), role: str = Query(...)
+):
+    result = user_service.get_all_users(page_size, page_number, role)
+    return result
+
+
+@router.get("/users_length", response_model=List[UserDTO])
+async def get_users_length(role: str = Query(...)):
+    result = user_service.get_users_length(role)
     return result

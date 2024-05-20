@@ -1,13 +1,5 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { RequestedLoansService } from "../services/requestedLoansService";
 import { useContextState } from "../ContexState";
 import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
@@ -24,28 +16,29 @@ const LibrarianLoans = () => {
 
       const loans = await RequestedLoansService.getAllLoans();
       setLoansList(loans);
-
     } catch (error) {
       console.error("Error al obtener los prestamos:", error);
     }
   };
 
   useEffect(() => {
-      fetchLoans();
+    fetchLoans();
   }, [contextState.isConnected]);
 
   return (
     <View style={styles.container}>
-        <Text style={styles.header}>Prestamos de usuarios</Text>
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            {loansList.map((book) => (
-              <View key={book.id} style={styles.bookContainer}>
-                <Text style={styles.bookTitle}>Título: {book.title} </Text>
-                <Text style={styles.bookTitle}>Usuario: {book.user_email}</Text>
-                <Text style={styles.cardLevel}>Vencimiento: {new Date(book.expiration_date).toLocaleDateString()}</Text>
-              </View>
-            ))}
-          </ScrollView>
+      <Text style={styles.header}>Prestamos de usuarios</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {loansList.map((book) => (
+          <View key={book.id} style={styles.bookContainer}>
+            <Text style={styles.bookTitle}>Título: {book.title} </Text>
+            <Text style={styles.bookTitle}>Usuario: {book.user_email}</Text>
+            <Text style={styles.cardLevel}>
+              Vencimiento: {new Date(book.expiration_date).toLocaleDateString()}
+            </Text>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };
@@ -92,4 +85,4 @@ const styles = StyleSheet.create({
   },
 });
 
-  export default LibrarianLoans;
+export default LibrarianLoans;
