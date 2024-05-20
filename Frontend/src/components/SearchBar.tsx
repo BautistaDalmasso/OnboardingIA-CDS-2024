@@ -4,13 +4,14 @@ import { SearchBar } from "@rneui/themed";
 import { Picker } from "@react-native-picker/picker";
 
 interface SearchBarComponentProps {
+  pickerItems: { label: string; value: string }[];
   search: string;
   setSearch: (search: string) => void;
   searchPicker: string;
   setSearchPicker: (criteria: string) => void;
 }
-
 const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
+  pickerItems,
   search,
   setSearch,
   searchPicker,
@@ -23,12 +24,12 @@ const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
         style={styles.picker}
         onValueChange={(itemValue: string) => setSearchPicker(itemValue)}
       >
-        <Picker.Item label="ISBN" value="isbn" />
-        <Picker.Item label="Título" value="title" />
-        <Picker.Item label="Autor" value="authors" />
+        {pickerItems.map((item) => (
+          <Picker.Item key={item.value} label={item.label} value={item.value} />
+        ))}
       </Picker>
       <SearchBar
-        placeholder="Buscar libro"
+        placeholder="Buscar Prestamo"
         onChangeText={(value) => setSearch(value)}
         value={search}
         platform="android"
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   picker: {
+    backgroundColor:"#EAEAEA",
     height: 50,
     width: "100%",
   },

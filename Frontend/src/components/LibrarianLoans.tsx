@@ -1,95 +1,125 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
+  StyleSheet,
 } from "react-native";
 import { RequestedLoansService } from "../services/requestedLoansService";
-import { useContextState } from "../ContexState";
 import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
+import SearchBarComponent from "./SearchBar";
 
 const LibrarianLoans = () => {
-  const { contextState } = useContextState();
-  const [loansList, setLoansList] = useState<ILoanInformationResponse[]>([]);
+    const [loans, setLoans] = useState<ILoanInformationResponse[]>([]);
+    const [search, setSearch] = useState("");
+    const [searchPicker, setSearchPicker] = useState("user_email");
+    const [pickerItems, setPickerItems ] = useState< {label: string ; value: string }[]>([]);
 
-  const fetchLoans = async () => {
-    try {
-      if (contextState.user === null) {
-        throw Error("No connected user.");
+    useEffect(() => {
+      const fetchBooks = async () => {
+        try {
+          const loans = await RequestedLoansService.getAllLoans();
+          setLoans(loans);
+          setPickerItems( [
+            { label: "E-mail del usuario", value: "user_email" },
+            { label: "Título del libro", value: "title" },
+          ]);
+        } catch (error) {
+          console.error("An error occurred, loans could not be retrieved:", error);
+        }
+      };
+
+      fetchBooks();
+    }, []);
+
+    const filteredLoans = loans.filter((loan) => {
+      switch (searchPicker) {
+        case "title":
+          return loan.title.toLowerCase().includes(search.toLowerCase());
+        case "user_email":
+          return loan.user_email.toLowerCase().includes(search.toLowerCase());
+        default:
+          return false;
       }
+    });
 
-      const loans = await RequestedLoansService.getAllLoans();
-      setLoansList(loans);
+    return (
+      <View style={styles.container}>
+        <Text style={styles.header}>Lista de Prestamos</Text>
+        <SearchBarComponent
+          pickerItems={pickerItems}
+          search={search}
+          setSearch={setSearch}
+          searchPicker={searchPicker}
+          setSearchPicker={setSearchPicker}
 
-    } catch (error) {
-      console.error("Error al obtener los prestamos:", error);
-    }
+        />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {filteredLoans.map((Loan) => (
+            <View key={Loan.id} style={styles.bookContainer}>
+              <Text style={styles.bookTitle}>{Loan.title}</Text>
+              <Text style={styles.bookTitle}>{Loan.user_email}</Text>
+              <Text style={styles.cardLevel}>
+                Vencimiento: {new Date(Loan.expiration_date).toLocaleDateString()}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    );
   };
 
-  useEffect(() => {
-      fetchLoans();
-  }, [contextState.isConnected]);
-
-  return (
-    <View style={styles.container}>
-        <Text style={styles.header}>Prestamos de usuarios</Text>
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            {loansList.map((book) => (
-              <View key={book.id} style={styles.bookContainer}>
-                <Text style={styles.bookTitle}>Título: {book.title} </Text>
-                <Text style={styles.bookTitle}>Usuario: {book.user_email}</Text>
-                <Text style={styles.cardLevel}>Vencimiento: {new Date(book.expiration_date).toLocaleDateString()}</Text>
-              </View>
-            ))}
-          </ScrollView>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    marginTop: 30,
-    textAlign: "center",
-  },
-  bookContainer: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  bookTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  cardLevel: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  scrollContent: {
-    paddingBottom: 200,
-  },
-});
+  const styles = StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      backgroundColor: "#f5f5f5",
+      padding: 10,
+      borderWidth: 1,
+      borderColor: "#ddd",
+      borderRadius: 8,
+      overflow: "hidden",
+    },
+    header: {
+      fontSize: 24,
+      fontWeight: "bold",
+      marginBottom: 20,
+      marginTop: 30,
+      textAlign: "center",
+    },
+    bookContainer: {
+      backgroundColor: "#fff",
+      borderRadius: 8,
+      padding: 20,
+      marginBottom: 15,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 3,
+    },
+    bookTitle: {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 5,
+    },
+    cardLevel: {
+      fontSize: 16,
+      marginBottom: 10,
+    },
+    button: {
+      backgroundColor: "#007bff",
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 5,
+      alignSelf: "flex-end",
+    },
+    buttonText: {
+      color: "#fff",
+      fontWeight: "bold",
+    },
+    scrollContent: {
+      paddingBottom: 200,
+    },
+  });
 
   export default LibrarianLoans;
