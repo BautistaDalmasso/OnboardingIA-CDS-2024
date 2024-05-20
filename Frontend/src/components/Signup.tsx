@@ -8,12 +8,14 @@ import { generateKeyPair } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
 import CustomTextInput from "./CustomTextInput";
 import useFinalizeLogin from "../hooks/useFinalizeLogin";
+import useInputChecks from "../hooks/useInputChecks";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const Signup = ({ navigation }: Props) => {
+  const { isValidEmail, isValidPassword } = useInputChecks();
   const [firstName, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,8 +23,6 @@ const Signup = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(false);
   const { authenticate, isBiometricAvailable } = useBiometrics();
   const { finalizeLogin } = useFinalizeLogin();
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = async () => {
     try {
@@ -33,11 +33,11 @@ const Signup = ({ navigation }: Props) => {
         );
         return;
       }
-      if (!emailRegex.test(email)) {
+      if (!isValidEmail(email)) {
         Alert.alert("Error", "Por favor ingrese un correo valido.");
         return;
       }
-      if (password.length < 6 || password.includes(" ")) {
+      if (!isValidPassword(password)) {
         Alert.alert(
           "Error",
           "Por favor ingrese una contraseña de 6 caracteres.",

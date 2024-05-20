@@ -14,14 +14,14 @@ import CustomTextInput from "./CustomTextInput";
 import TableDataUser from "./TableDataUser";
 import Dropdown from "./Dropdown";
 import { useContextState } from "../ContexState";
+import useRegexChecks from "../hooks/useInputChecks";
 
-const CRUDuser = () => {
+const RUDUser = () => {
   const { contextState } = useContextState();
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const dniRegex = /^\d{11}$/;
+  const { isValidEmail, isValidDni } = useRegexChecks();
   const [selectedValue, setSelectedValue] = useState(
     "Seleccione dato a actualizar >>",
   );
@@ -53,7 +53,7 @@ const CRUDuser = () => {
   };
 
   const upgradeLicenseLevel = async () => {
-    if (dni == "NO registra") {
+    if (dni == "NO registrado") {
       Alert.alert(
         "Error",
         "El usuario NO tiene carnet regular ni dni registrados.",
@@ -128,7 +128,7 @@ const CRUDuser = () => {
       );
     }
     if (selectedValue === options[2].label) {
-      if (dni === "NO registra") {
+      if (dni === "NO registrado") {
         Alert.alert(
           "Error",
           "El usuario no registro su DNI, ni solicito su carnet.",
@@ -136,7 +136,7 @@ const CRUDuser = () => {
         setInputValue("");
         return;
       }
-      if (!dniRegex.test(inputValue)) {
+      if (!isValidDni(inputValue)) {
         Alert.alert("Error", "Por favor ingrese un dni valido");
         setInputValue("");
         return;
@@ -159,7 +159,7 @@ const CRUDuser = () => {
   const handleLoadingData = async () => {
     try {
       setLoading(true);
-      if (!emailRegex.test(inputValue)) {
+      if (!isValidEmail(inputValue)) {
         Alert.alert("Por favor", "Ingrese un correo valido.");
         setLoading(false);
         setInputValue("");
@@ -169,6 +169,7 @@ const CRUDuser = () => {
         inputValue,
         contextState.accessToken as string,
       );
+
       if (!response.email) {
         Alert.alert("Error", "Usuario NO registrado");
         setLoading(false);
@@ -208,10 +209,6 @@ const CRUDuser = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleValueChange = (value: string) => {
-    setSelectedValue(value);
   };
 
   return (
@@ -294,7 +291,7 @@ const CRUDuser = () => {
           </View>
           <Dropdown
             options={options}
-            onValueChange={handleValueChange}
+            onValueChange={(value: string) => setSelectedValue(value)}
             selectedValue={selectedValue}
           />
         </View>
@@ -424,4 +421,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-export default CRUDuser;
+export default RUDUser;
