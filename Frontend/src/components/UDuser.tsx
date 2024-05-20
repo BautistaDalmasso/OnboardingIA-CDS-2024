@@ -13,16 +13,17 @@ import { LibrarianService } from "../services/librarianService";
 import CustomTextInput from "./CustomTextInput";
 import TableDataUser from "./TableDataUser";
 import Dropdown from "./Dropdown";
+import { useContextState } from "../ContexState";
 
 const CRUDuser = () => {
+  const { contextState } = useContextState();
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
-
   const scrollViewRef = useRef<ScrollView>(null);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const dniRegex = /^\d{11}$/;
   const [selectedValue, setSelectedValue] = useState(
-    "Seleccione dato a actualizar >>"
+    "Seleccione dato a actualizar >>",
   );
   const [name, setname] = useState("");
   const [lastName, setLastName] = useState("");
@@ -41,7 +42,7 @@ const CRUDuser = () => {
         setInputValue("");
         handleNextPage(0);
       };
-    }, [])
+    }, []),
   );
 
   const handleNextPage = (pageIndex: number) => {
@@ -55,7 +56,7 @@ const CRUDuser = () => {
     if (dni == "NO registra") {
       Alert.alert(
         "Error",
-        "El usuario NO tiene carnet regular ni dni registrados."
+        "El usuario NO tiene carnet regular ni dni registrados.",
       );
       return;
     }
@@ -68,7 +69,11 @@ const CRUDuser = () => {
   };
 
   const handleLevel = async (level: number) => {
-    await LibrarianService.updateLicense(email, level);
+    await LibrarianService.updateLicense(
+      email,
+      level,
+      contextState.accessToken as string,
+    );
 
     Alert.alert("", "¡Actualizacion de nivel de canet exitosa!");
 
@@ -79,7 +84,10 @@ const CRUDuser = () => {
   const unsubscribeUser = async () => {
     try {
       setLoading(true);
-      const response = await LibrarianService.deleteUser(inputValue);
+      const response = await LibrarianService.deleteUser(
+        inputValue,
+        contextState.accessToken as string,
+      );
 
       if (!response) {
         Alert.alert("", "¡Usuario dado de baja exitosamente!");
@@ -99,23 +107,31 @@ const CRUDuser = () => {
     if (!inputValue) {
       Alert.alert(
         "Error",
-        "Por favor ingrese un " + selectedValue + " valido."
+        "Por favor ingrese un " + selectedValue + " valido.",
       );
       setInputValue("");
       return;
     }
 
     if (selectedValue === options[0].label) {
-      await LibrarianService.updateName(email, inputValue);
+      await LibrarianService.updateName(
+        email,
+        inputValue,
+        contextState.accessToken as string,
+      );
     }
     if (selectedValue === options[1].label) {
-      await LibrarianService.updateLastName(email, inputValue);
+      await LibrarianService.updateLastName(
+        email,
+        inputValue,
+        contextState.accessToken as string,
+      );
     }
     if (selectedValue === options[2].label) {
       if (dni === "NO registra") {
         Alert.alert(
           "Error",
-          "El usuario no registro su DNI, ni solicito su carnet."
+          "El usuario no registro su DNI, ni solicito su carnet.",
         );
         setInputValue("");
         return;
@@ -125,12 +141,16 @@ const CRUDuser = () => {
         setInputValue("");
         return;
       }
-      await LibrarianService.updateDNI(email, inputValue);
+      await LibrarianService.updateDNI(
+        email,
+        inputValue,
+        contextState.accessToken as string,
+      );
     }
 
     Alert.alert(
       "",
-      "Se cambio el " + selectedValue + " del usuario exitosamente."
+      "Se cambio el " + selectedValue + " del usuario exitosamente.",
     );
     setInputValue("");
     handleNextPage(0);
@@ -140,15 +160,15 @@ const CRUDuser = () => {
     try {
       setLoading(true);
       if (!emailRegex.test(inputValue)) {
-        Alert.alert(
-          "Por favor",
-          "Ingrese un correo valido y una contraseña de más de 6 caracteres."
-        );
+        Alert.alert("Por favor", "Ingrese un correo valido.");
         setLoading(false);
         setInputValue("");
         return;
       }
-      const response = await LibrarianService.consultUser(inputValue);
+      const response = await LibrarianService.consultUser(
+        inputValue,
+        contextState.accessToken as string,
+      );
       if (!response.email) {
         Alert.alert("Error", "Usuario NO registrado");
         setLoading(false);
@@ -159,10 +179,10 @@ const CRUDuser = () => {
       handleNextPage(1);
       console.log(response);
       const userData = [
-        response.email || "NO registra",
-        response.dni || "NO registra",
-        response.firstName || "NO registra",
-        response.lastName || "NO registra",
+        response.email || "NO registrado",
+        response.dni || "NO registrado",
+        response.firstName || "NO registrado",
+        response.lastName || "NO registrado",
       ];
 
       setname(userData[2]);

@@ -40,7 +40,7 @@ async def create_requested_book(book: LoanDTO, token=Depends(HTTPBearer())):
             raise HTTPException(status_code=400, detail=str(e))
     else:
         raise HTTPException(
-            status_code=401, detail="No tienes permisos para solicitar este libro"
+            status_code=403, detail="No tienes permisos para solicitar este libro"
         )
 
 
@@ -51,18 +51,36 @@ async def book_loans_by_user_email(user_email: str):
 
 
 @router.get("/loan_by_email", response_model=list[LoanInformationDTO])
-async def book_loans_by_user_email(user_email: str):
-    result = loan_service.consult_book_loans_by_user_email(user_email)
-    return result
+async def book_loans_by_user_email(user_email: str, token=Depends(HTTPBearer())):
+    token_data = await verify_token(token.credentials)
+
+    if token_data.email == user_email or token_data.role == "librarian":
+        result = loan_service.consult_book_loans_by_user_email(user_email)
+        return result
+
+    raise HTTPException(
+        status_code=403,
+        detail="No puedes acceder a prestamos de otro usario sin ser bibliotecario.",
+    )
 
 
 @router.get("/all_loans", response_model=list[LoanInformationDTO])
-async def all_book_loans():
+async def all_book_loans(token=Depends(HTTPBearer())):
+    token_data = await verify_token(token.credentials)
+
+    if token_data.role != "librarian":
+        raise HTTPException(status_code=403, detail="Solo bibliotecarios.")
+
     result = loan_service.consult_all_book_loans()
     return result
 
 
 @router.get("/loans_by_title", response_model=list[LoanInformationDTO])
-async def book_loans_by_title(title: str):
+async def book_loans_by_title(title: str, token=Depends(HTTPBearer())):
+    token_data = await verify_token(token.credentials)
+
+    if token_data.role != "librarian":
+        raise HTTPException(status_code=403, detail="Solo bibliotecarios.")
+
     result = loan_service.consult_book_loans_by_title(title)
     return result

@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -29,8 +29,6 @@ const Stack = createStackNavigator();
 
 const Router = () => {
   const { contextState } = useContextState();
-
-  useEffect(() => {console.log((contextState.user?.role))})
 
   return (
     <NavigationContainer>
@@ -87,17 +85,20 @@ const Router = () => {
                 <Stack.Screen
                   name={Routes.RequestLoans}
                   component={RequestLoans}
-                  />
+                />
 
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
 
-                  {/* Librarian components */}
-                  {contextState.user.role === 'librarian' &&
+                {/* Librarian components */}
+                {contextState.user.role === "librarian" && (
                   <>
-                  <Stack.Screen name={Routes.LibrarianLoans} component={LibrarianLoans} />
-                  <Stack.Screen name={Routes.UDuser} component={UDuser} />
+                    <Stack.Screen
+                      name={Routes.LibrarianLoans}
+                      component={LibrarianLoans}
+                    />
+                    <Stack.Screen name={Routes.UDuser} component={UDuser} />
                   </>
-                  }
+                )}
 
                 <Drawer.Screen
                   name={Routes.RegisterFace}

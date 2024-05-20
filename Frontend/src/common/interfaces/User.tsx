@@ -55,11 +55,10 @@ export interface IDeviceUIDResponse {
   deviceUID: number;
 }
 
-export interface IUserDTOs {
+export interface IUserDTO {
   firstName: string;
   lastName: string;
   email: string;
   dni?: string;
   licenceLevel?: number;
-
 }
