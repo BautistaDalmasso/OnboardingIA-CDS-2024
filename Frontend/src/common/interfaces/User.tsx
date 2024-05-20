@@ -54,3 +54,12 @@ export interface IUpgradeBasicResponse {
 export interface IDeviceUIDResponse {
   deviceUID: number;
 }
+
+export interface IUserDTOs {
+  firstName: string;
+  lastName: string;
+  email: string;
+  dni?: string;
+  licenceLevel?: number;
+
+}

@@ -22,6 +22,8 @@ import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
 import ViewQR from "./src/components/ViewQR";
+import UDuser from "./src/components/UDuser";
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -34,6 +36,7 @@ const Router = () => {
         screenOptions={{ headerTitle: "", headerTransparent: true }}
       >
         <Drawer.Screen name={Routes.Home} component={Home} />
+
         {contextState.isConnected ? (
           <>
             <Stack.Screen
@@ -77,12 +80,16 @@ const Router = () => {
                       name={Routes.Licence}
                       component={RequestLicence}
                     />
+                    {contextState.user.role!='basic'&&
+                    <Stack.Screen name={Routes.UDuser} component={UDuser} />
+                    }
                   </>
                 )}
                 <Stack.Screen
                   name={Routes.RequestLoans}
                   component={RequestLoans}
                 />
+
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
                 <Stack.Screen name={Routes.LibrarianLoans} component={LibrarianLoans} />
                 <Drawer.Screen

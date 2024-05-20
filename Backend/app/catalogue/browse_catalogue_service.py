@@ -9,7 +9,7 @@ class BrowseCatalogueService(DatabaseUser):
             """
             SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                 book.edition, book.abstract, book.description, book.ddcClass,
-                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '')) AS authors,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '') || '|') AS authors,
                 GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
@@ -27,6 +27,94 @@ class BrowseCatalogueService(DatabaseUser):
 
         return create_marc_book_data(result)
 
+    def browse_by_title(self, book_title: str) -> list[MarcBookData]:
+        results = self.query_multiple_rows(
+            """
+            SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '') || '|') AS authors,
+                GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
+            FROM book
+                LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
+                LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
+            WHERE book.title LIKE ?
+            GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                    book.edition, book.abstract, book.description, book.ddcClass;
+            """,
+            (f"%{book_title}%",),
+        )
+
+        return [create_marc_book_data(row) for row in results]
+
+    def browse_by_author(self, author_name: str) -> list[MarcBookData]:
+        results = self.query_multiple_rows(
+            """
+            SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '') || '|') AS authors,
+                GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
+            FROM book
+                LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
+                LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
+            WHERE book.isbn IN (
+                SELECT bookAuthor.isbn
+                FROM bookAuthor
+                WHERE bookAuthor.authorName = ?
+            )
+            GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                    book.edition, book.abstract, book.description, book.ddcClass;
+            """,
+            (author_name,),
+        )
+
+        return [create_marc_book_data(row) for row in results]
+
+    def browse_by_publisher(self, publisher_name: str) -> list[MarcBookData]:
+        results = self.query_multiple_rows(
+            """
+            SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '') || '|') AS authors,
+                GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
+            FROM book
+                LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
+                LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
+            WHERE bookPublisher.publisher = ?
+            GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                    book.edition, book.abstract, book.description, book.ddcClass;
+            """,
+            (publisher_name,),
+        )
+
+        return [create_marc_book_data(row) for row in results]
+
+    def browse_by_topic(self, topic_name: str) -> list[MarcBookData]:
+        results = self.query_multiple_rows(
+            """
+            SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                book.edition, book.abstract, book.description, book.ddcClass,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '') || '|') AS authors,
+                GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
+            FROM book
+                LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
+                LEFT JOIN bookPublisher ON book.isbn = bookPublisher.isbn
+                LEFT JOIN bookTopic ON book.isbn = bookTopic.isbn
+            WHERE book.isbn IN (
+                SELECT bookTopic.isbn
+                FROM bookTopic
+                WHERE bookTopic.topic = ?
+            )
+            GROUP BY book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
+                    book.edition, book.abstract, book.description, book.ddcClass;
+            """,
+            (topic_name,),
+        )
+
+        return [create_marc_book_data(row) for row in results]
+
     def browse_books_by_page(
         self, page_size: int, page_number: int
     ) -> list[MarcBookData]:
@@ -34,7 +122,7 @@ class BrowseCatalogueService(DatabaseUser):
             f"""
             SELECT book.isbn, book.title, book.place, bookPublisher.publisher, book.dateIssued,
                 book.edition, book.abstract, book.description, book.ddcClass,
-                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '')) AS authors,
+                GROUP_CONCAT(DISTINCT bookAuthor.authorName || '~~' || COALESCE(bookAuthor.role, '') || '|') AS authors,
                 GROUP_CONCAT(DISTINCT bookTopic.topic) AS topics
             FROM book
                 LEFT JOIN bookAuthor ON book.isbn = bookAuthor.isbn
@@ -71,16 +159,15 @@ def create_marc_book_data(query_result) -> MarcBookData:
 
 
 def split_authors(authors_string: str) -> list[BookContributor]:
-    authors = authors_string.split(",")
-
-    grouped_authors = [",".join(authors[i : i + 2]) for i in range(0, len(authors), 2)]
+    authors = authors_string.strip("|").split("|,")
 
     book_contributors = []
 
-    for author_info in grouped_authors:
+    for author_info in authors:
         name_role = author_info.split("~~")
+
         role = None if name_role[1] == "" else name_role[1]
-        book_contributors.append(BookContributor(name=name_role[0], role=name_role[1]))
+        book_contributors.append(BookContributor(name=name_role[0], role=role))
 
     return book_contributors
 

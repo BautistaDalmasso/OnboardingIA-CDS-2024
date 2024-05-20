@@ -1,4 +1,5 @@
 from enum import auto
+import json
 import sqlite3
 from app.models import auto_index
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
