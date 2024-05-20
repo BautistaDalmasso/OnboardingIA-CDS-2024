@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   ScrollView,
   ImageBackground,
 } from "react-native";
@@ -32,8 +31,9 @@ const MyLoans = () => {
         throw Error("No connected user.");
       }
 
-      const loans = await RequestedLoansService.getLoans(
+      const loans = await RequestedLoansService.getLoansByEmail(
         contextState.user.email,
+        contextState.accessToken as string,
       );
 
       setBookList(loans);

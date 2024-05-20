@@ -5,18 +5,10 @@ import { baseFetch } from "./fetch";
 export class RequestedLoansService {
   private static loansRoute = `${ServerAddress}loans`;
 
-  static async getLoans(userEmail: string) {
-    const result = await baseFetch<void, ILoanInformationResponse[]>({
-      url: `${this.loansRoute}/user_loans?user_email=${userEmail}`,
-      method: `GET`,
-    });
-    return result;
-  }
-
-// esta planteado arriba pero este nombre es mas apropiado dejar momentaneamente para no romper otros componentes
-  static async getLoansByEmail(email: string) {
+  static async getLoansByEmail(email: string, token: string) {
     try {
       const loans = await baseFetch<void, ILoanInformationResponse[]>({
+        token: token,
         url: `${this.loansRoute}/loan_by_email?user_email=${email}`,
         method: "GET",
       });
@@ -28,9 +20,10 @@ export class RequestedLoansService {
     }
   }
 
-  static async getLoansByTitle(title: string) {
+  static async getLoansByTitle(title: string, token: string) {
     try {
       const loans = await baseFetch<void, ILoanInformationResponse[]>({
+        token: token,
         url: `${this.loansRoute}/loans_by_title?title=${title}`,
         method: "GET",
       });
@@ -42,9 +35,10 @@ export class RequestedLoansService {
     }
   }
 
-  static async getAllLoans(): Promise<ILoanInformationResponse[]> {
+  static async getAllLoans(token: string) {
     try {
       const loans = await baseFetch<void, ILoanInformationResponse[]>({
+        token: token,
         url: `${this.loansRoute}/all_loans`,
         method: "GET",
       });

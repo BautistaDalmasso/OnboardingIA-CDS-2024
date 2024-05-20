@@ -8,18 +8,21 @@ import {
 import { RequestedLoansService } from "../services/requestedLoansService";
 import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
 import SearchBarComponent from "./SearchBar";
+import { useContextState } from "../ContexState";
 
 const LibrarianLoans = () => {
+    const { contextState } = useContextState()
     const [loans, setLoans] = useState<ILoanInformationResponse[]>([]);
     const [searchValue, setSearchValue] = useState("");
     const [filterCategory, setFilterCategory] = useState("user_email");
     const [pickerItems, setPickerItems ] = useState< {label: string ; value: string }[]>([]);
     const [requestedButton, setRequestedButton] = useState<string[]>([]);
     const [showAlert, setShowAlert] = useState(false);
+
   useEffect(() => {
      const fetchLoans = async () => {
        try {
-        const loans = await RequestedLoansService.getAllLoans();
+        const loans = await RequestedLoansService.getAllLoans(contextState.accessToken as string);
           setLoans(loans);
 
           setPickerItems( [
@@ -36,7 +39,7 @@ const LibrarianLoans = () => {
 
     const [fetchLoans, setFetchLoans] = useState(() => async () => {
       try {
-        const loans = await RequestedLoansService.getAllLoans();
+        const loans = await RequestedLoansService.getAllLoans(contextState.accessToken as string);
         setLoans(loans);
         setShowAlert(false);
         setSearchValue ("");
@@ -75,10 +78,10 @@ const LibrarianLoans = () => {
       };
 
       const conductSearchByEmail = async () => {
-        return await RequestedLoansService.getLoans(searchValue);
+        return await RequestedLoansService.getLoansByEmail(searchValue, contextState.accessToken as string);
       };
       const conductSearchByTitle = async () => {
-        return await RequestedLoansService.getLoansByTitle(searchValue);
+        return await RequestedLoansService.getLoansByTitle(searchValue, contextState.accessToken as string);
       };
 
     return (
