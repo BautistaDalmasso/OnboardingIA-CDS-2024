@@ -1,5 +1,6 @@
 import pytest
 
+from app.catalogue.book_models import MarcBookData
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
 from app.file_paths import CATALOGUE_PATH
 
@@ -30,21 +31,85 @@ def test_book_with_different_author_roles(bc_service):
 
     result = bc_service.browse_by_isbn(isbn)
 
+    author_roles = {
+        "Vedda, Miguel": "creator",
+        "Burello, Marcelo Gabriel": "int.",
+        "Setton, Román": "col.",
+    }
+
+    assert_authors_with_roles(result.authors, author_roles)
+
+
+def test_book_with_single_word_author_name(bc_service):
+    isbn = "9789870409229"
+
+    result = bc_service.browse_by_isbn(isbn)
+
+    author_roles = {
+        "Saki": "creator",
+        "Piñeiro, Claudia": "pról.",
+        "Sordi, Fabiana A.": "sel.",
+    }
+
+    assert_authors_with_roles(result.authors, author_roles)
+
+
+def test_browse_by_title(bc_service):
+    isbns = ["9789875662445", "9789501303445"]
+
+    result = bc_service.browse_by_title("Antología")
+
+    assert_isbns_in_result(isbns, result)
+
+
+def test_browse_by_author(bc_service):
+    isbns = [
+        "9500420457",
+        "9500506626",
+        "9789501303445",
+    ]
+    result = bc_service.browse_by_author("Borges, Jorge Luis")
+
+    assert_isbns_in_result(isbns, result)
+
+
+def test_browse_by_publisher(bc_service):
+    isbns = [
+        "9789875662834",
+        "9789875662445",
+    ]
+    result = bc_service.browse_by_publisher("Debolsillo")
+
+    assert_isbns_in_result(isbns, result)
+
+
+def test_browse_by_topic(bc_service):
+    isbns = [
+        "9789875662445",
+        "9789501303445",
+        "9789875662834",
+    ]
+    result = bc_service.browse_by_topic("LITERATURA")
+
+    assert_isbns_in_result(isbns, result)
+
+
+def assert_authors_with_roles(authors, author_roles: dict[str, str]):
     author_names = []
 
-    for author in result.authors:
-        if author.name == "Vedda, Miguel":
-            assert author.role == "creator"
-        elif author.name == "Burello, Marcelo Gabriel":
-            assert author.role == "int."
-        elif author.name == "Setton, Román":
-            assert author.role == "col."
-
+    for author in authors:
         author_names.append(author.name)
 
-    assert set(author_names) == set(
-        ["Vedda, Miguel", "Burello, Marcelo Gabriel", "Setton, Román"]
-    )
+        assert author.role == author_roles[author.name]
+
+    assert set(author_names) == author_roles.keys()
+
+
+def assert_isbns_in_result(expected_isbns: list[str], result: list[MarcBookData]):
+    result_isbns = [book.isbn for book in result]
+
+    for isbn in expected_isbns:
+        assert isbn in result_isbns
 
 
 def compare_with_file(result, read_from_file):

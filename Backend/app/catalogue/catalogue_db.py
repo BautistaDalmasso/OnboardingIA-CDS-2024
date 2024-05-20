@@ -21,6 +21,12 @@ def initialize_database(db_path: Path):
     )
 
     execute_in_database(
+        "CREATE INDEX IF NOT EXISTS idx_book_title ON book (title);",
+        tuple(),
+        db_path,
+    )
+
+    execute_in_database(
         """CREATE TABLE IF NOT EXISTS author
                            (name TEXT PRIMARY KEY)""",
         tuple(),
