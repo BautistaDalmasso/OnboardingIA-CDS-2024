@@ -17,5 +17,5 @@ export enum Routes {
   TempQr = "Escanear QR",
   ViewQr = "Ver QR",
   UDuser = "Actualización de usuario",
-  LibrarianLoans = "Prestamos solicitados por usuarios"
+  LibrarianLoans = "Prestamos solicitados por usuarios",
 }

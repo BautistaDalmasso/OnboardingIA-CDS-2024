@@ -9,8 +9,8 @@ import {
 } from "../common/interfaces/Book";
 import { useContextState } from "../ContexState";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import SearchBarComponent from "./SearchBar";
 import BookListItem from "./BookListItem";
+import SearchBarComponent from "./BooksSearchBar";
 
 //TODO: refactor
 const RequestLoans = () => {
