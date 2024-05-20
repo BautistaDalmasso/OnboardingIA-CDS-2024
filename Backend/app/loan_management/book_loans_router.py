@@ -47,3 +47,9 @@ async def create_requested_book(book: LoanDTO, token=Depends(HTTPBearer())):
 async def book_loans_by_user_email(user_email: str):
     result = loan_service.consult_book_loans_by_user_email(user_email)
     return result
+
+
+@router.get("/all_loans", response_model=list[LoanInformationDTO])
+async def all_book_loans():
+    result = loan_service.consult_all_book_loans()
+    return result

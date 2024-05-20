@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
 import { LibraryService } from "../services/LibraryService";
 import { LoanService } from "../services/LoanManagementService";
 import {
@@ -16,8 +9,8 @@ import {
 } from "../common/interfaces/Book";
 import { useContextState } from "../ContexState";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LicenceLevel, LicenceName } from "../common/enums/licenceLevels";
 import SearchBarComponent from "./SearchBar";
+import BookListItem from "./BookListItem";
 
 //TODO: refactor
 const RequestLoans = () => {
@@ -26,8 +19,8 @@ const RequestLoans = () => {
   const [requestState, setRequestState] = useState("");
   const [requestedButton, setRequestedButton] = useState<string[]>([]);
   const [requestedBooks] = useState<ILoanWithTitle[]>([]);
-  const [search, setSearch] = useState("");
-  const [searchPicker, setSearchPicker] = useState("title");
+  const [searchValue, setSearchValue] = useState("");
+  const [filterCategory, setFilterCategory] = useState("title");
 
   const handleRequestedBook = (book: ILoanWithTitle) => {
     requestedBooks.push(book);
@@ -41,16 +34,16 @@ const RequestLoans = () => {
     return requestedButton.includes(isbn);
   };
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const books = await LibraryService.getBooks();
-        setBooks(books);
-      } catch (error) {
-        console.error("Error al obtener libros:", error);
-      }
-    };
+  const fetchBooks = async () => {
+    try {
+      const books = await LibraryService.getBooks();
+      setBooks(books);
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchBooks();
   }, []);
 
@@ -133,70 +126,66 @@ const RequestLoans = () => {
     }
   };
 
-  const licenceLevelToStr = (licenceLevel: number) => {
-    switch (licenceLevel) {
-      case LicenceLevel.NONE:
-        return LicenceName.NONE;
-      case LicenceLevel.REGULAR:
-        return LicenceName.REGULAR;
-      case LicenceLevel.TRUSTED:
-        return LicenceName.TRUSTED;
-      case LicenceLevel.RESEARCHER:
-        return LicenceName.RESEARCHER;
-      default:
-        return LicenceLevel.REGULAR;
+  const conductSearch = async () => {
+    try {
+      let books: IBookWithLicence[] = [];
+
+      if (filterCategory === "isbn") {
+        books = await conductSearchByIsbn();
+      } else {
+        books = await conductSearchByFilter();
+      }
+
+      setBooks(books);
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
     }
   };
 
-  const filteredBooks = books.filter((book) => {
-    switch (searchPicker) {
-      case "isbn":
-        return book.book_data.isbn.toLowerCase().includes(search.toLowerCase());
-      case "title":
-        return book.book_data.title
-          .toLowerCase()
-          .includes(search.toLowerCase());
-      case "authors":
-        return book.book_data.authors.includes(search);
-      default:
-        return false;
+  const conductSearchByIsbn = async () => {
+    return await LibraryService.getBookByISBN(searchValue);
+  };
+
+  const conductSearchByFilter = async () => {
+    return await LibraryService.getFilteredBooks(filterCategory, searchValue);
+  };
+
+  const conductSearchByButton = async (
+    filterCategory: string,
+    searchValue: string,
+  ) => {
+    try {
+      const books = await LibraryService.getFilteredBooks(
+        filterCategory,
+        searchValue,
+      );
+
+      setBooks(books);
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
     }
-  });
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Libros</Text>
       <SearchBarComponent
-        search={search}
-        setSearch={setSearch}
-        searchPicker={searchPicker}
-        setSearchPicker={setSearchPicker}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        filterCategory={filterCategory}
+        setFilterCategory={setFilterCategory}
+        onSearch={conductSearch}
+        onClear={fetchBooks}
       />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {filteredBooks.map((book) => (
-          <View key={book.book_data.isbn} style={styles.bookContainer}>
-            <Text style={styles.bookTitle}>{book.book_data.title}</Text>
-            <Text style={styles.cardLevel}>
-              Carnet: {licenceLevelToStr(book.licence_required)}
-            </Text>
-            <TouchableOpacity
-              style={[
-                styles.button,
-                {
-                  backgroundColor: isBookRequested(book.book_data.isbn)
-                    ? "#ccc"
-                    : "#007bff",
-                },
-              ]}
-              onPress={() => handleLoanRequest(book)}
-              disabled={isBookRequested(book.book_data.isbn)}
-            >
-              <Text style={styles.buttonText}>
-                {isBookRequested(book.book_data.isbn)
-                  ? "Solicitado"
-                  : "Solicitar"}
-              </Text>
-            </TouchableOpacity>
+        {books.map((book) => (
+          <View style={styles.bookContainer} key={book.book_data.isbn}>
+            <BookListItem
+              book={book}
+              isBookRequested={isBookRequested}
+              handleLoanRequest={handleLoanRequest}
+              handleButtonSearch={conductSearchByButton}
+            />
           </View>
         ))}
       </ScrollView>
@@ -231,18 +220,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
+    width: "100%",
   },
   bookTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   cardLevel: {
     fontSize: 16,
     marginBottom: 10,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   button: {
-    backgroundColor: "#007bff",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

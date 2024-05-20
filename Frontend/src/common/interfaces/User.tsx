@@ -74,3 +74,11 @@ export interface IDowngradeUserRole {
   role: string;
   email: string;
 }
+
+export interface IUserDTOs {
+  firstName: string;
+  lastName: string;
+  email: string;
+  dni?: string;
+  licenceLevel?: number;
+}

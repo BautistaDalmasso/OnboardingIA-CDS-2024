@@ -1,4 +1,5 @@
 from enum import auto
+import json
 import sqlite3
 from app.models import auto_index
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
@@ -92,6 +93,16 @@ class LoanService(DatabaseUser):
             INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
             WHERE loan.userEmail = ?""",
             (email,),
+        )
+
+        return [self.create_loan_data(entry) for entry in loans]
+
+    def consult_all_book_loans(self) -> List[LoanInformationDTO]:
+        loans = self.query_multiple_rows(
+            """SELECT loan.*, bookInventory.isbn
+            FROM loan
+            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber""",
+            tuple(),
         )
 
         return [self.create_loan_data(entry) for entry in loans]
