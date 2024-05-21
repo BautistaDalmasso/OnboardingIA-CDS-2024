@@ -1,5 +1,5 @@
 import { ServerAddress } from "../common/consts/serverAddress";
-import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 import { baseFetch } from "./fetch";
 
 export class RequestedLoansService {
@@ -7,7 +7,7 @@ export class RequestedLoansService {
 
   static async getLoansByEmail(email: string, token: string) {
     try {
-      const loans = await baseFetch<void, ILoanInformationResponse[]>({
+      const loans = await baseFetch<void, ILoanInformation[]>({
         token: token,
         url: `${this.loansRoute}/loan_by_email?user_email=${email}`,
         method: "GET",
@@ -22,7 +22,7 @@ export class RequestedLoansService {
 
   static async getLoansByTitle(title: string, token: string) {
     try {
-      const loans = await baseFetch<void, ILoanInformationResponse[]>({
+      const loans = await baseFetch<void, ILoanInformation[]>({
         token: token,
         url: `${this.loansRoute}/loans_by_title?title=${title}`,
         method: "GET",
@@ -37,7 +37,7 @@ export class RequestedLoansService {
 
   static async getAllLoans(token: string) {
     try {
-      const loans = await baseFetch<void, ILoanInformationResponse[]>({
+      const loans = await baseFetch<void, ILoanInformation[]>({
         token: token,
         url: `${this.loansRoute}/all_loans`,
         method: "GET",

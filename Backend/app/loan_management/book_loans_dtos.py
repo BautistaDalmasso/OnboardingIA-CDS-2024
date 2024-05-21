@@ -6,32 +6,27 @@ from pydantic import BaseModel
 from app.models import auto_index
 
 
+LOAN_STATUS = (
+    Literal["reserved"]
+    | Literal["loaned"]
+    | Literal["reservation_canceled"]
+    | Literal["loan_return_overdue"]
+    | Literal["returned"]
+)
+
+
 class LoanInformationDTO(BaseModel):
-    id: int
     inventory_number: int
+    isbn: str
     title: str
     expiration_date: datetime
     user_email: str
+    loan_status: LOAN_STATUS
 
 
-class LIDI(auto_index):
-    """Indexes for LoanInformationDTO"""
-
-    id = auto()
-    inventory_number = auto()
-    title = auto()
-    expiration_date = auto()
-    user_email = auto()
-
-
-class LoanDTO(BaseModel):
+class ReservationRequestDTO(BaseModel):
     isbn: str
     expiration_date: datetime
-    user_email: str
-
-
-class RequestedBookDTO(BaseModel):
-    isbn: str
     user_email: str
 
 

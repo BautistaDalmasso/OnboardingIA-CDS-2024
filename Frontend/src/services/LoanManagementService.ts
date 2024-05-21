@@ -1,16 +1,19 @@
 import { ServerAddress } from "../common/consts/serverAddress";
 import { baseFetch } from "./fetch";
-import { IRequestedBook, ILoan } from "../common/interfaces/Book";
-import { ILoanRequestResponse } from "../common/interfaces/LoanReqResponse";
+import { IReservationRequest } from "../common/interfaces/Book";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 
 export class LoanService {
   private static baseRoute: string = `${ServerAddress}loans`;
 
   constructor() {}
-  static async createRequestedBook(book: ILoan, token: string) {
+  static async requestBookReservation(
+    book: IReservationRequest,
+    token: string,
+  ) {
     try {
-      const response = await baseFetch<ILoan, ILoanRequestResponse>({
-        url: `${this.baseRoute}/borrow`,
+      const response = await baseFetch<IReservationRequest, ILoanInformation>({
+        url: `${this.baseRoute}/reserve`,
         method: "POST",
         data: book,
         token,
