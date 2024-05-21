@@ -11,3 +11,18 @@ export enum LicenceName {
   TRUSTED = "Confiado",
   RESEARCHER = "Investigador",
 }
+
+export const licenceLevelToStr = (licenceLevel: number) => {
+  switch (licenceLevel) {
+    case LicenceLevel.NONE:
+      return LicenceName.NONE;
+    case LicenceLevel.REGULAR:
+      return LicenceName.REGULAR;
+    case LicenceLevel.TRUSTED:
+      return LicenceName.TRUSTED;
+    case LicenceLevel.RESEARCHER:
+      return LicenceName.RESEARCHER;
+    default:
+      return LicenceName.REGULAR;
+  }
+};

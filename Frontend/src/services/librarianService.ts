@@ -15,22 +15,14 @@ export class LibrarianService {
     });
   }
 
-  static async deleteUser(email: string, token: string): Promise<IUserDTO> {
-    return baseFetch<void, IUserDTO>({
-      token: token,
-      url: `${this.baseRoute}/delete_user?user_email=${email}`,
-      method: "GET",
-    });
-  }
-
-  static async updateLicense(
+  static async updateLicence(
     email: string,
     level: number,
     token: string,
   ): Promise<IUserDTO> {
     return baseFetch<void, IUserDTO>({
       token: token,
-      url: `${this.baseRoute}/update_license_user?user_email=${email}&level=${level}`,
+      url: `${this.baseRoute}/update_licence_user?user_email=${email}&level=${level}`,
       method: "GET",
     });
   }

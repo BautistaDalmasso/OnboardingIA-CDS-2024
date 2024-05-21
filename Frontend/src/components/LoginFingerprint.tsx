@@ -13,29 +13,27 @@ import { NavigationProp } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { Routes } from "../../src/common/enums/routes";
 import { UserService } from "../services/userService";
-import { useContextState } from "../ContexState";
 import { encryptWithPrivateKey } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
 import useFinalizeLogin from "../hooks/useFinalizeLogin";
+import useInputChecks from "../hooks/useInputChecks";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const LoginFingerprint = ({ navigation }: Props) => {
+  const { isValidEmail } = useInputChecks();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const { setContextState } = useContextState();
   const { authenticate } = useBiometrics();
   const { finalizeLogin } = useFinalizeLogin();
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleLoginFingerprint = async () => {
     try {
       setLoading(true);
 
-      if (!emailRegex.test(email)) {
+      if (!isValidEmail(email)) {
         Alert.alert("Por favor", "Ingrese un correo valido");
         return;
       }
