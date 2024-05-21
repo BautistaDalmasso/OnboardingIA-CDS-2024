@@ -9,14 +9,14 @@ import {
 import BookCard from "./BookCard";
 import { RequestedLoansService } from "../services/requestedLoansService";
 import { useContextState } from "../ContexState";
-import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const image = require("../assets/background.png");
 
 const MyLoans = () => {
   const { contextState } = useContextState();
-  const [bookList, setBookList] = useState<ILoanInformationResponse[]>([]);
+  const [bookList, setBookList] = useState<ILoanInformation[]>([]);
 
   const fetchLoans = async () => {
     try {

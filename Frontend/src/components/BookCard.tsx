@@ -18,9 +18,7 @@ const BookCard: React.FC<BookCardProps> = ({ title, dueDate, status }) => {
         <Text style={styles.detail}>
           Vencimiento: {new Date(dueDate).toLocaleDateString()}
         </Text>
-        <Text style={styles.detail}>
-          Estado: {status}
-        </Text>
+        <Text style={styles.detail}>Estado: {status}</Text>
       </View>
     </View>
   );
@@ -45,7 +43,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   titleContainer: {
-
     marginBottom: 8,
   },
   title: {
