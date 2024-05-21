@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { RequestedLoansService } from "../services/requestedLoansService";
-import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 import SearchBarComponent from "./SearchBar";
 import { useContextState } from "../ContexState";
 
 const LibrarianLoans = () => {
   const { contextState } = useContextState();
-  const [loans, setLoans] = useState<ILoanInformationResponse[]>([]);
+  const [loans, setLoans] = useState<ILoanInformation[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("user_email");
   const [pickerItems, setPickerItems] = useState<
@@ -62,7 +62,7 @@ const LibrarianLoans = () => {
 
   const conductSearch = async () => {
     try {
-      let loans: ILoanInformationResponse[] = [];
+      let loans: ILoanInformation[] = [];
 
       if (filterCategory === "user_email") {
         loans = await conductSearchByEmail();

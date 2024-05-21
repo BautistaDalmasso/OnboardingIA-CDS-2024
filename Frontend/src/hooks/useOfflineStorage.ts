@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { offlineInformation } from "../common/enums/offlineInformation";
 import { IUser } from "../common/interfaces/User";
 import { IQrCodeInfo, QrToggle } from "../common/interfaces/QrCodeInfo";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 
 const useOfflineStorage = () => {
   const storeLastUser = async (user: IUser) => {
@@ -46,11 +47,19 @@ const useOfflineStorage = () => {
     return null;
   };
 
+  const saveUserLoans = async (loans: ILoanInformation[]) => {
+    await AsyncStorage.setItem(
+      offlineInformation.LAST_USER_LOANS,
+      JSON.stringify(loans),
+    );
+  };
+
   return {
     storeLastUser,
     getLastUser,
     saveLastQrCodeInfo,
     getLastQrCodeInfo,
+    saveUserLoans,
   };
 };
 

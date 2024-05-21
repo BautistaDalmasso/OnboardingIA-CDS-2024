@@ -9,21 +9,14 @@ import {
 import BookCard from "./BookCard";
 import { RequestedLoansService } from "../services/requestedLoansService";
 import { useContextState } from "../ContexState";
-import { ILoanInformationResponse } from "../common/interfaces/LoanReqResponse";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-interface Loan {
-  isbn: string;
-  title: string;
-  copyID: string;
-  expirationDate: Date;
-}
 
 const image = require("../assets/background.png");
 
 const MyLoans = () => {
   const { contextState } = useContextState();
-  const [bookList, setBookList] = useState<ILoanInformationResponse[]>([]);
+  const [bookList, setBookList] = useState<ILoanInformation[]>([]);
 
   const fetchLoans = async () => {
     try {
@@ -76,6 +69,7 @@ const MyLoans = () => {
                 key={book.inventory_number}
                 title={book.title}
                 dueDate={book.expiration_date}
+                status={book.loan_status}
               />
             ))}
           </ScrollView>
