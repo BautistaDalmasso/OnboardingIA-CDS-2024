@@ -1,9 +1,13 @@
 from datetime import datetime
-from app.user.user_dtos import UserDTO
+
+import jwt
+from app.user.user_service import UserService
+from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO, UserDTO
 from app.database.database_user import DatabaseUser
 from pathlib import Path
 import sqlite3
-from app.database.database_user import DatabaseUser
+
+user_service = UserService(DatabaseUser)
 
 
 class LibrarianService(DatabaseUser):
@@ -93,3 +97,45 @@ class LibrarianService(DatabaseUser):
             )
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
+
+    def upgrade_role_to_librarian(self, user: UpdateUserRoleDTO):
+
+        access_token_data = TokenDataDTO(
+            email=user.email,
+            role="librarian",
+        )
+
+        try:
+            self.execute_in_database(
+                """UPDATE users
+                SET role = ? WHERE email = ?""",
+                ("librarian", user.email),
+            )
+
+            return {
+                "role": user.role,
+                "access_token": user_service.create_access_token(access_token_data),
+            }
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo agregar bibliotecario"}
+
+    def downgrade_role_to_user(self, user: UpdateUserRoleDTO):
+
+        access_token_data = TokenDataDTO(
+            email=user.email,
+            role="basic",
+        )
+
+        try:
+            self.execute_in_database(
+                """UPDATE users
+                SET role = ? WHERE email = ?""",
+                ("basic", user.email),
+            )
+
+            return {
+                "role": user.role,
+                "access_token": user_service.create_access_token(access_token_data),
+            }
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo agregar bibliotecario"}

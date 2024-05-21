@@ -36,7 +36,6 @@ async def create_requested_book(book: LoanDTO, token=Depends(HTTPBearer())):
 
             return result
         except (BookNotFound, NoCopiesAvailable) as e:
-            print(e)
             raise HTTPException(status_code=400, detail=str(e))
     else:
         raise HTTPException(

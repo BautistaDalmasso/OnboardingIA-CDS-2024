@@ -1,6 +1,9 @@
 from datetime import datetime
+from enum import auto
 from typing import Optional
 from pydantic import BaseModel
+
+from app.models import auto_index
 
 
 class CreateUserDTO(BaseModel):
@@ -42,6 +45,11 @@ class UpdateRSADTO(BaseModel):
 
 class UpdateUserDniDTO(BaseModel):
     dni: str
+
+
+class UpdateUserRoleDTO(BaseModel):
+    role: str
+    email: str
 
 
 class TokenDataDTO(BaseModel):
