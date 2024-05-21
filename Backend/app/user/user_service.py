@@ -4,7 +4,7 @@ from pathlib import Path
 import sqlite3
 import string
 from datetime import datetime, timedelta
-from typing import Any
+from typing import List
 
 import jwt
 from passlib.context import CryptContext
@@ -14,7 +14,12 @@ from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
-from .user_dtos import CreateUserDTO, TokenDataDTO, UpdateUserDniDTO, UserDTO
+from .user_dtos import (
+    CreateUserDTO,
+    TokenDataDTO,
+    UpdateUserDniDTO,
+    UserDTO,
+)
 
 
 class UserService(DatabaseUser):
@@ -200,6 +205,43 @@ class UserService(DatabaseUser):
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
+
+    def get_all_users_by_role(
+        self, page_size: int, page_number: int, role: str
+    ) -> List[UserDTO]:
+        """Page numbering should start at 0"""
+        offset = page_number * page_size
+        query = """
+            SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
+            FROM users
+            WHERE role = ?
+            LIMIT ? OFFSET ?;
+        """
+        result = self.query_multiple_rows(query, (role, page_size, offset))
+
+        return [self.create_user_data(user_data) for user_data in result]
+
+    def create_user_data(self, query_result) -> UserDTO:
+        return UserDTO(
+            firstName=query_result[0],
+            lastName=query_result[1],
+            email=query_result[2],
+            dni=query_result[3],
+            licenceLevel=query_result[4],
+            role=query_result[5],
+            lastPermissionUpdate=query_result[6],
+        )
+
+    def get_users(self, role: string) -> List[UserDTO]:
+        """Page numbering should start at 0"""
+        query = """
+                SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
+                FROM users
+                WHERE role = ?;
+            """
+        result = self.query_multiple_rows(query, (role,))
+
+        return [self.create_user_data(user_data) for user_data in result]
 
 
 def create_UserDTO(user: User) -> UserDTO:

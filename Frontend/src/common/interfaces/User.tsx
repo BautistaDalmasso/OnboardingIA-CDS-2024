@@ -55,6 +55,26 @@ export interface IDeviceUIDResponse {
   deviceUID: number;
 }
 
+export interface IUpgradeRoleResponse {
+  role: string;
+  access_token: string;
+}
+
+export interface IDowngradeRoleResponse {
+  role: string;
+  access_token: string;
+}
+
+export interface IUpgradeUserRole {
+  role: string;
+  email: string;
+}
+
+export interface IDowngradeUserRole {
+  role: string;
+  email: string;
+}
+
 export interface IUserDTO {
   firstName: string;
   lastName: string;

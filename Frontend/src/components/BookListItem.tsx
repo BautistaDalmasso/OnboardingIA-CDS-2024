@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { IAuthor, IBookWithLicence } from "../common/interfaces/Book";
-import { LicenceLevel, LicenceName } from "../common/enums/licenceLevels";
+import { licenceLevelToStr } from "../common/enums/licenceLevels";
 import LinkButton from "./LinkButton";
 
 interface BookListItemProps {
@@ -39,21 +39,6 @@ const BookListItem = ({
   useEffect(() => {
     findCreatorAndContributors();
   }, [book]);
-
-  const licenceLevelToStr = (licenceLevel: number) => {
-    switch (licenceLevel) {
-      case LicenceLevel.NONE:
-        return LicenceName.NONE;
-      case LicenceLevel.REGULAR:
-        return LicenceName.REGULAR;
-      case LicenceLevel.TRUSTED:
-        return LicenceName.TRUSTED;
-      case LicenceLevel.RESEARCHER:
-        return LicenceName.RESEARCHER;
-      default:
-        return LicenceLevel.REGULAR;
-    }
-  };
 
   const contributorsSubComponent = () => {
     return (

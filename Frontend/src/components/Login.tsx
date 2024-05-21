@@ -11,24 +11,24 @@ import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../../src/common/enums/routes";
 import { UserService } from "../services/userService";
 import useFinalizeLogin from "../hooks/useFinalizeLogin";
+import useInputChecks from "../hooks/useInputChecks";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const Login = ({ navigation }: Props) => {
+  const { isValidEmail, isValidPassword } = useInputChecks();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { finalizeLogin } = useFinalizeLogin();
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   const handlePasswordLogin = async () => {
     try {
       setLoading(true);
 
-      if (!emailRegex.test(email) || password.length < 6) {
+      if (!isValidEmail(email) || !isValidPassword(password)) {
         Alert.alert(
           "Por favor",
           "Ingrese un correo valido y una contraseña de más de 6 caracteres.",
