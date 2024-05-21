@@ -125,7 +125,7 @@ const AddLibrarian = () => {
         <Picker.Item label="Bibliotecario" value={UserRole.LIBRARIAN} />
       </Picker>
       <SearchBar
-        placeholder="Buscar por nombre"
+        placeholder="Buscar por email"
         onChangeText={(text) => setSearchTerm(text)}
         value={searchTerm}
         containerStyle={styles.searchBarContainer}

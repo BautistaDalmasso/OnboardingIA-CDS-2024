@@ -206,7 +206,7 @@ class UserService(DatabaseUser):
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
 
-    def get_all_users(
+    def get_all_users_by_role(
         self, page_size: int, page_number: int, role: str
     ) -> List[UserDTO]:
         """Page numbering should start at 0"""
@@ -232,7 +232,7 @@ class UserService(DatabaseUser):
             lastPermissionUpdate=query_result[6],
         )
 
-    def get_users_length(self, role: string) -> List[UserDTO]:
+    def get_users(self, role: string) -> List[UserDTO]:
         """Page numbering should start at 0"""
         query = """
                 SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
