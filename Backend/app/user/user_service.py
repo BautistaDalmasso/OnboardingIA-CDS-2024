@@ -1,11 +1,10 @@
-from enum import Enum, auto
 import json
 import random
 from pathlib import Path
 import sqlite3
 import string
 from datetime import datetime, timedelta
-from typing import Any, List
+from typing import List
 
 import jwt
 from passlib.context import CryptContext
@@ -14,12 +13,11 @@ from app.licence_levels.licence_level import LicenceLevel
 from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
-from ..models import User, auto_index
+from ..models import User
 from .user_dtos import (
     CreateUserDTO,
     TokenDataDTO,
     UpdateUserDniDTO,
-    UpdateUserRoleDTO,
     UserDTO,
 )
 
@@ -208,28 +206,6 @@ class UserService(DatabaseUser):
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}
 
-    # TODO: move to librarian_service.py
-    def upgrade_role_to_librarian(self, user: UpdateUserRoleDTO):
-
-        access_token_data = TokenDataDTO(
-            email=user.email,
-            role="librarian",
-        )
-
-        try:
-            self.execute_in_database(
-                """UPDATE users
-                SET role = ? WHERE email = ?""",
-                ("librarian", user.email),
-            )
-
-            return {
-                "role": user.role,
-                "access_token": self.create_access_token(access_token_data),
-            }
-        except sqlite3.IntegrityError:
-            return {"error": "No se pudo agregar bibliotecario"}
-
     def get_all_users(
         self, page_size: int, page_number: int, role: str
     ) -> List[UserDTO]:
@@ -244,28 +220,6 @@ class UserService(DatabaseUser):
         result = self.query_multiple_rows(query, (role, page_size, offset))
 
         return [self.create_user_data(user_data) for user_data in result]
-
-    # TODO: move to librarian_service.py
-    def downgrade_role_to_user(self, user: UpdateUserRoleDTO):
-
-        access_token_data = TokenDataDTO(
-            email=user.email,
-            role="basic",
-        )
-
-        try:
-            self.execute_in_database(
-                """UPDATE users
-                SET role = ? WHERE email = ?""",
-                ("basic", user.email),
-            )
-
-            return {
-                "role": user.role,
-                "access_token": self.create_access_token(access_token_data),
-            }
-        except sqlite3.IntegrityError:
-            return {"error": "No se pudo agregar bibliotecario"}
 
     def create_user_data(self, query_result) -> UserDTO:
         return UserDTO(

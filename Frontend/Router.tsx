@@ -22,7 +22,7 @@ import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
 import ViewQR from "./src/components/ViewQR";
-import AddLibrarian from "./src/components/AddLibriarian";
+import AddLibrarian from "./src/components/CreateDeleteLibrarian";
 import UDuser from "./src/components/UDuser";
 
 const Drawer = createDrawerNavigator();
@@ -66,12 +66,6 @@ const Router = () => {
             )}
             {contextState.user !== null && (
               <>
-                {contextState.user.role != "basic" && (
-                  <Stack.Screen
-                    name={Routes.AddLibrarian}
-                    component={AddLibrarian}
-                  />
-                )}
                 {contextState.user.dni ? (
                   <>
                     <Stack.Screen name={Routes.Carnet} component={Licence} />
@@ -104,6 +98,10 @@ const Router = () => {
                       component={LibrarianLoans}
                     />
                     <Stack.Screen name={Routes.UDuser} component={UDuser} />
+                    <Stack.Screen
+                      name={Routes.AddLibrarian}
+                      component={AddLibrarian}
+                    />
                   </>
                 )}
 

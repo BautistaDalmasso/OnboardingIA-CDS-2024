@@ -14,7 +14,9 @@ import { UserRole } from "../common/enums/user";
 import { Picker } from "@react-native-picker/picker";
 import { SearchBar } from "@rneui/themed";
 import { ShowUserPage } from "../common/enums/Page";
+import { librarianServiceCD } from "../services/librarianCDService";
 
+//TODO: update the search bar and adapt it to the one currently being used if it's necessary.
 const AddLibrarian = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const { contextState } = useContextState();
@@ -41,7 +43,7 @@ const AddLibrarian = () => {
 
   const handleAddLibrarian = async (user: IUser) => {
     try {
-      const response = await UserService.addLibrarian(
+      const response = await librarianServiceCD.addLibrarian(
         user.email,
         contextState.accessToken as string,
       );
@@ -57,7 +59,7 @@ const AddLibrarian = () => {
 
   const handleDeleteLibrarian = async (user: IUser) => {
     try {
-      const response = await UserService.deleteLibrarian(
+      const response = await librarianServiceCD.deleteLibrarian(
         user.email,
         contextState.accessToken as string,
       );

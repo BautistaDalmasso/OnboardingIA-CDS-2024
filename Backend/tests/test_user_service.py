@@ -1,6 +1,5 @@
 import pytest
 
-from app.user.user_service import UserService
 from app.user.user_dtos import CreateUserDTO
 
 from tests.common_fixtures import user_service

@@ -15,7 +15,6 @@ from .user_dtos import (
     TokenDataDTO,
     UpdateRSADTO,
     UpdateUserDniDTO,
-    UpdateUserRoleDTO,
     UserDTO,
 )
 
@@ -118,48 +117,6 @@ async def update_user(user: UpdateUserDniDTO, token=Depends(HTTPBearer())):
 @router.get("/deviceUID")
 async def generate_device_UID(user_email: str):
     result = user_service.generate_new_uid(user_email)
-
-    return result
-
-
-@router.patch("/update_role_to_librarian")
-async def add_librarian(user: UpdateUserRoleDTO, token=Depends(HTTPBearer())):
-    user_data: TokenDataDTO = await verify_token(token.credentials)
-    if user_data.role == "librarian":
-        result = user_service.upgrade_role_to_librarian(user)
-        if "error" in result:
-            raise HTTPException(status_code=400, detail=result["error"])
-
-    return result
-
-
-@router.patch("/downgrade_role_to_user")
-async def add_librarian(user: UpdateUserRoleDTO, token=Depends(HTTPBearer())):
-    user_data: TokenDataDTO = await verify_token(token.credentials)
-    if user_data.role == "librarian":
-        result = user_service.downgrade_role_to_user(user)
-        if "error" in result:
-            raise HTTPException(status_code=400, detail=result["error"])
-
-    return result
-
-
-# TODO: Delete later, Development only.
-@router.patch("/add_first_librarian")
-async def add_first_librarian(user: UpdateUserRoleDTO):
-    result = user_service.upgrade_role_to_librarian(user)
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
-
-    return result
-
-
-# TODO: Delete later, Development only.
-@router.patch("/downgrade_role_to_user")
-async def delete_librarian(user: UpdateUserRoleDTO):
-    result = user_service.downgrade_role_to_user(user)
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
 
     return result
 

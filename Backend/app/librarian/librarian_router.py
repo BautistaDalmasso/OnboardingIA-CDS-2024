@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer
 
 from app.middlewares import verify_token
-from app.user.user_dtos import TokenDataDTO
+from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO
 from app.librarian.librarian_service import LibrarianService
 from app.catalogue import catalogue_db
 from app.catalogue.add_to_catalogue_service import AddToCatalogueService
@@ -12,6 +12,7 @@ from app.file_paths import CATALOGUE_PATH, DATABASE_PATH
 
 
 router = APIRouter(prefix="/librarian", tags=["Librarian"])
+librarian_cd_router = APIRouter(prefix="/librarianCD", tags=["LibrarianCD"])
 
 add_to_catalogue_service = AddToCatalogueService(CATALOGUE_PATH)
 librarian_service = LibrarianService(DATABASE_PATH)
@@ -90,3 +91,35 @@ async def librarian_permissions_verification(token: str) -> TokenDataDTO:
         raise HTTPException(status_code=403, detail="Not a librarian.")
 
     return token_data
+
+
+@librarian_cd_router.patch("/update_role_to_librarian")
+async def add_librarian(user: UpdateUserRoleDTO, token=Depends(HTTPBearer())):
+    await librarian_permissions_verification(token.credentials)
+    return librarian_service.upgrade_role_to_librarian(user)
+
+
+@librarian_cd_router.patch("/downgrade_role_to_user")
+async def downgrade_librarian(user: UpdateUserRoleDTO, token=Depends(HTTPBearer())):
+    await librarian_permissions_verification(token.credentials)
+    return librarian_service.downgrade_role_to_user(user)
+
+
+# TODO: Delete later, Development only.
+@librarian_cd_router.patch("/add_first_librarian")
+async def add_first_librarian(user: UpdateUserRoleDTO):
+    result = librarian_service.upgrade_role_to_librarian(user)
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    return result
+
+
+# TODO: Delete later, Development only.
+@librarian_cd_router.patch("/downgrade_role_to_user")
+async def delete_librarian(user: UpdateUserRoleDTO):
+    result = librarian_service.downgrade_role_to_user(user)
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+
+    return result
