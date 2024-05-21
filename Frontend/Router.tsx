@@ -22,8 +22,8 @@ import Licence from "./src/components/Licence";
 import UserConfiguration from "./src/components/UserConfiguration";
 import CaptureQR from "./src/components/CaptureQR";
 import ViewQR from "./src/components/ViewQR";
-import AddLibrarian from "./src/components/CreateDeleteLibrarian";
-import UDuser from "./src/components/UDuser";
+import CreateDeleteLibrarian from "./src/components/CreateDeleteLibrarian";
+import RUDUser from "./src/components/RUDUser";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -97,10 +97,10 @@ const Router = () => {
                       name={Routes.LibrarianLoans}
                       component={LibrarianLoans}
                     />
-                    <Stack.Screen name={Routes.UDuser} component={UDuser} />
+                    <Stack.Screen name={Routes.RUDUser} component={RUDUser} />
                     <Stack.Screen
-                      name={Routes.AddLibrarian}
-                      component={AddLibrarian}
+                      name={Routes.CreateDeleteLibrarian}
+                      component={CreateDeleteLibrarian}
                     />
                   </>
                 )}

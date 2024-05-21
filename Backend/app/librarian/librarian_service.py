@@ -47,26 +47,7 @@ class LibrarianService(DatabaseUser):
             )
             return user
 
-    def delete_user(self, user_email: str) -> UserDTO:
-        try:
-            books_not_returned = self.query_database(
-                """SELECT * FROM loan WHERE userEmail = ? AND expirationDate >= date('now')""",
-                (user_email,),
-            )
-            queries = [
-                f"DELETE FROM users WHERE email = ?",
-                f"DELETE FROM deviceRSAS WHERE email = ?",
-                f"DELETE FROM requested_books WHERE userEmail = ?",
-            ]
-            if not books_not_returned:
-                for query in queries:
-                    self.execute_in_database(query, (user_email,))
-
-                return self.get_user_by_email(user_email)
-        except sqlite3.IntegrityError:
-            return {
-                "error": "No se pudo dar de baja el usuario, tiene que devolver libros prestados."
-            }
+    # TODO: make improved delete user.
 
     def update_licence(self, user_email: str, level: int) -> UserDTO:
         try:

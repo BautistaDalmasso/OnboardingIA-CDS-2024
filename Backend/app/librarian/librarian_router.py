@@ -47,15 +47,8 @@ async def consult_user_by_email(user_email: str, token=Depends(HTTPBearer())):
     return user
 
 
-@router.get("/delete_user")
-async def delete_user_by_email(user_email: str, token=Depends(HTTPBearer())):
-    await librarian_permissions_verification(token.credentials)
-
-    return librarian_service.delete_user(user_email)
-
-
-@router.get("/update_license_user")
-async def update_license(user_email: str, level: int, token=Depends(HTTPBearer())):
+@router.get("/update_licence_user")
+async def update_licence(user_email: str, level: int, token=Depends(HTTPBearer())):
     await librarian_permissions_verification(token.credentials)
 
     return librarian_service.update_licence(user_email, level)
