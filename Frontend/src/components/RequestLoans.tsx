@@ -92,6 +92,7 @@ const RequestLoans = () => {
       isbn: book.isbn,
       expiration_date: futureDate,
       user_email: book.user_email,
+      loan_status: "requested",
     };
 
     try {
@@ -105,6 +106,7 @@ const RequestLoans = () => {
           title: book.title,
           expiration_date: futureDate,
           user_email: book.user_email,
+          loan_status: "requested",
         });
       }
       return response;
@@ -250,4 +252,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RequestLoans;
+export default RequestLoans

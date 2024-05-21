@@ -51,4 +51,5 @@ export interface ILoanWithTitle {
   title: string;
   expiration_date: Date;
   user_email: string;
+  loan_status: string;
 }

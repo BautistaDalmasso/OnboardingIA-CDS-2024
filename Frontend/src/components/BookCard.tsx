@@ -5,18 +5,21 @@ import { Entypo } from "@expo/vector-icons";
 interface BookCardProps {
   title: string;
   dueDate: Date;
+  status: string;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ title, dueDate }) => {
+const BookCard: React.FC<BookCardProps> = ({ title, dueDate, status }) => {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Entypo name="book" color="#006691" size={32} />
         <Text style={styles.title}>{title}</Text>
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.detail}>
           Vencimiento: {new Date(dueDate).toLocaleDateString()}
+        </Text>
+        <Text style={styles.detail}>
+          Estado: {status}
         </Text>
       </View>
     </View>
@@ -26,8 +29,8 @@ const BookCard: React.FC<BookCardProps> = ({ title, dueDate }) => {
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 2,
-    width: 330,
-    height: 100,
+    width: 350,
+    height: 170,
     backgroundColor: "white",
     borderRadius: 15,
     shadowColor: "#000",
@@ -42,12 +45,12 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   titleContainer: {
-    flexDirection: "row",
+
     marginBottom: 8,
   },
   title: {
     marginStart: 10,
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#006691",
   },

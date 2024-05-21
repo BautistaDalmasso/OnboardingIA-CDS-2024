@@ -36,12 +36,13 @@ class LoanService(DatabaseUser):
         copy_data = self._find_available_copy_data(book_request.isbn)
 
         self.execute_in_database(
-            """INSERT INTO loan (inventoryNumber, expirationDate, userEmail)
-                        VALUES (?, ?, ?)""",
+            """INSERT INTO loan (inventoryNumber, expirationDate, userEmail, loan_status)
+                        VALUES (?, ?, ?, ?)""",
             (
                 copy_data.inventoryNumber,
                 book_request.expiration_date,
                 book_request.user_email,
+                "requested",
             ),
         )
 
@@ -97,7 +98,6 @@ class LoanService(DatabaseUser):
             WHERE loan.userEmail = ?""",
             (email,),
         )
-
         return [self.create_loan_data(entry) for entry in loans]
 
     def consult_book_loans_by_title(self, title: str) -> List[LoanInformationDTO]:
@@ -115,24 +115,24 @@ class LoanService(DatabaseUser):
         return filtered_result
 
     def consult_all_book_loans(self) -> List[LoanInformationDTO]:
+
         loans = self.query_multiple_rows(
             """SELECT loan.*, bookInventory.isbn
             FROM loan
             INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber""",
             tuple(),
         )
-
         return [self.create_loan_data(entry) for entry in loans]
 
     def create_loan_data(self, db_entry: list[Any]) -> LoanInformationDTO:
         book = self._catalogue_service.browse_by_isbn(db_entry[CLBEI.isbn.value])
-
         return LoanInformationDTO(
             id=db_entry[CLBEI.id.value],
             title=book.title,
             inventory_number=db_entry[CLBEI.inventory_number.value],
             expiration_date=db_entry[CLBEI.expiration_date.value],
             user_email=db_entry[CLBEI.user_email.value],
+            loan_status=db_entry[CLBEI.loan_status.value],
         )
 
 
@@ -143,4 +143,5 @@ class CLBEI(auto_index):
     inventory_number = auto()
     expiration_date = auto()
     user_email = auto()
+    loan_status = auto()
     isbn = auto()

@@ -12,6 +12,7 @@ class LoanInformationDTO(BaseModel):
     title: str
     expiration_date: datetime
     user_email: str
+    loan_status: str
 
 
 class LIDI(auto_index):
@@ -22,12 +23,20 @@ class LIDI(auto_index):
     title = auto()
     expiration_date = auto()
     user_email = auto()
+    loan_status = auto()
 
 
 class LoanDTO(BaseModel):
     isbn: str
     expiration_date: datetime
     user_email: str
+    loan_status: (
+        Literal["requested"]
+        | Literal["acepted"]
+        | Literal["rejected"]
+        | Literal["expired"]
+        | Literal["finished"]
+    )
 
 
 class RequestedBookDTO(BaseModel):

@@ -72,6 +72,7 @@ def initialize_database(db_path: Path) -> None:
                 inventoryNumber INTEGER,
                 expirationDate DATE,
                 userEmail TEXT,
+                loan_status TEXT,
                 FOREIGN KEY (inventoryNumber) REFERENCES bookInventory(inventoryNumber),
                 FOREIGN KEY (userEmail) REFERENCES users(Email),
                 UNIQUE(inventoryNumber, expirationDate));""",
