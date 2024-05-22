@@ -1,3 +1,5 @@
+import { ILoanInformation } from "./LoanReqResponse";
+
 export interface ICreateUser {
   firstName: string;
   lastName: string;
@@ -18,6 +20,7 @@ export interface IUser {
 export interface ILoginResponse {
   access_token: string;
   user: IUser;
+  loans: ILoanInformation[];
   detail?: string;
 }
 
@@ -57,12 +60,10 @@ export interface IDeviceUIDResponse {
 
 export interface IUpgradeRoleResponse {
   role: string;
-  access_token: string;
 }
 
 export interface IDowngradeRoleResponse {
   role: string;
-  access_token: string;
 }
 
 export interface IUpgradeUserRole {

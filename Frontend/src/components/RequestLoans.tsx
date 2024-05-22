@@ -15,7 +15,7 @@ const RequestLoans = () => {
   const [filterCategory, setFilterCategory] = useState("title");
 
   const isBookRequested = (isbn: string) => {
-    return contextState.loans.some((loan) => loan.isbn === isbn);
+    return contextState.loans.some((loan) => loan.catalogue_data.isbn === isbn);
   };
 
   const fetchBooks = async () => {

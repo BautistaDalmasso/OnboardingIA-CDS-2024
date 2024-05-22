@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { IAuthor, IBookWithLicence } from "../common/interfaces/Book";
 import { licenceLevelToStr } from "../common/enums/licenceLevels";
 import LinkButton from "./LinkButton";
@@ -136,6 +136,16 @@ const BookListItem = ({
       <View style={styles.mixedTextContainer}>
         <Text style={styles.label}>Clasificación CDD:</Text>
         <Text style={styles.ddcClass}> {book.book_data.ddc_class} </Text>
+        <LinkButton
+          text="(?)"
+          onPress={() =>
+            Alert.alert(
+              "Clasificación Decimal de Dewey",
+              "Las Secciones y Estanterías de nuestra biblioteca están ordenadas según este código." +
+                " Podés utilizarlo para localizar el libro que buscás.",
+            )
+          }
+        />
       </View>
 
       {book.book_data.abstract && (

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { useContextState } from "../ContexState";
 import { IUser } from "../common/interfaces/User";
-import { UserService } from "../services/userService";
 import { UserRole } from "../common/enums/user";
 import { Picker } from "@react-native-picker/picker";
 import { SearchBar } from "@rneui/themed";
@@ -28,7 +27,7 @@ const AddLibrarian = () => {
 
   const fetchUsers = async (role: string, page: number) => {
     try {
-      const data = await UserService.getAllUsersByRole(role, page);
+      const data = await librarianServiceCD.getAllUsersByRole(role, page);
       setUsers(data);
 
       const librarianEmails = data
@@ -77,7 +76,7 @@ const AddLibrarian = () => {
 
   const getTotalUsers = async () => {
     try {
-      const response = await UserService.getTotalUsers(selectedRole);
+      const response = await librarianServiceCD.getTotalUsers(selectedRole);
       const total = Math.ceil(response.length / ShowUserPage.PAGE_SIZE);
       setTotalPages(total - 1);
     } catch (error) {

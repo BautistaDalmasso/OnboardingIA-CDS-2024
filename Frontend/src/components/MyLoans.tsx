@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -6,57 +6,13 @@ import {
   ScrollView,
   ImageBackground,
 } from "react-native";
-import BookCard from "./BookCard";
-import { RequestedLoansService } from "../services/requestedLoansService";
+import LoanInformationCard from "./LoanInformationCard";
 import { useContextState } from "../ContexState";
-import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const image = require("../assets/background.png");
 
 const MyLoans = () => {
   const { contextState } = useContextState();
-  const [bookList, setBookList] = useState<ILoanInformation[]>([]);
-
-  const fetchLoans = async () => {
-    try {
-      if (contextState.user === null) {
-        throw Error("No connected user.");
-      }
-
-      const loans = await RequestedLoansService.getLoansByEmail(
-        contextState.user.email,
-        contextState.accessToken as string,
-      );
-
-      setBookList(loans);
-    } catch (error) {
-      console.error("Error al obtener libros:", error);
-    }
-  };
-
-  const loadBooksFromAsyncStorage = async () => {
-    try {
-      const jsonData = await AsyncStorage.getItem("Loans");
-      if (!jsonData) {
-        console.log("No hay datos guardados en AsyncStorage.");
-        return;
-      }
-
-      const data = JSON.parse(jsonData);
-      setBookList(data);
-    } catch (error) {
-      console.error("Error al cargar los datos desde AsyncStorage:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (contextState.isConnected) {
-      fetchLoans();
-    } else {
-      loadBooksFromAsyncStorage();
-    }
-  }, [contextState.isConnected]);
 
   return (
     <View style={styles.container1}>
@@ -64,13 +20,8 @@ const MyLoans = () => {
         <Text style={styles.title}>Prestamos solicitadados</Text>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-            {bookList.map((book) => (
-              <BookCard
-                key={book.inventory_number}
-                title={book.title}
-                dueDate={book.expiration_date}
-                status={book.loan_status}
-              />
+            {contextState.loans.map((loan) => (
+              <LoanInformationCard key={loan.inventory_number} loan={loan} />
             ))}
           </ScrollView>
         </View>

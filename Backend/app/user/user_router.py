@@ -3,12 +3,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
+from app.loan_management.book_loans_service import LoanService
 from app.user.user_service import UserService, create_UserDTO
-from app.file_paths import DATABASE_PATH
+from app.file_paths import CATALOGUE_PATH, DATABASE_PATH
 
 
 from ..middlewares import verify_token
 from .user_dtos import (
+    LOGIN_RESPONSE,
     CheckChallengeDTO,
     CreateUserDTO,
     LoginDTO,
@@ -19,42 +21,31 @@ from .user_dtos import (
 )
 
 user_service = UserService(DATABASE_PATH)
+loans_service = LoanService(DATABASE_PATH, CATALOGUE_PATH)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter(prefix="/users", tags=["User"])
 
 
-@router.post("")
+@router.post("", response_model=LOGIN_RESPONSE)
 async def create_user(user: CreateUserDTO):
     result = user_service.create_user(user)
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
 
-    access_token = user_service.create_access_token(
-        TokenDataDTO(
-            email=result.email,
-            role=result.role,
-            licenceLevel=result.licenceLevel,
-        )
-    )
-
-    return {"access_token": access_token, "user": user}
+    return user_service.finish_login_data(result)
 
 
-@router.post("/login")
+@router.post("/login", response_model=LOGIN_RESPONSE)
 async def login_for_access_token(loginData: LoginDTO):
     user = user_service.authenticate_user(loginData.email, loginData.password)
 
     if not user:
         raise HTTPException(status_code=401, detail="Email o contraseña incorrectos")
 
-    access_token = user_service.create_access_token(
-        TokenDataDTO(email=user.email, role=user.role, licenceLevel=user.licenceLevel)
-    )
-
-    return {"access_token": access_token, "user": user}
+    return user_service.finish_login_data(user)
 
 
 @router.post("/rsa")
@@ -92,14 +83,7 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 
     user_service.delete_challenge(challengeDTO.email)
 
-    access_token = user_service.create_access_token(
-        TokenDataDTO(email=user.email, role=user.role, licenceLevel=user.licenceLevel)
-    )
-
-    return {
-        "access_token": access_token,
-        "user": create_UserDTO(user),
-    }
+    return user_service.finish_login_data(create_UserDTO(user))
 
 
 @router.patch("/dni")

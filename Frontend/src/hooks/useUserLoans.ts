@@ -20,6 +20,7 @@ const useUserLoans = () => {
 
     if (reservedBookData.detail) {
       Alert.alert("Error solicitando libro.", reservedBookData.detail);
+      return;
     }
     extendLoanData(reservedBookData);
   };

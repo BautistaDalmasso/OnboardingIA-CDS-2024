@@ -6,7 +6,7 @@ import useOfflineStorage from "./useOfflineStorage";
 
 const useOfflineAuth = () => {
   const { setContextState } = useContextState();
-  const { getLastUser } = useOfflineStorage();
+  const { getLastUser, getLastUsersLoans } = useOfflineStorage();
   const { authenticate } = useBiometrics();
 
   const offlineAuthenticate = async () => {
@@ -24,11 +24,14 @@ const useOfflineAuth = () => {
     const successBiometric = await authenticate();
 
     if (successBiometric) {
+      const loans = await getLastUsersLoans();
+
       setContextState((state) => ({
         ...state,
         user: user,
         connectionType: ConnectionType.OFFLINE,
         userOffline: true,
+        loans: loans,
       }));
 
       return true;

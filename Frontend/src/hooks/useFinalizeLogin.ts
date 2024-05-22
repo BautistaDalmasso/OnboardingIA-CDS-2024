@@ -7,7 +7,7 @@ import useQr from "./useQr";
 
 const useFinalizeLogin = () => {
   const { setContextState } = useContextState();
-  const { storeLastUser } = useOfflineStorage();
+  const { storeLastUser, saveUserLoans } = useOfflineStorage();
   const { updateQrCode } = useQr();
 
   const finalizeLogin = async (loginResponse: ILoginResponse) => {
@@ -18,8 +18,10 @@ const useFinalizeLogin = () => {
         connectionType: ConnectionType.ONLINE,
         accessToken: loginResponse.access_token,
         messages: [],
+        loans: loginResponse.loans,
       }));
 
+      await saveUserLoans(loginResponse.loans);
       await storeLastUser(loginResponse.user);
     }
 

@@ -27,7 +27,7 @@ def test_book_is_loaned(loan_librarian_service):
 
     loans = loan_librarian_service[LOAN].consult_book_loans_by_user_email(user_email)
 
-    assert loans[0].title == "Prólogos con un prólogo de prólogos"
+    assert loans[0].catalogue_data.title == "Prólogos con un prólogo de prólogos"
 
 
 def test_book_is_not_over_loaned(loan_librarian_service):
@@ -63,5 +63,5 @@ def test_consult_multiple_loans(loan_librarian_service):
 
     loans = loan_librarian_service[LOAN].consult_book_loans_by_user_email(user_email)
 
-    assert loans[1].title == "Exámen de residencia"
-    assert loans[0].title == "Prólogos con un prólogo de prólogos"
+    assert loans[1].catalogue_data.title == "Exámen de residencia"
+    assert loans[0].catalogue_data.title == "Prólogos con un prólogo de prólogos"
