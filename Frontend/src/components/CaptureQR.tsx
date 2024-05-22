@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
 import { View, StyleSheet, Text } from "react-native";
 import React from "react";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import LinkButton from "./LinkButton";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -17,6 +19,7 @@ const CaptureQR = ({ navigation }: Props) => {
   const [cameraType] = useState(CameraType.back);
   const [flash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
+  const [scanResult, setScanResult] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -35,27 +38,46 @@ const CaptureQR = ({ navigation }: Props) => {
   }
 
   return (
-    <View style={styles.container}>
-      {isFocused && (
-        <Camera
-          style={styles.camera}
-          type={cameraType}
-          ref={cameraRef}
-          flashMode={flash}
-          barCodeScannerSettings={{
-            barCodeTypes: ["qr"],
-          }}
-          onBarCodeScanned={(scanningResult) => {
-            console.log(scanningResult);
-          }}
-        />
+    <>
+      {scanResult === "" ? (
+        isFocused && (
+          <View style={styles.cameraContainer}>
+            <Camera
+              style={styles.camera}
+              type={cameraType}
+              ref={cameraRef}
+              flashMode={flash}
+              barCodeScannerSettings={{
+                barCodeTypes: ["qr"],
+              }}
+              onBarCodeScanned={(scanningResult) => {
+                setScanResult(scanningResult.data);
+              }}
+            />
+          </View>
+        )
+      ) : (
+        <View style={styles.container}>
+          <Text>VISTA TEMPORAL DE INFORMACIÓN</Text>
+          <Text>{scanResult}</Text>
+          <LinkButton
+            text="Escanear Otro QR"
+            onPress={() => setScanResult("")}
+          />
+        </View>
       )}
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingTop: Constants.statusBarHeight,
+    padding: 8,
+  },
+  cameraContainer: {
     flex: 1,
     justifyContent: "center",
     paddingTop: Constants.statusBarHeight,
