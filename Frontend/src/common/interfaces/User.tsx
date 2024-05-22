@@ -57,12 +57,10 @@ export interface IDeviceUIDResponse {
 
 export interface IUpgradeRoleResponse {
   role: string;
-  access_token: string;
 }
 
 export interface IDowngradeRoleResponse {
   role: string;
-  access_token: string;
 }
 
 export interface IUpgradeUserRole {

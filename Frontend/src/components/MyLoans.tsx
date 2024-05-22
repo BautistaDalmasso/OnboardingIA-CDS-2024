@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -7,56 +7,12 @@ import {
   ImageBackground,
 } from "react-native";
 import LoanInformationCard from "./LoanInformationCard";
-import { RequestedLoansService } from "../services/requestedLoansService";
 import { useContextState } from "../ContexState";
-import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const image = require("../assets/background.png");
 
 const MyLoans = () => {
   const { contextState } = useContextState();
-  const [loansList, setLoansList] = useState<ILoanInformation[]>([]);
-
-  const fetchLoans = async () => {
-    try {
-      if (contextState.user === null) {
-        throw Error("No connected user.");
-      }
-
-      const loans = await RequestedLoansService.getLoansByEmail(
-        contextState.user.email,
-        contextState.accessToken as string,
-      );
-
-      setLoansList(loans);
-    } catch (error) {
-      console.error("Error al obtener libros:", error);
-    }
-  };
-
-  const loadBooksFromAsyncStorage = async () => {
-    try {
-      const jsonData = await AsyncStorage.getItem("Loans");
-      if (!jsonData) {
-        console.log("No hay datos guardados en AsyncStorage.");
-        return;
-      }
-
-      const data = JSON.parse(jsonData);
-      setLoansList(data);
-    } catch (error) {
-      console.error("Error al cargar los datos desde AsyncStorage:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (contextState.isConnected) {
-      fetchLoans();
-    } else {
-      loadBooksFromAsyncStorage();
-    }
-  }, [contextState.isConnected]);
 
   return (
     <View style={styles.container1}>
@@ -64,7 +20,7 @@ const MyLoans = () => {
         <Text style={styles.title}>Prestamos solicitadados</Text>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-            {loansList.map((loan) => (
+            {contextState.loans.map((loan) => (
               <LoanInformationCard loan={loan} />
             ))}
           </ScrollView>

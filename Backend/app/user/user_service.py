@@ -9,13 +9,17 @@ from typing import List
 import jwt
 from passlib.context import CryptContext
 
+from app.file_paths import CATALOGUE_PATH
+from app.loan_management.book_loans_service import LoanService
 from app.licence_levels.licence_level import LicenceLevel
 from app.database.database_user import DatabaseUser
 
 from ..jwt_config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from ..models import User
 from .user_dtos import (
+    LOGIN_RESPONSE,
     CreateUserDTO,
+    LoginSuccessfulResponseDTO,
     TokenDataDTO,
     UpdateUserDniDTO,
     UserDTO,
@@ -27,6 +31,7 @@ class UserService(DatabaseUser):
         super().__init__(db_path)
 
         self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        self._loans_service = LoanService(db_path, CATALOGUE_PATH)
 
     def create_user(self, user: CreateUserDTO):
         hashed_password = self._pwd_context.hash(user.password)
@@ -59,6 +64,8 @@ class UserService(DatabaseUser):
             if self._pwd_context.verify(password, user.password):
                 return create_UserDTO(user)
 
+        return None
+
     def create_access_token(self, data: TokenDataDTO):
         expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         expire = datetime.now() + expires_delta
@@ -72,7 +79,7 @@ class UserService(DatabaseUser):
         encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
 
-    def get_user_by_email(self, email: str) -> User:
+    def get_user_by_email(self, email: str) -> User | None:
         user_data = self.query_database(
             """SELECT * FROM users WHERE email = ?""",
             (email,),
@@ -92,6 +99,7 @@ class UserService(DatabaseUser):
                 lastPermissionUpdate=user_data[10],
             )
             return user
+        return None
 
     def update_public_rsa(self, user_email: str, public_rsa: str, device_uid: int):
 
@@ -242,6 +250,21 @@ class UserService(DatabaseUser):
         result = self.query_multiple_rows(query, (role,))
 
         return [self.create_user_data(user_data) for user_data in result]
+
+    def finish_login_data(self, user: UserDTO) -> LOGIN_RESPONSE:
+        user_loans = self._loans_service.consult_book_loans_by_user_email(user.email)
+
+        access_token = self.create_access_token(
+            TokenDataDTO(
+                email=user.email, role=user.role, licenceLevel=user.licenceLevel
+            )
+        )
+
+        return LoginSuccessfulResponseDTO(
+            access_token=access_token,
+            user=user,
+            loans=user_loans,
+        )
 
 
 def create_UserDTO(user: User) -> UserDTO:

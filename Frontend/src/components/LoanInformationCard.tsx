@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import convertLoanStatusToString from "../common/enums/loanStatus";
 import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
@@ -11,6 +11,10 @@ interface LoanInformationCardProps {
 const LoanInformationCard: React.FC<LoanInformationCardProps> = ({
   loan,
 }: LoanInformationCardProps) => {
+  useEffect(() => {
+    console.log(loan);
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>

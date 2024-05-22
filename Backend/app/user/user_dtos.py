@@ -1,9 +1,8 @@
 from datetime import datetime
-from enum import auto
 from typing import Optional
 from pydantic import BaseModel
 
-from app.models import auto_index
+from app.loan_management.book_loans_dtos import LoanInformationDTO
 
 
 class CreateUserDTO(BaseModel):
@@ -56,3 +55,16 @@ class TokenDataDTO(BaseModel):
     email: str
     role: Optional[str] = "basic"
     licenceLevel: int = 0
+
+
+class LoginSuccessfulResponseDTO(BaseModel):
+    access_token: str
+    user: UserDTO
+    loans: list[LoanInformationDTO]
+
+
+class LoginFailureResponseDTO(BaseModel):
+    detail: str
+
+
+LOGIN_RESPONSE = LoginSuccessfulResponseDTO | LoginFailureResponseDTO

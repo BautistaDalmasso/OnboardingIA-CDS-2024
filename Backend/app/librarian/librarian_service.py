@@ -14,6 +14,7 @@ class LibrarianService(DatabaseUser):
 
     def __init__(self, db_path: Path) -> None:
         super().__init__(db_path)
+        self._user_service = UserService(db_path)
 
     def add_exemplars(self, isbns: list[str]):
 
@@ -28,24 +29,11 @@ class LibrarianService(DatabaseUser):
         )
 
     def get_user_by_email(self, email: str) -> UserDTO:
-        user_data = self.query_database(
-            """SELECT
-            firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
-            FROM users WHERE email = ?""",
-            (email,),
-        )
+        user_data = self._user_service.get_user_by_email(email)
 
         if user_data:
-            user = UserDTO(
-                firstName=user_data[0],
-                lastName=user_data[1],
-                email=user_data[2],
-                dni=user_data[3],
-                licenceLevel=user_data[4],
-                role=user_data[5],
-                lastPermissionUpdate=user_data[6],
-            )
-            return user
+            return user_data
+        return None
 
     # TODO: make improved delete user.
 
@@ -114,7 +102,6 @@ class LibrarianService(DatabaseUser):
 
             return {
                 "role": user.role,
-                "access_token": user_service.create_access_token(access_token_data),
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo agregar bibliotecario"}
@@ -135,7 +122,6 @@ class LibrarianService(DatabaseUser):
 
             return {
                 "role": user.role,
-                "access_token": user_service.create_access_token(access_token_data),
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo agregar bibliotecario"}
