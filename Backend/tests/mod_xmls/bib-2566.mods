@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.1" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-1.xsd">
+  <titleInfo>
+    <title>Finite fields</title>
+    <subTitle>theory and computation : the meeting point of number theory, computer science, coding theory and cryptogrphy</subTitle>
+  </titleInfo>
+  <name type="personal">
+    <namePart>Shparlinski, Igor E.</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="text">creator</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>text</typeOfResource>
+  <originInfo>
+    <place>
+      <placeTerm type="code" authority="marccountry">ne</placeTerm>
+    </place>
+    <place>
+      <placeTerm type="text">Dordrecht</placeTerm>
+    </place>
+    <publisher>Kluwer Academic</publisher>
+    <dateIssued>1999</dateIssued>
+    <issuance>monographic</issuance>
+  </originInfo>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+  </language>
+  <physicalDescription>
+    <extent>xiv, 528 p. : il.</extent>
+  </physicalDescription>
+  <subject>
+    <topic>COMPUTACION</topic>
+  </subject>
+  <subject>
+    <topic>MATEMATICAS</topic>
+  </subject>
+  <subject>
+    <geographic>DOCUMENTOS TEORICOS O METODOLOGICOS</geographic>
+  </subject>
+  <subject>
+    <topic>CRIPTOGRAFIA</topic>
+  </subject>
+  <subject>
+    <topic>FACTORIZACION</topic>
+  </subject>
+  <subject>
+    <topic>POLINOMIOS</topic>
+  </subject>
+  <classification authority="ddc">512.3 559fin</classification>
+  <identifier type="isbn">0792356624</identifier>
+  <recordInfo>
+    <recordContentSource authority="marcorg">AR-LpoUNG</recordContentSource>
+    <recordCreationDate encoding="marc">191001</recordCreationDate>
+    <recordChangeDate encoding="iso8601">20210131230256.0</recordChangeDate>
+    <recordIdentifier source="AR-LpoUNG">PT35413</recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>

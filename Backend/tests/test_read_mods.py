@@ -7,6 +7,8 @@ from app.catalogue.read_mods import ReadMod
 BASE_PATH = Path(".") / "tests" / "mod_xmls"
 ALFPATH = BASE_PATH / "bib-10878.mods"
 INGSOFT = BASE_PATH / "bib-19409.mods"
+ESS = BASE_PATH / "bib-6887.mods"
+FF = BASE_PATH / "bib-2566.mods"
 
 
 def test_read_isbn(alf_read_mod):
@@ -70,6 +72,21 @@ def test_multiple_authors(alf_read_mod):
     )
 
 
+def test_book_with_non_sort_in_title(ess_read_mod):
+    title = ess_read_mod._get_title()
+
+    assert title == "El segundo sexo"
+
+
+def test_book_with_subtitle(ff_read_mod):
+    title = ff_read_mod._get_title()
+
+    assert (
+        title
+        == "Finite fields: theory and computation : the meeting point of number theory, computer science, coding theory and cryptogrphy"
+    )
+
+
 def test_topics(alf_read_mod):
     topics = alf_read_mod._get_topics()
 
@@ -105,6 +122,26 @@ def ingsoft_read_mod():
     """Mods XML data for book: Ingeniería de software orientada a ojetivos con UML, Java e Internet"""
     with open(INGSOFT, "rb") as ingsoft:
         xml_bytes = ingsoft.read()
+
+    return ReadMod(mods_xml=xml_bytes)
+
+
+@pytest.fixture
+def ess_read_mod():
+    """Mods XML data for book: El Segundo sexo"""
+    with open(ESS, "rb") as ess:
+        xml_bytes = ess.read()
+
+    return ReadMod(mods_xml=xml_bytes)
+
+
+@pytest.fixture
+def ff_read_mod():
+    """Mods XML data for book:
+    "Finite fields : theory and computation : the meeting point of number theory, computer science, coding theory and cryptogrphy"
+    """
+    with open(FF, "rb") as ff:
+        xml_bytes = ff.read()
 
     return ReadMod(mods_xml=xml_bytes)
 
