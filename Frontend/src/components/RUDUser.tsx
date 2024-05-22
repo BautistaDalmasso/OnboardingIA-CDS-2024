@@ -194,7 +194,7 @@ const RUDUser = () => {
 
         {/* View user's data page. */}
         <View key={pages.USER_DATA} style={styles.page}>
-          {user && (
+          {user!=null && (
             <TableDataUser
               name={user.firstName}
               lastName={user.lastName}
@@ -209,7 +209,7 @@ const RUDUser = () => {
           >
             <Text style={styles.buttonText}>Modificar datos</Text>
           </TouchableOpacity>
-          {(user as IUserDTO).dni && (
+          {user!=null &&(user as IUserDTO).dni && (
             <TouchableOpacity
               style={styles.button}
               onPress={gotoUpgradeLicenceLevel}
@@ -240,7 +240,7 @@ const RUDUser = () => {
               label="Actualizar Apellido"
               value={fieldOptions.LAST_NAME}
             />
-            {(user as IUserDTO).dni && (
+            {user!=null && (user as IUserDTO).dni && (
               <Picker.Item label="Actualizar DNI" value={fieldOptions.DNI} />
             )}
           </Picker>
