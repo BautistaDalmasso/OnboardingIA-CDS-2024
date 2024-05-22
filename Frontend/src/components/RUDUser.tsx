@@ -40,13 +40,11 @@ const RUDUser = () => {
     updateUsersDni,
     updateUsersLicence,
   } = useRUDUsers();
-  const { contextState } = useContextState();
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
-  const { isValidEmail, isValidDni } = useRegexChecks();
   const [fieldToUpdate, setFieldToUpdate] = useState(
-    "Seleccione dato a actualizar >>",
+    fieldOptions.FIRST_NAME as string
   );
   const [user, setUser] = useState<IUserDTO | null>(null);
   const options = [
@@ -93,10 +91,10 @@ const RUDUser = () => {
     Alert.alert("", "¡Actualizacion de nivel de carnet exitosa!");
 
     handleChangePage(pages.USER_DATA);
-    handleLoadingData();
+    handleLoadingData(user.email);
   };
 
-  const upgradeData = async () => {
+  const updateUsersData = async () => {
     setInputValue(inputValue.trim());
     if (inputValue === "") {
       Alert.alert(
@@ -133,14 +131,15 @@ const RUDUser = () => {
     }
 
     Alert.alert("Se cambio el " + fieldToUpdate + " del usuario exitosamente.");
-    handleChangePage(pages.USER_SELECT);
+    handleChangePage(pages.USER_DATA);
+    handleLoadingData(user.email);
   };
 
-  const handleLoadingData = async () => {
+  const handleLoadingData = async (userEmail: string) => {
     try {
       setLoading(true);
 
-      const user = await consultUser(inputValue);
+      const user = await consultUser(userEmail);
 
       if (user == null) {
         Alert.alert("Error", "Usuario NO registrado");
@@ -178,7 +177,7 @@ const RUDUser = () => {
             onChangeText={(text) => setInputValue(text)}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLoadingData}>
+          <TouchableOpacity style={styles.button} onPress={() => handleLoadingData(inputValue)}>
             <Text style={styles.buttonText}>Buscar Usuario</Text>
           </TouchableOpacity>
 
@@ -253,7 +252,7 @@ const RUDUser = () => {
 
             <TouchableOpacity
               style={styles.buttonUpdateData}
-              onPress={upgradeData}
+              onPress={updateUsersData}
             >
               <Text style={styles.textButtonUpdateData}>Actualizar</Text>
             </TouchableOpacity>

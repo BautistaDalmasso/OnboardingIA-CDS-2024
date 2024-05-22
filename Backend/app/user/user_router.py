@@ -103,17 +103,3 @@ async def generate_device_UID(user_email: str):
     result = user_service.generate_new_uid(user_email)
 
     return result
-
-
-@router.get("/get_all_users", response_model=List[UserDTO])
-async def get_all_users_by_role(
-    page_size: int = Query(...), page_number: int = Query(...), role: str = Query(...)
-):
-    result = user_service.get_all_users_by_role(page_size, page_number, role)
-    return result
-
-
-@router.get("/users_length", response_model=List[UserDTO])
-async def get_users(role: str = Query(...)):
-    result = user_service.get_users(role)
-    return result
