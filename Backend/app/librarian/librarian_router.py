@@ -1,10 +1,13 @@
 # TODO: temp router development only, add access token requirements that check for librarian status.
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.security import HTTPBearer
 
+from app.user.user_service import UserService
+from app.catalogue.update_catalogue_service import UpdateCatalogueService
+from app.loan_management.book_loans_service import BookNotFound
 from app.middlewares import verify_token
-from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO
+from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO, UserDTO
 from app.librarian.librarian_service import LibrarianService
 from app.catalogue import catalogue_db
 from app.catalogue.add_to_catalogue_service import AddToCatalogueService
@@ -15,7 +18,9 @@ router = APIRouter(prefix="/librarian", tags=["Librarian"])
 librarian_cd_router = APIRouter(prefix="/librarianCD", tags=["LibrarianCD"])
 
 add_to_catalogue_service = AddToCatalogueService(CATALOGUE_PATH)
+update_catalogue_service = UpdateCatalogueService(CATALOGUE_PATH)
 librarian_service = LibrarianService(DATABASE_PATH)
+user_service = UserService(DATABASE_PATH)
 
 
 @router.post("/reset_catalogue")
@@ -29,6 +34,14 @@ async def reset_catalogue():
 async def add_to_catalogue(url: str):
     # TODO: temp, add error handling
     add_to_catalogue_service.add_book_by_url(url)
+
+
+@router.patch("/update_book_data")
+async def update_book_data(url: str):
+    try:
+        update_catalogue_service.update_book_by_url(url)
+    except BookNotFound as e:
+        raise HTTPException(status_code=404, detail=e)
 
 
 @router.post("/add_exemplar")
@@ -115,4 +128,18 @@ async def delete_librarian(user: UpdateUserRoleDTO):
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
 
+    return result
+
+
+@librarian_cd_router.get("/get_all_users", response_model=list[UserDTO])
+async def get_all_users_by_role(
+    page_size: int = Query(...), page_number: int = Query(...), role: str = Query(...)
+):
+    result = user_service.get_all_users_by_role(page_size, page_number, role)
+    return result
+
+
+@librarian_cd_router.get("/users_length", response_model=list[UserDTO])
+async def get_users(role: str = Query(...)):
+    result = user_service.get_users(role)
     return result

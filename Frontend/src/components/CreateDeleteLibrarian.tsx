@@ -36,6 +36,7 @@ const AddLibrarian = () => {
       setRequestedButtons(librarianEmails);
       getTotalUsers();
     } catch (error) {
+      setUsers([]);
       console.error("Error al obtener usuarios:", error);
     }
   };
@@ -85,11 +86,13 @@ const AddLibrarian = () => {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.role === selectedRole &&
-      user.email.includes(searchTerm.toLowerCase()),
-  );
+  const filteredUsers = () => {
+      return users.filter(
+          (user) =>
+            user.role === selectedRole &&
+          user.email.includes(searchTerm.toLowerCase()),
+        )
+    }
 
   useEffect(() => {
     fetchUsers(selectedRole, currentPage);
@@ -107,7 +110,7 @@ const AddLibrarian = () => {
   };
 
   const goToNextPage = () => {
-    if (currentPage < totalPages && filteredUsers.length > 0) {
+    if (currentPage < totalPages && filteredUsers().length > 0) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -131,7 +134,7 @@ const AddLibrarian = () => {
         inputContainerStyle={styles.searchBarInputContainer}
       />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {filteredUsers.map((user) => (
+        {filteredUsers().map((user) => (
           <View key={user.email} style={styles.bookContainer}>
             <Text style={styles.bookTitle}>
               {user.firstName.toUpperCase() + " " + user.lastName.toUpperCase()}

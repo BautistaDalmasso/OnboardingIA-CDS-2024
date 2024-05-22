@@ -111,7 +111,7 @@ const LibrarianLoans = () => {
       )}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {loans.map((Loan) => (
-          <View style={styles.bookContainer} key={Loan.id}>
+          <View style={styles.bookContainer} key={Loan.inventory_number}>
             <Text style={styles.bookTitle}>{Loan.catalogue_data.title}</Text>
             <Text style={styles.bookTitle}>{Loan.user_email}</Text>
             <Text style={styles.cardLevel}>
