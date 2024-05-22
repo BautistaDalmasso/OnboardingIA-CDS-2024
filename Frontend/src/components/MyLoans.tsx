@@ -21,7 +21,7 @@ const MyLoans = () => {
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             {contextState.loans.map((loan) => (
-              <LoanInformationCard loan={loan} />
+              <LoanInformationCard key={loan.inventory_number} loan={loan} />
             ))}
           </ScrollView>
         </View>

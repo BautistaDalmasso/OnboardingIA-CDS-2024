@@ -1,3 +1,5 @@
+import { ILoanInformation } from "./LoanReqResponse";
+
 export interface ICreateUser {
   firstName: string;
   lastName: string;
@@ -18,6 +20,7 @@ export interface IUser {
 export interface ILoginResponse {
   access_token: string;
   user: IUser;
+  loans: ILoanInformation[];
   detail?: string;
 }
 
