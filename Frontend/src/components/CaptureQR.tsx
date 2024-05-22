@@ -1,5 +1,5 @@
 import { NavigationProp } from "@react-navigation/native";
-import { Camera, CameraType, FlashMode } from "expo-camera";
+import { Camera,CameraType, FlashMode } from "expo-camera/legacy";
 import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
@@ -9,7 +9,6 @@ import React from "react";
 interface Props {
   navigation: NavigationProp<any, any>;
 }
-
 const CaptureQR = ({ navigation }: Props) => {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
