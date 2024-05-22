@@ -6,7 +6,7 @@ import {
   ScrollView,
   ImageBackground,
 } from "react-native";
-import BookCard from "./BookCard";
+import LoanInformationCard from "./LoanInformationCard";
 import { RequestedLoansService } from "../services/requestedLoansService";
 import { useContextState } from "../ContexState";
 import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
@@ -16,7 +16,7 @@ const image = require("../assets/background.png");
 
 const MyLoans = () => {
   const { contextState } = useContextState();
-  const [bookList, setBookList] = useState<ILoanInformation[]>([]);
+  const [loansList, setLoansList] = useState<ILoanInformation[]>([]);
 
   const fetchLoans = async () => {
     try {
@@ -29,7 +29,7 @@ const MyLoans = () => {
         contextState.accessToken as string,
       );
 
-      setBookList(loans);
+      setLoansList(loans);
     } catch (error) {
       console.error("Error al obtener libros:", error);
     }
@@ -44,7 +44,7 @@ const MyLoans = () => {
       }
 
       const data = JSON.parse(jsonData);
-      setBookList(data);
+      setLoansList(data);
     } catch (error) {
       console.error("Error al cargar los datos desde AsyncStorage:", error);
     }
@@ -64,13 +64,8 @@ const MyLoans = () => {
         <Text style={styles.title}>Prestamos solicitadados</Text>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-            {bookList.map((book) => (
-              <BookCard
-                key={book.inventory_number}
-                title={book.title}
-                dueDate={book.expiration_date}
-                status={book.loan_status}
-              />
+            {loansList.map((loan) => (
+              <LoanInformationCard loan={loan} />
             ))}
           </ScrollView>
         </View>

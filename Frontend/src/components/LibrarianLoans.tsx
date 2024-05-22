@@ -13,7 +13,6 @@ const LibrarianLoans = () => {
   const [pickerItems, setPickerItems] = useState<
     { label: string; value: string }[]
   >([]);
-  const [requestedButton, setRequestedButton] = useState<string[]>([]);
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
@@ -113,7 +112,7 @@ const LibrarianLoans = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {loans.map((Loan) => (
           <View style={styles.bookContainer} key={Loan.id}>
-            <Text style={styles.bookTitle}>{Loan.title}</Text>
+            <Text style={styles.bookTitle}>{Loan.catalogue_data.title}</Text>
             <Text style={styles.bookTitle}>{Loan.user_email}</Text>
             <Text style={styles.cardLevel}>
               Vencimiento: {new Date(Loan.expiration_date).toLocaleDateString()}

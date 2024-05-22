@@ -3,6 +3,7 @@ from enum import auto
 from typing import Literal
 from pydantic import BaseModel
 
+from app.catalogue.book_models import MarcBookData
 from app.models import auto_index
 
 
@@ -17,8 +18,7 @@ LOAN_STATUS = (
 
 class LoanInformationDTO(BaseModel):
     inventory_number: int
-    isbn: str
-    title: str
+    catalogue_data: MarcBookData
     expiration_date: datetime
     user_email: str
     loan_status: LOAN_STATUS
