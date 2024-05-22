@@ -1,9 +1,9 @@
-import { NavigationProp } from "@react-navigation/native";
-import { Camera,CameraType, FlashMode } from "expo-camera/legacy";
+import { NavigationProp, useIsFocused } from "@react-navigation/native";
+import { Camera, CameraType, FlashMode } from "expo-camera/legacy";
 import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import React from "react";
 
 interface Props {
@@ -13,11 +13,10 @@ const CaptureQR = ({ navigation }: Props) => {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
   >(null);
-  const [image, setImage] = useState<string>("");
-  const [cameraType, setType] = useState(CameraType.back);
-  const [flash, setFlash] = useState(FlashMode.off);
+  const isFocused = useIsFocused();
+  const [cameraType] = useState(CameraType.back);
+  const [flash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
-  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -27,20 +26,30 @@ const CaptureQR = ({ navigation }: Props) => {
     })();
   }, []);
 
+  if (!hasCameraPermission) {
+    return (
+      <View>
+        <Text>Necesitamos permiso para utilizar tu camara.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Camera
-        style={styles.camera}
-        type={cameraType}
-        ref={cameraRef}
-        flashMode={flash}
-        barCodeScannerSettings={{
-          barCodeTypes: ["qr"],
-        }}
-        onBarCodeScanned={(scanningResult) => {
-          console.log(scanningResult);
-        }}
-      />
+      {isFocused && (
+        <Camera
+          style={styles.camera}
+          type={cameraType}
+          ref={cameraRef}
+          flashMode={flash}
+          barCodeScannerSettings={{
+            barCodeTypes: ["qr"],
+          }}
+          onBarCodeScanned={(scanningResult) => {
+            console.log(scanningResult);
+          }}
+        />
+      )}
     </View>
   );
 };
