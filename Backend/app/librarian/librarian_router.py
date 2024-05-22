@@ -3,6 +3,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer
 
+from app.catalogue.update_catalogue_service import UpdateCatalogueService
+from app.loan_management.book_loans_service import BookNotFound
 from app.middlewares import verify_token
 from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO
 from app.librarian.librarian_service import LibrarianService
@@ -15,6 +17,7 @@ router = APIRouter(prefix="/librarian", tags=["Librarian"])
 librarian_cd_router = APIRouter(prefix="/librarianCD", tags=["LibrarianCD"])
 
 add_to_catalogue_service = AddToCatalogueService(CATALOGUE_PATH)
+update_catalogue_service = UpdateCatalogueService(CATALOGUE_PATH)
 librarian_service = LibrarianService(DATABASE_PATH)
 
 
@@ -29,6 +32,14 @@ async def reset_catalogue():
 async def add_to_catalogue(url: str):
     # TODO: temp, add error handling
     add_to_catalogue_service.add_book_by_url(url)
+
+
+@router.patch("/update_book_data")
+async def update_book_data(url: str):
+    try:
+        update_catalogue_service.update_book_by_url(url)
+    except BookNotFound as e:
+        raise HTTPException(status_code=404, detail=e)
 
 
 @router.post("/add_exemplar")
