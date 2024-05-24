@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.1" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-1.xsd">
+  <titleInfo>
+    <nonSort>El </nonSort>
+    <title>segundo sexo</title>
+  </titleInfo>
+  <name type="personal">
+    <namePart>Beauvoir, Simone de</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="text">creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>García Puente, Juan</namePart>
+    <role>
+      <roleTerm type="text">tr.</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>text</typeOfResource>
+  <originInfo>
+    <place>
+      <placeTerm type="code" authority="marccountry">ag</placeTerm>
+    </place>
+    <place>
+      <placeTerm type="text">Buenos Aires</placeTerm>
+    </place>
+    <publisher>Debolsillo</publisher>
+    <dateIssued>2011</dateIssued>
+    <edition>5ta. ed.</edition>
+    <issuance>monographic</issuance>
+  </originInfo>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+  </language>
+  <physicalDescription>
+    <extent>727 p. : il., fot.</extent>
+  </physicalDescription>
+  <subject>
+    <topic>ANALISIS DE GENERO</topic>
+  </subject>
+  <subject>
+    <topic>ENSAYO</topic>
+  </subject>
+  <subject>
+    <topic>ESTATUS DE LA MUJER</topic>
+  </subject>
+  <subject>
+    <topic>FEMINISMO</topic>
+  </subject>
+  <subject>
+    <topic>FILOSOFIA</topic>
+  </subject>
+  <subject>
+    <topic>LITERATURA</topic>
+  </subject>
+  <subject>
+    <topic>MUJERES</topic>
+  </subject>
+  <subject>
+    <topic>ROL DE LA MUJER</topic>
+  </subject>
+  <subject>
+    <topic>SOCIEDAD</topic>
+  </subject>
+  <subject>
+    <geographic>DOCUMENTOS TEORICOS O METODOLOGICOS</geographic>
+  </subject>
+  <subject>
+    <topic>PERSPECTIVA DE GENERO</topic>
+  </subject>
+  <classification authority="ddc">305.4 386seg</classification>
+  <identifier type="isbn">9789875662834</identifier>
+  <recordInfo>
+    <recordContentSource authority="marcorg">AR-LpoUNG</recordContentSource>
+    <recordCreationDate encoding="marc">191001</recordCreationDate>
+    <recordChangeDate encoding="iso8601">20221010125336.0</recordChangeDate>
+    <recordIdentifier source="AR-LpoUNG">PT42520</recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>

@@ -39,7 +39,27 @@ class ReadMod:
     def _get_title(self) -> str:
         title_info_element = self._query_xml("//mods:titleInfo")[0]
 
-        return self._query_xml("./mods:title/text()", title_info_element)[0]
+        # Collect parts in the order they appear
+        parts = []
+        for element in title_info_element.iterchildren():
+            tag = etree.QName(element).localname
+            parts.append((tag, element.text))
+
+        title = ""
+        for part in parts:
+            match part[0]:
+                case "nonSort" | "title":
+                    title += part[1]
+                case "subTitle" | "partName":
+                    title += f": {part[1]}"
+                case "partNumber":
+                    title += f", {part[1]}"
+                case _:
+                    print(
+                        f"Unknown tag found in title: {part[0]}. Full title part: {part}"
+                    )
+
+        return title
 
     def _get_place(self) -> str:
         place_element = self._query_xml(

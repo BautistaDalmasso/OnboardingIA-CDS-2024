@@ -54,12 +54,25 @@ const useOfflineStorage = () => {
     );
   };
 
+  const getLastUsersLoans = async (): Promise<ILoanInformation[]> => {
+    const loans = await AsyncStorage.getItem(
+      offlineInformation.LAST_USER_LOANS,
+    );
+
+    if (loans == null) {
+      return [];
+    }
+
+    return JSON.parse(loans);
+  };
+
   return {
     storeLastUser,
     getLastUser,
     saveLastQrCodeInfo,
     getLastQrCodeInfo,
     saveUserLoans,
+    getLastUsersLoans,
   };
 };
 

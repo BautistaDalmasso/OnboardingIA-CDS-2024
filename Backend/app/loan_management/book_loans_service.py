@@ -40,15 +40,13 @@ class LoanService(DatabaseUser):
     def reserve_book(self, book_request: ReservationRequestDTO) -> LoanInformationDTO:
         """Mark a copy of a book as reserved.."""
         copy_data = self._find_available_copy_data(book_request.isbn)
-        # TODO: find a better way of getting the title here.
-        book = self._catalogue_service.browse_by_isbn(book_request.isbn)
+        catalogue_data = self._catalogue_service.browse_by_isbn(book_request.isbn)
 
         loan_status: LOAN_STATUS = "reserved"
 
         loan_information = LoanInformationDTO(
             inventory_number=copy_data.inventoryNumber,
-            isbn=copy_data.isbn,
-            title=book.title,
+            catalogue_data=catalogue_data,
             expiration_date=book_request.expiration_date,
             user_email=book_request.user_email,
             loan_status=loan_status,
@@ -144,11 +142,12 @@ class LoanService(DatabaseUser):
         return [self.create_loan_data(entry) for entry in loans]
 
     def create_loan_data(self, db_entry: list[Any]) -> LoanInformationDTO:
-        book = self._catalogue_service.browse_by_isbn(db_entry[CLBEI.isbn.value])
+        catalogue_data = self._catalogue_service.browse_by_isbn(
+            db_entry[CLBEI.isbn.value]
+        )
 
         return LoanInformationDTO(
-            title=book.title,
-            isbn=db_entry[CLBEI.isbn.value],
+            catalogue_data=catalogue_data,
             inventory_number=db_entry[CLBEI.inventory_number.value],
             expiration_date=db_entry[CLBEI.expiration_date.value],
             user_email=db_entry[CLBEI.user_email.value],

@@ -1,9 +1,11 @@
 import { ServerAddress } from "../common/consts/serverAddress";
+import { ShowUserPage } from "../common/enums/Page";
 import {
   IUpgradeRoleResponse,
   IUpgradeUserRole,
   IDowngradeRoleResponse,
   IDowngradeUserRole,
+  IUser,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
 
@@ -34,5 +36,36 @@ export class librarianServiceCD {
       data: { role: "basic", email },
       token,
     });
+  }
+
+  static async getAllUsersByRole(
+    role: string,
+    page_number: number,
+  ): Promise<IUser[]> {
+    try {
+      const users = await baseFetch<void, IUser[]>({
+        url: `${this.baseRoute}/get_all_users?page_size=${ShowUserPage.PAGE_SIZE}&page_number=${page_number}&role=${role}`,
+        method: "GET",
+      });
+
+      return users;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw error;
+    }
+  }
+
+  static async getTotalUsers(role: string): Promise<IUser[]> {
+    try {
+      const value = await baseFetch<void, IUser[]>({
+        url: `${this.baseRoute}/users_length?role=${role}`,
+        method: "GET",
+      });
+
+      return value;
+    } catch (error) {
+      console.error("Error fetching users length:", error);
+      throw error;
+    }
   }
 }

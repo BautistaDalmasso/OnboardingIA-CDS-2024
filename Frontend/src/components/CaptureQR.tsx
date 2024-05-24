@@ -1,10 +1,17 @@
+<<<<<<< HEAD
 import { NavigationProp } from "@react-navigation/native";
 import { Camera,CameraType, FlashMode } from "expo-camera/legacy";
+=======
+import { NavigationProp, useIsFocused } from "@react-navigation/native";
+import { Camera, CameraType, FlashMode } from "expo-camera/legacy";
+>>>>>>> 4921edfb858e03a9ca6525c48e6f6254b764db4d
 import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import React from "react";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import LinkButton from "./LinkButton";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -13,11 +20,11 @@ const CaptureQR = ({ navigation }: Props) => {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
   >(null);
-  const [image, setImage] = useState<string>("");
-  const [cameraType, setType] = useState(CameraType.back);
-  const [flash, setFlash] = useState(FlashMode.off);
+  const isFocused = useIsFocused();
+  const [cameraType] = useState(CameraType.back);
+  const [flash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [scanResult, setScanResult] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -27,26 +34,55 @@ const CaptureQR = ({ navigation }: Props) => {
     })();
   }, []);
 
+  if (!hasCameraPermission) {
+    return (
+      <View>
+        <Text>Necesitamos permiso para utilizar tu camara.</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Camera
-        style={styles.camera}
-        type={cameraType}
-        ref={cameraRef}
-        flashMode={flash}
-        barCodeScannerSettings={{
-          barCodeTypes: ["qr"],
-        }}
-        onBarCodeScanned={(scanningResult) => {
-          console.log(scanningResult);
-        }}
-      />
-    </View>
+    <>
+      {scanResult === "" ? (
+        isFocused && (
+          <View style={styles.cameraContainer}>
+            <Camera
+              style={styles.camera}
+              type={cameraType}
+              ref={cameraRef}
+              flashMode={flash}
+              barCodeScannerSettings={{
+                barCodeTypes: ["qr"],
+              }}
+              onBarCodeScanned={(scanningResult) => {
+                setScanResult(scanningResult.data);
+              }}
+            />
+          </View>
+        )
+      ) : (
+        <View style={styles.container}>
+          <Text>VISTA TEMPORAL DE INFORMACIÓN</Text>
+          <Text>{scanResult}</Text>
+          <LinkButton
+            text="Escanear Otro QR"
+            onPress={() => setScanResult("")}
+          />
+        </View>
+      )}
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingTop: Constants.statusBarHeight,
+    padding: 8,
+  },
+  cameraContainer: {
     flex: 1,
     justifyContent: "center",
     paddingTop: Constants.statusBarHeight,

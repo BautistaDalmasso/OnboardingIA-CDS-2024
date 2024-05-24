@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import Constants from "expo-constants";
+<<<<<<< HEAD
 import { Camera,CameraType, FlashMode } from "expo-camera/legacy";
+=======
+import { useIsFocused } from "@react-navigation/native";
+import { Camera, CameraType, FlashMode } from "expo-camera/legacy";
+>>>>>>> 4921edfb858e03a9ca6525c48e6f6254b764db4d
 import * as MediaLibrary from "expo-media-library";
 import Button from "./Button";
 
@@ -13,6 +18,7 @@ const Capture = ({ onAccept }: Props) => {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
   >(null);
+  const isFocused = useIsFocused();
   const [image, setImage] = useState<string>("");
   const [cameraType, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
@@ -70,7 +76,7 @@ const Capture = ({ onAccept }: Props) => {
 
   return (
     <View style={styles.container}>
-      {!image ? (
+      {!image && isFocused ? (
         <Camera
           style={styles.camera}
           type={cameraType}

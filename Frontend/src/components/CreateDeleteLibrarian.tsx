@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { useContextState } from "../ContexState";
 import { IUser } from "../common/interfaces/User";
-import { UserService } from "../services/userService";
 import { UserRole } from "../common/enums/user";
 import { Picker } from "@react-native-picker/picker";
 import { SearchBar } from "@rneui/themed";
@@ -28,7 +27,7 @@ const AddLibrarian = () => {
 
   const fetchUsers = async (role: string, page: number) => {
     try {
-      const data = await UserService.getAllUsersByRole(role, page);
+      const data = await librarianServiceCD.getAllUsersByRole(role, page);
       setUsers(data);
 
       const librarianEmails = data
@@ -37,6 +36,7 @@ const AddLibrarian = () => {
       setRequestedButtons(librarianEmails);
       getTotalUsers();
     } catch (error) {
+      setUsers([]);
       console.error("Error al obtener usuarios:", error);
     }
   };
@@ -77,7 +77,7 @@ const AddLibrarian = () => {
 
   const getTotalUsers = async () => {
     try {
-      const response = await UserService.getTotalUsers(selectedRole);
+      const response = await librarianServiceCD.getTotalUsers(selectedRole);
       const total = Math.ceil(response.length / ShowUserPage.PAGE_SIZE);
       setTotalPages(total - 1);
     } catch (error) {
@@ -86,11 +86,13 @@ const AddLibrarian = () => {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.role === selectedRole &&
-      user.email.includes(searchTerm.toLowerCase()),
-  );
+  const filteredUsers = () => {
+      return users.filter(
+          (user) =>
+            user.role === selectedRole &&
+          user.email.includes(searchTerm.toLowerCase()),
+        )
+    }
 
   useEffect(() => {
     fetchUsers(selectedRole, currentPage);
@@ -108,7 +110,7 @@ const AddLibrarian = () => {
   };
 
   const goToNextPage = () => {
-    if (currentPage < totalPages && filteredUsers.length > 0) {
+    if (currentPage < totalPages && filteredUsers().length > 0) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -132,7 +134,7 @@ const AddLibrarian = () => {
         inputContainerStyle={styles.searchBarInputContainer}
       />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {filteredUsers.map((user) => (
+        {filteredUsers().map((user) => (
           <View key={user.email} style={styles.bookContainer}>
             <Text style={styles.bookTitle}>
               {user.firstName.toUpperCase() + " " + user.lastName.toUpperCase()}
