@@ -8,12 +8,12 @@ import {
   StyleSheet,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { UserService } from "../services/userService";
-import { useContextState } from "../ContexState";
-import useBiometrics from "../hooks/useBiometrics";
-import { generateKeyPair } from "../common/utils/crypto";
+import { UserService } from "../../services/userService";
+import { useContextState } from "../../ContexState";
+import useBiometrics from "../../hooks/useBiometrics";
+import { generateKeyPair } from "../../common/utils/crypto";
 import React, { useState } from "react";
-import { Routes } from "../common/enums/routes";
+import { Routes } from "../../common/enums/routes";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -68,7 +68,7 @@ const UserConfiguration = ({ navigation }: Props) => {
       >
         <Text style={styles.buttonText}>Registrar Huella</Text>
         <Image
-          source={require("../assets/fingerprint.png")}
+          source={require("../../assets/fingerprint.png")}
           style={styles.fingerprintIcon}
           resizeMode="contain"
         />

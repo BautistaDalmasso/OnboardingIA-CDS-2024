@@ -1,13 +1,12 @@
 import { Alert } from "react-native";
 import { LibrarianService } from "../services/librarianService";
 import { useContextState } from "../ContexState";
-import useInputChecks from "./useInputChecks";
 import { IUserDTO } from "../common/interfaces/User";
 import { LicenceLevel } from "../common/enums/licenceLevels";
+import { isValidDni, isValidEmail } from "../common/utils/inputCheck";
 
 const useRUDUsers = () => {
   const { contextState } = useContextState();
-  const { isValidEmail, isValidDni } = useInputChecks();
 
   const consultUser = async (userEmail: string): Promise<IUserDTO | null> => {
     if (!isValidEmail(userEmail)) {

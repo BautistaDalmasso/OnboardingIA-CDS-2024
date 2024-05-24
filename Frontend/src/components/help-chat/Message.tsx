@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
-import { IMessage } from "../common/interfaces/Message";
-import { MessageType } from "../common/enums/messageType";
+import { IMessage } from "../../common/interfaces/Message";
+import { MessageType } from "../../common/enums/messageType";
 
 interface Props {
   message: IMessage;
@@ -18,7 +18,7 @@ const Message = ({ message }: Props) => {
     >
       {message.type === MessageType.Bot && (
         <Image
-          source={require("../assets/bot-icon.png")}
+          source={require("../../assets/bot-icon.png")}
           style={styles.botIcon}
           resizeMode="contain"
         />

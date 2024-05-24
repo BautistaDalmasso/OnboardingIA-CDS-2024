@@ -1,8 +1,8 @@
 import { NavigationProp } from "@react-navigation/native";
-import { FacialRecognitionService } from "../services/facialRecognitionService";
-import Capture from "./Capture";
+import { FacialRecognitionService } from "../../services/facialRecognitionService";
+import Capture from "../common/Capture";
 import React, { useState } from "react";
-import { Routes } from "../common/enums/routes";
+import { Routes } from "../../common/enums/routes";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import useFinalizeLogin from "../hooks/useFinalizeLogin";
+import useFinalizeLogin from "../../hooks/useFinalizeLogin";
 
 interface Props {
   navigation: NavigationProp<any, any>;

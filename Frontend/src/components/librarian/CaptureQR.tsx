@@ -6,7 +6,7 @@ import * as MediaLibrary from "expo-media-library";
 import { View, StyleSheet, Text } from "react-native";
 import React from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import LinkButton from "./LinkButton";
+import LinkButton from "../common/LinkButton";
 
 interface Props {
   navigation: NavigationProp<any, any>;

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { IAuthor, IBookWithLicence } from "../common/interfaces/Book";
-import { licenceLevelToStr } from "../common/enums/licenceLevels";
-import LinkButton from "./LinkButton";
+import { IAuthor, IBookWithLicence } from "../../common/interfaces/Book";
+import { licenceLevelToStr } from "../../common/enums/licenceLevels";
+import LinkButton from "../common/LinkButton";
 
 interface BookListItemProps {
   book: IBookWithLicence;
