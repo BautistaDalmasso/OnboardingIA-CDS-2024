@@ -5,17 +5,16 @@ import { UserService } from "../services/userService";
 import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../common/enums/routes";
 import { generateKeyPair } from "../common/utils/crypto";
+import { isValidEmail, isValidPassword } from "../common/utils/inputCheck";
 import useBiometrics from "../hooks/useBiometrics";
 import CustomTextInput from "./CustomTextInput";
 import useFinalizeLogin from "../hooks/useFinalizeLogin";
-import useInputChecks from "../hooks/useInputChecks";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const Signup = ({ navigation }: Props) => {
-  const { isValidEmail, isValidPassword } = useInputChecks();
   const [firstName, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");

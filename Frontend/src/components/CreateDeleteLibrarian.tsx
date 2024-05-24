@@ -87,12 +87,12 @@ const AddLibrarian = () => {
   };
 
   const filteredUsers = () => {
-      return users.filter(
-          (user) =>
-            user.role === selectedRole &&
-          user.email.includes(searchTerm.toLowerCase()),
-        )
-    }
+    return users.filter(
+      (user) =>
+        user.role === selectedRole &&
+        user.email.includes(searchTerm.toLowerCase()),
+    );
+  };
 
   useEffect(() => {
     fetchUsers(selectedRole, currentPage);

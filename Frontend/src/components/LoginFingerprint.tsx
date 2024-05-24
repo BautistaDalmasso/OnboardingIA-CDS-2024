@@ -16,14 +16,13 @@ import { UserService } from "../services/userService";
 import { encryptWithPrivateKey } from "../common/utils/crypto";
 import useBiometrics from "../hooks/useBiometrics";
 import useFinalizeLogin from "../hooks/useFinalizeLogin";
-import useInputChecks from "../hooks/useInputChecks";
+import { isValidEmail } from "../common/utils/inputCheck";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const LoginFingerprint = ({ navigation }: Props) => {
-  const { isValidEmail } = useInputChecks();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const { authenticate } = useBiometrics();

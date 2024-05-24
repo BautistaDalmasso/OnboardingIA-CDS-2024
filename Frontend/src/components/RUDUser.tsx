@@ -11,8 +11,6 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import CustomTextInput from "./CustomTextInput";
 import TableDataUser from "./TableDataUser";
-import { useContextState } from "../ContexState";
-import useRegexChecks from "../hooks/useInputChecks";
 import useRUDUsers from "../hooks/useRUDUsers";
 import { IUserDTO } from "../common/interfaces/User";
 import { LicenceLevel, licenceLevelToStr } from "../common/enums/licenceLevels";
@@ -44,7 +42,7 @@ const RUDUser = () => {
   const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const [fieldToUpdate, setFieldToUpdate] = useState(
-    fieldOptions.FIRST_NAME as string
+    fieldOptions.FIRST_NAME as string,
   );
   const [user, setUser] = useState<IUserDTO | null>(null);
   const options = [
@@ -177,7 +175,10 @@ const RUDUser = () => {
             onChangeText={(text) => setInputValue(text)}
           />
 
-          <TouchableOpacity style={styles.button} onPress={() => handleLoadingData(inputValue)}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleLoadingData(inputValue)}
+          >
             <Text style={styles.buttonText}>Buscar Usuario</Text>
           </TouchableOpacity>
 
