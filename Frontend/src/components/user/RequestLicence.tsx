@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
-import { Routes } from "../common/enums/routes";
+import { Routes } from "../../common/enums/routes";
 import {
   View,
   Text,
@@ -10,10 +10,10 @@ import {
   Alert,
   Keyboard,
 } from "react-native";
-import { useContextState } from "../ContexState";
-import { UserService } from "../services/userService";
-import { IUser } from "../common/interfaces/User";
-import useQr from "../hooks/useQr";
+import { useContextState } from "../../ContexState";
+import { UserService } from "../../services/userService";
+import { IUser } from "../../common/interfaces/User";
+import useQr from "../../hooks/useQr";
 
 interface Props {
   navigation: NavigationProp<any, any>;

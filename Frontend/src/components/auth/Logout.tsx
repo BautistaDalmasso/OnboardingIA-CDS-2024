@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { Routes } from "../../src/common/enums/routes";
+import { Routes } from "../../common/enums/routes";
 import { NavigationProp } from "@react-navigation/native";
-import { useContextState } from "../ContexState";
-import { ConnectionType } from "../common/enums/connectionType";
+import { useContextState } from "../../ContexState";
+import { ConnectionType } from "../../common/enums/connectionType";
 
 interface Props {
   navigation: NavigationProp<any, any>;

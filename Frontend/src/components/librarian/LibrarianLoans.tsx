@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
-import { RequestedLoansService } from "../services/requestedLoansService";
-import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
-import SearchBarComponent from "./SearchBar";
-import { useContextState } from "../ContexState";
+import { RequestedLoansService } from "../../services/requestedLoansService";
+import { ILoanInformation } from "../../common/interfaces/LoanReqResponse";
+import SearchBarComponent from "../common/SearchBar";
+import { useContextState } from "../../ContexState";
 
 const LibrarianLoans = () => {
   const { contextState } = useContextState();

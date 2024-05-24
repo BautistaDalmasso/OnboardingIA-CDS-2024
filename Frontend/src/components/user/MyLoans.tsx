@@ -6,10 +6,10 @@ import {
   ScrollView,
   ImageBackground,
 } from "react-native";
-import LoanInformationCard from "./LoanInformationCard";
-import { useContextState } from "../ContexState";
+import LoanInformationCard from "../common/loan/LoanInformationCard";
+import { useContextState } from "../../ContexState";
 
-const image = require("../assets/background.png");
+const image = require("../../assets/background.png");
 
 const MyLoans = () => {
   const { contextState } = useContextState();

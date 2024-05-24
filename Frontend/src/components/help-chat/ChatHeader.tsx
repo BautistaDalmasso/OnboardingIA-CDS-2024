@@ -1,20 +1,20 @@
 import { StackHeaderProps } from "@react-navigation/stack";
 import React from "react";
 import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Routes } from "../common/enums/routes";
+import { Routes } from "../../common/enums/routes";
 
 const ChatHeader = ({ navigation }: StackHeaderProps) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.navigate(Routes.Home)}>
         <Image
-          source={require("../assets/arrow-left.png")}
+          source={require("../../assets/arrow-left.png")}
           style={styles.backButton}
           resizeMode="contain"
         />
       </TouchableOpacity>
       <Image
-        source={require("../assets/bot-icon.png")}
+        source={require("../../assets/bot-icon.png")}
         style={styles.image}
         resizeMode="contain"
       />

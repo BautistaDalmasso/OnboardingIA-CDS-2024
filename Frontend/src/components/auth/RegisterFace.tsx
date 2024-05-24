@@ -1,9 +1,9 @@
 import { NavigationProp } from "@react-navigation/native";
-import { FacialRecognitionService } from "../services/facialRecognitionService";
-import { useContextState } from "../ContexState";
-import Capture from "./Capture";
+import { FacialRecognitionService } from "../../services/facialRecognitionService";
+import { useContextState } from "../../ContexState";
+import Capture from "../common/Capture";
 import React from "react";
-import { Routes } from "../common/enums/routes";
+import { Routes } from "../../common/enums/routes";
 
 interface Props {
   navigation: NavigationProp<any, any>;

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import Constants from "expo-constants";
 import { View, Image, StyleSheet, Dimensions } from "react-native";
-import useQr from "../hooks/useQr";
+import useQr from "../../hooks/useQr";
 
 interface Props {
   navigation: NavigationProp<any, any>;

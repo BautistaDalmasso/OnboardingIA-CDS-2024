@@ -7,9 +7,9 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
-import { useContextState } from "../ContexState";
+import { useContextState } from "../../ContexState";
 import { NavigationProp } from "@react-navigation/native";
-import { Routes } from "../common/enums/routes";
+import { Routes } from "../../common/enums/routes";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -17,7 +17,7 @@ interface Props {
 
 const Licence = ({ navigation }: Props) => {
   const { contextState } = useContextState();
-  const image = require("../assets/LicenceBack.png");
+  const image = require("../../assets/LicenceBack.png");
 
   function handleNavigateQR(): void {
     navigation.navigate(Routes.ViewQr);
@@ -58,13 +58,13 @@ const Licence = ({ navigation }: Props) => {
                 </View>
               </View>
               <Image
-                source={require("../assets/reader.png")}
+                source={require("../../assets/reader.png")}
                 style={styles.imageProfile}
                 resizeMode="contain"
               />
               <View style={styles.imageLogo}>
                 <Image
-                  source={require("../assets/logo.png")}
+                  source={require("../../assets/logo.png")}
                   style={styles.imageLogo}
                   resizeMode="contain"
                 />

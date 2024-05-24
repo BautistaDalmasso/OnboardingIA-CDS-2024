@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
-import convertLoanStatusToString from "../common/enums/loanStatus";
-import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
-import LinkButton from "./LinkButton";
+import convertLoanStatusToString from "../../../common/enums/loanStatus";
+import { ILoanInformation } from "../../../common/interfaces/LoanReqResponse";
+import LinkButton from "../LinkButton";
 
 interface LoanInformationCardProps {
   loan: ILoanInformation;
