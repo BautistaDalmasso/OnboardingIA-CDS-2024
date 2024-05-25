@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import auto
 import json
 import sqlite3
@@ -43,6 +44,7 @@ class LoanService(DatabaseUser):
         catalogue_data = self._catalogue_service.browse_by_isbn(book_request.isbn)
 
         loan_status: LOAN_STATUS = "reserved"
+        today = datetime.today()
 
         loan_information = LoanInformationDTO(
             inventory_number=copy_data.inventoryNumber,
@@ -50,6 +52,9 @@ class LoanService(DatabaseUser):
             expiration_date=book_request.expiration_date,
             user_email=book_request.user_email,
             loan_status=loan_status,
+            reservation_date=today,
+            checkout_date=None,
+            return_date=None,
         )
 
         self.execute_in_database(
@@ -152,6 +157,9 @@ class LoanService(DatabaseUser):
             expiration_date=db_entry[CLBEI.expiration_date.value],
             user_email=db_entry[CLBEI.user_email.value],
             loan_status=db_entry[CLBEI.loan_status.value],
+            reservation_date=db_entry[CLBEI.reservation_date.value],
+            checkout_date=db_entry[CLBEI.checkout_date.value],
+            return_date=db_entry[CLBEI.return_date.value],
         )
 
 
@@ -163,4 +171,7 @@ class CLBEI(auto_index):
     expiration_date = auto()
     user_email = auto()
     loan_status = auto()
+    reservation_date = auto()
+    checkout_date = auto()
+    return_date = auto()
     isbn = auto()
