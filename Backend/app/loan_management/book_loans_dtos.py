@@ -22,6 +22,9 @@ class LoanInformationDTO(BaseModel):
     expiration_date: datetime
     user_email: str
     loan_status: LOAN_STATUS
+    reservation_date: datetime | None
+    checkout_date: datetime | None
+    return_date: datetime | None
 
 
 class ReservationRequestDTO(BaseModel):
