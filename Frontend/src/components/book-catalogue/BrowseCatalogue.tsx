@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
-import { LibraryService } from "../services/LibraryService";
-import { IRequestedBook, IBookWithLicence } from "../common/interfaces/Book";
-import { useContextState } from "../ContexState";
+import { LibraryService } from "../../services/LibraryService";
+import { IRequestedBook, IBookWithLicence } from "../../common/interfaces/Book";
+import { useContextState } from "../../ContexState";
 import BookListItem from "./BookListItem";
 import SearchBarComponent from "./BooksSearchBar";
-import useUserLoans from "../hooks/useUserLoans";
+import useUserLoans from "../../hooks/useUserLoans";
 
 const RequestLoans = () => {
   const { reserveBook } = useUserLoans();

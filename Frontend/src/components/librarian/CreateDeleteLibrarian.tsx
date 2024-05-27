@@ -7,13 +7,13 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { useContextState } from "../ContexState";
-import { IUser } from "../common/interfaces/User";
-import { UserRole } from "../common/enums/user";
+import { useContextState } from "../../ContexState";
+import { IUser } from "../../common/interfaces/User";
+import { UserRole } from "../../common/enums/user";
 import { Picker } from "@react-native-picker/picker";
 import { SearchBar } from "@rneui/themed";
-import { ShowUserPage } from "../common/enums/Page";
-import { librarianServiceCD } from "../services/librarianCDService";
+import { ShowUserPage } from "../../common/enums/Page";
+import { librarianServiceCD } from "../../services/librarianCDService";
 
 //TODO: update the search bar and adapt it to the one currently being used if it's necessary.
 const AddLibrarian = () => {
@@ -87,12 +87,12 @@ const AddLibrarian = () => {
   };
 
   const filteredUsers = () => {
-      return users.filter(
-          (user) =>
-            user.role === selectedRole &&
-          user.email.includes(searchTerm.toLowerCase()),
-        )
-    }
+    return users.filter(
+      (user) =>
+        user.role === selectedRole &&
+        user.email.includes(searchTerm.toLowerCase()),
+    );
+  };
 
   useEffect(() => {
     fetchUsers(selectedRole, currentPage);

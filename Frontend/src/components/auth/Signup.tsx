@@ -1,21 +1,20 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { UserService } from "../services/userService";
+import { UserService } from "../../services/userService";
 import { NavigationProp } from "@react-navigation/native";
-import { Routes } from "../common/enums/routes";
-import { generateKeyPair } from "../common/utils/crypto";
-import useBiometrics from "../hooks/useBiometrics";
-import CustomTextInput from "./CustomTextInput";
-import useFinalizeLogin from "../hooks/useFinalizeLogin";
-import useInputChecks from "../hooks/useInputChecks";
+import { Routes } from "../../common/enums/routes";
+import { generateKeyPair } from "../../common/utils/crypto";
+import { isValidEmail, isValidPassword } from "../../common/utils/inputCheck";
+import useBiometrics from "../../hooks/useBiometrics";
+import CustomTextInput from "../common/CustomTextInput";
+import useFinalizeLogin from "../../hooks/useFinalizeLogin";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const Signup = ({ navigation }: Props) => {
-  const { isValidEmail, isValidPassword } = useInputChecks();
   const [firstName, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");

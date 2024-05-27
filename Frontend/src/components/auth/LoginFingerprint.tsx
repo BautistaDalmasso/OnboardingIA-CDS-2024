@@ -6,54 +6,76 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from "react-native";
+
 import { NavigationProp } from "@react-navigation/native";
-import { Routes } from "../../src/common/enums/routes";
-import { UserService } from "../services/userService";
-import useFinalizeLogin from "../hooks/useFinalizeLogin";
-import useInputChecks from "../hooks/useInputChecks";
+import * as SecureStore from "expo-secure-store";
+import { Routes } from "../../common/enums/routes";
+import { UserService } from "../../services/userService";
+import { encryptWithPrivateKey } from "../../common/utils/crypto";
+import useBiometrics from "../../hooks/useBiometrics";
+import useFinalizeLogin from "../../hooks/useFinalizeLogin";
+import { isValidEmail } from "../../common/utils/inputCheck";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
-const Login = ({ navigation }: Props) => {
-  const { isValidEmail, isValidPassword } = useInputChecks();
+const LoginFingerprint = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { authenticate } = useBiometrics();
   const { finalizeLogin } = useFinalizeLogin();
 
-  const handlePasswordLogin = async () => {
+  const handleLoginFingerprint = async () => {
     try {
       setLoading(true);
 
-      if (!isValidEmail(email) || !isValidPassword(password)) {
-        Alert.alert(
-          "Por favor",
-          "Ingrese un correo valido y una contraseña de más de 6 caracteres.",
-        );
-        return null;
+      if (!isValidEmail(email)) {
+        Alert.alert("Por favor", "Ingrese un correo valido");
+        return;
       }
 
-      const response = await UserService.login(email, password);
+      const privateKey = await SecureStore.getItemAsync("privateKey");
+      if (!privateKey) {
+        Alert.alert("Error", "Este dispositivo no tiene una cuenta vinculada.");
+        return;
+      }
+
+      const successBiometric = await authenticate();
+      if (!successBiometric) {
+        Alert.alert("Error", "Autenticación fallida");
+        return;
+      }
+
+      const challengeResponse = await UserService.getChallenge(email);
+      if (challengeResponse.detail) {
+        Alert.alert("Error", challengeResponse.detail);
+        return;
+      }
+
+      const challengeResult = encryptWithPrivateKey(
+        challengeResponse.challenge,
+        JSON.parse(privateKey as unknown as string),
+      );
+
+      const response = await UserService.verifyChallenge(
+        email,
+        challengeResult,
+      );
 
       const loginSuccess = await finalizeLogin(response);
 
       if (loginSuccess) {
-        navigation.navigate(Routes.Home);
         setEmail("");
-        setPassword("");
+        navigation.navigate(Routes.Home);
       }
     } catch (error) {
       console.error("Error logging in:", error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogin = async () => {
-    await handlePasswordLogin();
   };
 
   return (
@@ -65,20 +87,21 @@ const Login = ({ navigation }: Props) => {
         value={email}
         onChangeText={(text) => setEmail(text)}
       />
-      <TextInput
-        placeholder="Contraseña"
-        style={styles.input}
-        secureTextEntry={true}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
       <TouchableOpacity
         style={styles.button}
-        onPress={handleLogin}
+        onPress={handleLoginFingerprint}
         disabled={loading}
       >
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
+        {
+          <Image
+            source={require("../../assets/fingerprint.png")}
+            style={styles.fingerprintIcon}
+            resizeMode="contain"
+          />
+        }
       </TouchableOpacity>
+      <Text style={styles.linkText}></Text>
     </View>
   );
 };
@@ -96,7 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 40,
     textAlign: "center",
-    color: "#3369FF",
+    color: "#48bce4",
   },
   input: {
     height: 50,
@@ -109,7 +132,7 @@ const styles = StyleSheet.create({
     maxWidth: 330,
   },
   button: {
-    backgroundColor: "#3369FF",
+    backgroundColor: "#48bce4",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 100,
@@ -127,10 +150,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   linkText: {
-    color: "#3369FF",
+    color: "#48bce4",
     marginTop: 25,
     textAlign: "center",
   },
+
   fingerprintIcon: {
     width: 20,
     height: 20,
@@ -138,4 +162,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default LoginFingerprint;

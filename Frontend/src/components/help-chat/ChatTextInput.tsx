@@ -37,7 +37,7 @@ const ChatTextInput = ({ onSubmit }: Props) => {
         style={styles.sendButtonContainer}
       >
         <Image
-          source={require("../assets/send-message-button.png")}
+          source={require("../../assets/send-message-button.png")}
           style={styles.sendButton}
           resizeMode="contain"
         />

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import Message from "./Message";
-import { MessageType } from "../common/enums/messageType";
+import { MessageType } from "../../common/enums/messageType";
 import ChatTextInput from "./ChatTextInput";
-import { BotService } from "../services/botService";
-import { useContextState } from "../ContexState";
+import { BotService } from "../../services/botService";
+import { useContextState } from "../../ContexState";
 
 const Chat = () => {
   const { contextState, setContextState } = useContextState();
