@@ -11,7 +11,7 @@ from app.loan_management.points_calculator import (
 
 
 def test_calc_points_canceled_reservation_too_soon(generic_loan):
-    current_date = datetime(2024, 5, 28)
+    current_date = datetime(2024, 12, 31)
     delta = timedelta(days=6)
     generic_loan.expiration_date = current_date + delta
 
@@ -20,7 +20,7 @@ def test_calc_points_canceled_reservation_too_soon(generic_loan):
 
 
 def test_calc_points_canceled_reservation(generic_loan):
-    current_date = datetime(2024, 5, 28)
+    current_date = datetime(2024, 12, 31)
     delta = timedelta(days=4)
     generic_loan.expiration_date = current_date + delta
 
@@ -29,7 +29,7 @@ def test_calc_points_canceled_reservation(generic_loan):
 
 
 def test_calc_points_loan_returned_too_soon(generic_loan):
-    current_date = datetime(2024, 5, 28)
+    current_date = datetime(2024, 12, 31)
     delta = timedelta(days=6)
     generic_loan.expiration_date = current_date + delta
 
@@ -43,7 +43,7 @@ def test_calc_points_loan_returned_too_soon(generic_loan):
 
 
 def test_calc_points_loan_returned_before_expiry(generic_loan):
-    current_date = datetime(2024, 5, 28)
+    current_date = datetime(2024, 12, 31)
     delta = timedelta(days=5)
     generic_loan.expiration_date = current_date + delta
 
