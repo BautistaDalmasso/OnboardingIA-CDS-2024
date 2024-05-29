@@ -14,27 +14,43 @@ import { Picker } from "@react-native-picker/picker";
 import { SearchBar } from "@rneui/themed";
 import { ShowUserPage } from "../../common/enums/Page";
 import { librarianServiceCD } from "../../services/librarianCDService";
+import Pagination from "../../common/interfaces/Pagination";
+import usePagination from "../../hooks/usePagination";
 
 //TODO: update the search bar and adapt it to the one currently being used if it's necessary.
-const AddLibrarian = () => {
+const CDLibrarian = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const { contextState } = useContextState();
   const [requestedButtons, setRequestedButtons] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
   const [selectedRole, setSelectedRole] = useState(UserRole.BASIC);
   const [searchTerm, setSearchTerm] = useState("");
-  const [totalPages, setTotalPages] = useState(0);
+  const {
+    setTotalPages,
+    goToNextPage,
+    goToPreviousPage,
+    setCurrentPage,
+    currentPage,
+    totalPages,
+  } = usePagination();
 
-  const fetchUsers = async (role: string, page: number) => {
+  const fetchUsers = async () => {
     try {
-      const data = await librarianServiceCD.getAllUsersByRole(role, page);
-      setUsers(data);
+      const data = await librarianServiceCD.getAllUsersByRole(
+        selectedRole,
+        currentPage,
+      );
+      console.log(data.length);
+      setTotalPages(false);
+      if (data.length > 0) {
+        setUsers(data);
 
-      const librarianEmails = data
-        .filter((user) => user.role !== UserRole.BASIC)
-        .map((user) => user.email);
-      setRequestedButtons(librarianEmails);
-      getTotalUsers();
+        const librarianEmails = data
+          .filter((user) => user.role !== UserRole.BASIC)
+          .map((user) => user.email);
+        setRequestedButtons(librarianEmails);
+      } else {
+        setTotalPages(true);
+      }
     } catch (error) {
       setUsers([]);
       console.error("Error al obtener usuarios:", error);
@@ -75,17 +91,6 @@ const AddLibrarian = () => {
     }
   };
 
-  const getTotalUsers = async () => {
-    try {
-      const response = await librarianServiceCD.getTotalUsers(selectedRole);
-      const total = Math.ceil(response.length / ShowUserPage.PAGE_SIZE);
-      setTotalPages(total - 1);
-    } catch (error) {
-      console.log(error);
-      Alert.alert(`${error}`);
-    }
-  };
-
   const filteredUsers = () => {
     return users.filter(
       (user) =>
@@ -95,25 +100,13 @@ const AddLibrarian = () => {
   };
 
   useEffect(() => {
-    fetchUsers(selectedRole, currentPage);
+    fetchUsers();
   }, [currentPage]);
 
   useEffect(() => {
     setCurrentPage(0);
-    fetchUsers(selectedRole, 0);
+    fetchUsers();
   }, [selectedRole]);
-
-  const goToPreviousPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages && filteredUsers().length > 0) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -165,22 +158,12 @@ const AddLibrarian = () => {
           </View>
         ))}
       </ScrollView>
-      <View style={styles.pageContainer}>
-        <TouchableOpacity
-          style={styles.pageButton}
-          onPress={goToPreviousPage}
-          disabled={currentPage === 0}
-        >
-          <Text style={styles.pageButtonText}>
-            {"<<"} Pág {currentPage}{" "}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.pageButton} onPress={goToNextPage}>
-          <Text style={styles.pageButtonText}>
-            Pág {currentPage + 1} {">>"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        goToPreviousPage={goToPreviousPage}
+        goToNextPage={goToNextPage}
+      />
     </View>
   );
 };
@@ -236,27 +219,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 50,
   },
-  pageContainer: {
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#007bff",
-    padding: 10,
-    borderRadius: 5,
-    marginVertical: "auto",
-  },
-  pageButton: {
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 5,
-    position: "static",
-    marginVertical: "auto",
-  },
-  pageButtonText: {
-    color: "#000",
-  },
   picker: {
     backgroundColor: "#fff",
     height: 50,
@@ -277,4 +239,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddLibrarian;
+export default CDLibrarian;

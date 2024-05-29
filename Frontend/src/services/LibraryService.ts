@@ -1,16 +1,17 @@
 import { ServerAddress } from "../common/consts/serverAddress";
 import { baseFetch } from "./fetch";
 import { IBookWithLicence } from "../common/interfaces/Book";
+import { BookPage } from "../common/enums/Page";
 
 export class LibraryService {
   private static booksRoute: string = `${ServerAddress}books`;
 
   constructor() {}
 
-  static async getBooks(): Promise<IBookWithLicence[]> {
+  static async getBooks(page_number: number): Promise<IBookWithLicence[]> {
     try {
       const books = await baseFetch<void, IBookWithLicence[]>({
-        url: `${this.booksRoute}/show_books`,
+        url: `${this.booksRoute}/show_books?page_number=${page_number}&page_size=${BookPage.PAGE_SIZE}`,
         method: "GET",
       });
 

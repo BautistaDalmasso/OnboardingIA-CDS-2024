@@ -6,6 +6,8 @@ import { useContextState } from "../../ContexState";
 import BookListItem from "./BookListItem";
 import SearchBarComponent from "./BooksSearchBar";
 import useUserLoans from "../../hooks/useUserLoans";
+import Pagination from "../../common/interfaces/Pagination";
+import usePagination from "../../hooks/usePagination";
 
 const RequestLoans = () => {
   const { reserveBook } = useUserLoans();
@@ -13,6 +15,13 @@ const RequestLoans = () => {
   const { contextState } = useContextState();
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("title");
+  const {
+    setTotalPages,
+    currentPage,
+    totalPages,
+    goToNextPage,
+    goToPreviousPage,
+  } = usePagination();
 
   const isBookRequested = (isbn: string) => {
     return contextState.loans.some((loan) => loan.catalogue_data.isbn === isbn);
@@ -20,8 +29,13 @@ const RequestLoans = () => {
 
   const fetchBooks = async () => {
     try {
-      const books = await LibraryService.getBooks();
-      setBooks(books);
+      const books = await LibraryService.getBooks(currentPage);
+      if (books.length > 0) {
+        setTotalPages(false);
+        setBooks(books);
+      } else {
+        setTotalPages(true);
+      }
     } catch (error) {
       console.error("Error al obtener libros:", error);
     }
@@ -29,7 +43,7 @@ const RequestLoans = () => {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [currentPage]);
 
   const conductSearch = async () => {
     try {
@@ -94,6 +108,12 @@ const RequestLoans = () => {
           </View>
         ))}
       </ScrollView>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        goToPreviousPage={goToPreviousPage}
+        goToNextPage={goToNextPage}
+      />
     </View>
   );
 };
