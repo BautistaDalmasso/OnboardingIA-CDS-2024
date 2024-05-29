@@ -2,6 +2,12 @@ from datetime import datetime, timedelta
 import sqlite3
 import pytest
 
+from app.loan_management.points import (
+    LOAN_OVERDUE_PER_DAY_PENALITY,
+    RESERVATION_OVERDUE_PENALITY,
+)
+from app.user.user_dtos import CreateUserDTO
+from app.user.user_service import UserService
 from app.database.initialize_db import initialize_database
 from app.file_paths import CATALOGUE_PATH, TEST_DB_PATH
 from app.librarian.librarian_service import LibrarianService
@@ -32,6 +38,10 @@ def test_reservation_is_canceled(parser_service):
     all_loans = parser_service[SERVICE].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "reservation_canceled"
+    assert (
+        UserService(TEST_DB_PATH).get_user_by_email("user@email.com").points
+        == RESERVATION_OVERDUE_PENALITY
+    )
     # Ensure copy is marked as available.
     parser_service[SERVICE].reserve_book(
         ReservationRequestDTO(
@@ -70,6 +80,10 @@ def test_loan_is_marked_as_overdue(parser_service):
     all_loans = parser_service[SERVICE].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "loan_return_overdue"
+    assert (
+        UserService(TEST_DB_PATH).get_user_by_email("user@email.com").points
+        == LOAN_OVERDUE_PER_DAY_PENALITY
+    )
 
 
 def test_loan_is_not_marked_as_overdue(parser_service):
@@ -82,6 +96,24 @@ def test_loan_is_not_marked_as_overdue(parser_service):
     all_loans = parser_service[SERVICE].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "loaned"
+
+
+def test_overdue_loan_is_penalized(parser_service):
+    current_date = datetime(2024, 12, 31)
+    delta = timedelta(days=1)
+    # TODO: change when borrowed status changing is implemented
+    make_loaned_book(current_date - delta)
+
+    parser_service[PARSER].parse_non_historic_loans(today=current_date)
+    parser_service[PARSER].parse_non_historic_loans(today=current_date)
+
+    all_loans = parser_service[SERVICE].consult_all_book_loans()
+
+    assert all_loans[0].loan_status == "loan_return_overdue"
+    assert (
+        UserService(TEST_DB_PATH).get_user_by_email("user@email.com").points
+        == LOAN_OVERDUE_PER_DAY_PENALITY * 2
+    )
 
 
 def make_loaned_book(expiration_date: datetime):
@@ -104,6 +136,7 @@ def parser_service():
     initialize_database(TEST_DB_PATH)
 
     add_books()
+    create_user()
 
     try:
         yield (
@@ -117,3 +150,14 @@ def parser_service():
 def add_books():
     isbns = ["9789875662445", "9789501303445"]
     LibrarianService(TEST_DB_PATH).add_exemplars(isbns)
+
+
+def create_user():
+    UserService(TEST_DB_PATH).create_user(
+        CreateUserDTO(
+            firstName="User",
+            lastName="User",
+            email="user@email.com",
+            password="123456",
+        )
+    )

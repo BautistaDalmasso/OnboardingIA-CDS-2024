@@ -1,13 +1,14 @@
 from datetime import datetime
 from pathlib import Path
 import sqlite3
+from app.loan_management.points import (
+    LOAN_OVERDUE_PER_DAY_PENALITY,
+    RESERVATION_OVERDUE_PENALITY,
+)
 from app.database.database_user import DatabaseUser
 from app.loan_management.book_loans_dtos import LoanInformationDTO
 from app.loan_management.book_loans_service import LoanService
 from app.user.user_service import UserService
-
-RESERVATION_OVERDUE_PENALITY = -50
-LOAN_OVERDUE_PER_DAY_PENALITY = -200
 
 
 class LoanParser(DatabaseUser):
@@ -26,7 +27,7 @@ class LoanParser(DatabaseUser):
                 case "loaned":
                     self._ensure_loan_not_overdue(loan, today)
                 case "loan_return_overdue":
-                    self._add_point_penality(loan, today)
+                    self._apply_overdue_point_penalty(loan)
 
     def _get_all_loans(self) -> list[LoanInformationDTO]:
 
@@ -53,7 +54,8 @@ class LoanParser(DatabaseUser):
             cursor = connection.cursor()
 
             cursor.execute("BEGIN")
-            # TODO: get user and apply minus points
+
+            self._apply_points(loan.user_email, RESERVATION_OVERDUE_PENALITY, cursor)
 
             cursor.execute(
                 """UPDATE loan SET loanStatus=?
@@ -84,7 +86,8 @@ class LoanParser(DatabaseUser):
             cursor = connection.cursor()
 
             cursor.execute("BEGIN")
-            # TODO: get user and apply minus points
+
+            self._apply_points(loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor)
 
             cursor.execute(
                 """UPDATE loan SET loanStatus=?
@@ -92,7 +95,27 @@ class LoanParser(DatabaseUser):
                 ("loan_return_overdue", loan.id),
             )
 
-            cursor.execute("COMMIT")
+            cursor.execute("""COMMIT""")
         finally:
             cursor.close()
             connection.close()
+
+    def _apply_overdue_point_penalty(self, loan: LoanInformationDTO):
+        try:
+            connection = sqlite3.connect(self._db_path)
+            cursor = connection.cursor()
+
+            cursor.execute("BEGIN")
+
+            self._apply_points(loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor)
+
+            cursor.execute("""COMMIT""")
+        finally:
+            cursor.close()
+            connection.close()
+
+    def _apply_points(self, user_email: str, points: int, cursor: sqlite3.Cursor):
+        cursor.execute(
+            """UPDATE users SET points = points + ? WHERE email = ?""",
+            (points, user_email),
+        )

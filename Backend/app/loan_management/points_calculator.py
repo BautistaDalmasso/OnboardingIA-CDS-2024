@@ -1,10 +1,10 @@
 from datetime import datetime
+from app.loan_management.points import (
+    DEFAULT_POINTS,
+    POINTS_PER_EARLY_DAY,
+    RESERVATION_CANCELED_POINTS,
+)
 from app.loan_management.book_loans_dtos import LoanInformationDTO
-
-RESERVATION_NEVER_CHECKEDOUT = -10
-RESERVATION_CANCELED_POINTS = 10
-POINTS_PER_EARLY_DAY = 100
-DEFAULT_POINTS = -1
 
 
 def calculate_points_for_returned_book(
