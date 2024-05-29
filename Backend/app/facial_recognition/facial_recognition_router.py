@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, Request
 from fastapi.security import HTTPBearer
 
 from app.user.user_dtos import LOGIN_RESPONSE, TokenDataDTO
-from app.user.user_service import UserService, create_UserDTO
+from app.user.user_service import UserService, create_UserDTO_from_login
 from app.facial_recognition.facial_recognition_service import FacialRecognitionService
 from app.middlewares import verify_token
 
@@ -36,4 +36,4 @@ async def login_face_recognition(user_email: str, face: UploadFile):
     if result["success"]:
         user = user_service.get_user_by_email(user_email)
 
-        return user_service.finish_login_data(create_UserDTO(user))
+        return user_service.finish_login_data(create_UserDTO_from_login(user))

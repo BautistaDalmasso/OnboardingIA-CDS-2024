@@ -10,10 +10,6 @@ class CreateUserDTO(BaseModel):
     lastName: str
     email: str
     password: str
-    dni: None = None
-    licenceLevel: int = 0
-    role: str = "basic"
-    lastPermissionUpdate: Optional[datetime] = None
 
 
 class UserDTO(BaseModel):
@@ -24,6 +20,7 @@ class UserDTO(BaseModel):
     licenceLevel: Optional[int] = None
     role: Optional[str] = "basic"
     lastPermissionUpdate: datetime
+    points: int
 
 
 class LoginDTO(BaseModel):

@@ -15,6 +15,7 @@ export interface IUser {
   licenceLevel: null | number;
   role: null | string;
   lastPermissionUpdate: Date;
+  points: number;
 }
 
 export interface ILoginResponse {

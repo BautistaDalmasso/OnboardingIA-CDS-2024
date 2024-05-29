@@ -33,27 +33,27 @@ class UserService(DatabaseUser):
         self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self._loans_service = LoanService(db_path, CATALOGUE_PATH)
 
-    def create_user(self, user: CreateUserDTO):
-        hashed_password = self._pwd_context.hash(user.password)
+    def create_user(self, register_information: CreateUserDTO):
+        hashed_password = self._pwd_context.hash(register_information.password)
         time = datetime.now()
 
         try:
             self.execute_in_database(
-                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel, lastPermissionUpdate)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel, lastPermissionUpdate, points)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
-                    user.firstName,
-                    user.lastName,
-                    user.email,
+                    register_information.firstName,
+                    register_information.lastName,
+                    register_information.email,
                     hashed_password,
                     "basic",
                     LicenceLevel.NONE,
                     time,
+                    0,
                 ),
             )
 
-            user.lastPermissionUpdate = time
-            return create_UserDTO(user)
+            return create_UserDTO_from_registration(register_information, time)
         except sqlite3.IntegrityError:
             return {"error": "El email ya está registrado"}
 
@@ -62,7 +62,7 @@ class UserService(DatabaseUser):
 
         if user:
             if self._pwd_context.verify(password, user.password):
-                return create_UserDTO(user)
+                return create_UserDTO_from_login(user)
 
         return None
 
@@ -97,6 +97,7 @@ class UserService(DatabaseUser):
                 licenceLevel=user_data[8],
                 role=user_data[9],
                 lastPermissionUpdate=user_data[10],
+                points=user_data[11],
             )
             return user
         return None
@@ -220,7 +221,7 @@ class UserService(DatabaseUser):
         """Page numbering should start at 0"""
         offset = page_number * page_size
         query = """
-            SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
+            SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate, points
             FROM users
             WHERE role = ?
             LIMIT ? OFFSET ?;
@@ -238,12 +239,13 @@ class UserService(DatabaseUser):
             licenceLevel=query_result[4],
             role=query_result[5],
             lastPermissionUpdate=query_result[6],
+            points=query_result[7],
         )
 
     def get_users(self, role: string) -> List[UserDTO]:
         """Page numbering should start at 0"""
         query = """
-                SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate
+                SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate, points
                 FROM users
                 WHERE role = ?;
             """
@@ -267,7 +269,22 @@ class UserService(DatabaseUser):
         )
 
 
-def create_UserDTO(user: User) -> UserDTO:
+def create_UserDTO_from_registration(
+    register_info: CreateUserDTO, time: datetime
+) -> UserDTO:
+    return UserDTO(
+        email=register_info.email,
+        firstName=register_info.firstName,
+        lastName=register_info.lastName,
+        dni=None,
+        role="basic",
+        licenceLevel=0,
+        lastPermissionUpdate=time,
+        points=0,
+    )
+
+
+def create_UserDTO_from_login(user: User) -> UserDTO:
     return UserDTO(
         email=user.email,
         firstName=user.firstName,
@@ -276,4 +293,5 @@ def create_UserDTO(user: User) -> UserDTO:
         role=user.role,
         licenceLevel=user.licenceLevel,
         lastPermissionUpdate=user.lastPermissionUpdate,
+        points=user.points,
     )
