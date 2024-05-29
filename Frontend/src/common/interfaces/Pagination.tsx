@@ -3,14 +3,14 @@ import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 
 interface PaginationProps {
   currentPage: number;
-  totalPages: boolean;
+  showNextPage: boolean;
   goToPreviousPage: () => void;
   goToNextPage: () => void;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
-  totalPages,
+  showNextPage,
   goToPreviousPage,
   goToNextPage,
 }) => {
@@ -28,7 +28,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <TouchableOpacity
         style={styles.pageButton}
         onPress={goToNextPage}
-        disabled={totalPages}
+        disabled={showNextPage}
       >
         <Text style={styles.pageButtonText}>
           Pág {currentPage + 1} {">>"}

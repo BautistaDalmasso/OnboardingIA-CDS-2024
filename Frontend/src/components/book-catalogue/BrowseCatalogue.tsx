@@ -16,11 +16,11 @@ const RequestLoans = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("title");
   const {
-    setTotalPages,
-    currentPage,
-    totalPages,
+    setShowNextPage,
     goToNextPage,
     goToPreviousPage,
+    currentPage,
+    showNextPage,
   } = usePagination();
 
   const isBookRequested = (isbn: string) => {
@@ -31,10 +31,10 @@ const RequestLoans = () => {
     try {
       const books = await LibraryService.getBooks(currentPage);
       if (books.length > 0) {
-        setTotalPages(false);
+        setShowNextPage(false);
         setBooks(books);
       } else {
-        setTotalPages(true);
+        setShowNextPage(true);
       }
     } catch (error) {
       console.error("Error al obtener libros:", error);
@@ -110,7 +110,7 @@ const RequestLoans = () => {
       </ScrollView>
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
+        showNextPage={showNextPage}
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
       />

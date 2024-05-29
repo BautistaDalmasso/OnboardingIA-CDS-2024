@@ -38,13 +38,13 @@ export class librarianServiceCD {
     });
   }
 
-  static async getAllUsersByRole(
+  static async getUsersByRole(
     role: string,
     page_number: number,
   ): Promise<IUser[]> {
     try {
       const users = await baseFetch<void, IUser[]>({
-        url: `${this.baseRoute}/get_all_users?page_size=${ShowUserPage.PAGE_SIZE}&page_number=${page_number}&role=${role}`,
+        url: `${this.baseRoute}/get_users?page_size=${ShowUserPage.PAGE_SIZE}&page_number=${page_number}&role=${role}`,
         method: "GET",
       });
 
@@ -55,10 +55,10 @@ export class librarianServiceCD {
     }
   }
 
-  static async getTotalUsers(role: string): Promise<IUser[]> {
+  static async getAllUsers(role: string): Promise<IUser[]> {
     try {
       const value = await baseFetch<void, IUser[]>({
-        url: `${this.baseRoute}/users_length?role=${role}`,
+        url: `${this.baseRoute}/get_all_users?role=${role}`,
         method: "GET",
       });
 

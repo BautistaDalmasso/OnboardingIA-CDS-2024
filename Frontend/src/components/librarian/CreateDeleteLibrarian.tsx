@@ -12,7 +12,6 @@ import { IUser } from "../../common/interfaces/User";
 import { UserRole } from "../../common/enums/user";
 import { Picker } from "@react-native-picker/picker";
 import { SearchBar } from "@rneui/themed";
-import { ShowUserPage } from "../../common/enums/Page";
 import { librarianServiceCD } from "../../services/librarianCDService";
 import Pagination from "../../common/interfaces/Pagination";
 import usePagination from "../../hooks/usePagination";
@@ -25,22 +24,21 @@ const CDLibrarian = () => {
   const [selectedRole, setSelectedRole] = useState(UserRole.BASIC);
   const [searchTerm, setSearchTerm] = useState("");
   const {
-    setTotalPages,
+    setShowNextPage,
     goToNextPage,
     goToPreviousPage,
     setCurrentPage,
     currentPage,
-    totalPages,
+    showNextPage,
   } = usePagination();
 
   const fetchUsers = async () => {
     try {
-      const data = await librarianServiceCD.getAllUsersByRole(
+      const data = await librarianServiceCD.getUsersByRole(
         selectedRole,
         currentPage,
       );
-      console.log(data.length);
-      setTotalPages(false);
+      setShowNextPage(false);
       if (data.length > 0) {
         setUsers(data);
 
@@ -49,7 +47,7 @@ const CDLibrarian = () => {
           .map((user) => user.email);
         setRequestedButtons(librarianEmails);
       } else {
-        setTotalPages(true);
+        setShowNextPage(true);
       }
     } catch (error) {
       setUsers([]);
@@ -160,7 +158,7 @@ const CDLibrarian = () => {
       </ScrollView>
       <Pagination
         currentPage={currentPage}
-        totalPages={totalPages}
+        showNextPage={showNextPage}
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
       />

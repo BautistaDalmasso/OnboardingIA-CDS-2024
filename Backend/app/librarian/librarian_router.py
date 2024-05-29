@@ -131,15 +131,16 @@ async def delete_librarian(user: UpdateUserRoleDTO):
     return result
 
 
-@librarian_cd_router.get("/get_all_users", response_model=list[UserDTO])
-async def get_all_users_by_role(
+@librarian_cd_router.get("/get_users", response_model=list[UserDTO])
+async def get_users_by_role(
     page_size: int = Query(...), page_number: int = Query(...), role: str = Query(...)
 ):
     result = user_service.get_all_users_by_role(page_size, page_number, role)
     return result
 
 
-@librarian_cd_router.get("/users_length", response_model=list[UserDTO])
-async def get_users(role: str = Query(...)):
+# not used currently but it might be useful in the future
+@librarian_cd_router.get("/get_all_users", response_model=list[UserDTO])
+async def get_all_users(role: str = Query(...)):
     result = user_service.get_users(role)
     return result
