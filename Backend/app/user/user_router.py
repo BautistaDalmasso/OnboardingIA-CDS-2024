@@ -4,7 +4,7 @@ from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
 from app.loan_management.book_loans_service import LoanService
-from app.user.user_service import UserService, create_UserDTO
+from app.user.user_service import UserService, create_UserDTO_from_login
 from app.file_paths import CATALOGUE_PATH, DATABASE_PATH
 
 
@@ -83,7 +83,7 @@ async def verify_challenge(challengeDTO: CheckChallengeDTO):
 
     user_service.delete_challenge(challengeDTO.email)
 
-    return user_service.finish_login_data(create_UserDTO(user))
+    return user_service.finish_login_data(create_UserDTO_from_login(user))
 
 
 @router.patch("/dni")
