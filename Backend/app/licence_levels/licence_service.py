@@ -26,7 +26,7 @@ class BookDataWithLicence(BaseModel):
         )
 
 
-class LicenceService(DatabaseUser):
+class BookWithLicenceBrowser(DatabaseUser):
     def __init__(self, db_path: Path, catalogue_db: Path) -> None:
         super().__init__(db_path)
         self._catalogue_service = BrowseCatalogueService(catalogue_db)

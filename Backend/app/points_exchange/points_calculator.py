@@ -38,7 +38,6 @@ def _reservation_returned_in_time_points(
     loan: LoanInformationDTO, today: datetime
 ) -> bool:
     days_before_expiry = (loan.expiration_date - today).days
-    print(days_before_expiry)
 
     if days_before_expiry > 5:
         return 0
