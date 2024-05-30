@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 import sqlite3
-from app.loan_management.points import (
+from app.points_exchange.points import (
     LOAN_OVERDUE_PER_DAY_PENALITY,
     RESERVATION_OVERDUE_PENALITY,
 )

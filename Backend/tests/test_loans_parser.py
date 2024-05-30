@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import sqlite3
 import pytest
 
-from app.loan_management.points import (
+from app.points_exchange.points import (
     LOAN_OVERDUE_PER_DAY_PENALITY,
     RESERVATION_OVERDUE_PENALITY,
 )

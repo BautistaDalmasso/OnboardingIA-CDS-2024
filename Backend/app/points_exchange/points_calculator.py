@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.loan_management.points import (
+from app.points_exchange.points import (
     DEFAULT_POINTS,
     POINTS_PER_EARLY_DAY,
     RESERVATION_CANCELED_POINTS,
