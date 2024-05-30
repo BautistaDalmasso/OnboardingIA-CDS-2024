@@ -152,6 +152,7 @@ class LoanService(DatabaseUser):
         )
 
         return LoanInformationDTO(
+            id=db_entry[CLBEI.id.value],
             catalogue_data=catalogue_data,
             inventory_number=db_entry[CLBEI.inventory_number.value],
             expiration_date=db_entry[CLBEI.expiration_date.value],
