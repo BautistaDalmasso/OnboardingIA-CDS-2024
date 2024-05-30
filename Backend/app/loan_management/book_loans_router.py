@@ -84,3 +84,24 @@ async def book_loans_by_title(title: str, token=Depends(HTTPBearer())):
 
     result = loan_service.consult_book_loans_by_title(title)
     return result
+
+
+@router.post("/assign_loan", response_model=LoanInformationDTO)
+async def create_loan(
+    inventory_number: int, user_email: str, token=Depends(HTTPBearer())
+) -> LoanInformationDTO:
+    user_data: TokenDataDTO = await verify_token(token.credentials)
+    if user_data.role == "librarian":
+        try:
+            result = loan_service.lend_book(inventory_number, user_email)
+            return result
+        except BookNotFound as e:
+            print(e)
+            raise HTTPException(status_code=404, detail=str(e))
+        except NoCopiesAvailable as e:
+            print(e)
+            raise HTTPException(status_code=409, detail=str(e))
+    else:
+        raise HTTPException(
+            status_code=403, detail="No tienes permisos para crear prestamo"
+        )

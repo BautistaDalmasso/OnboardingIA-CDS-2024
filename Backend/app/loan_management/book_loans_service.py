@@ -162,6 +162,43 @@ class LoanService(DatabaseUser):
             return_date=db_entry[CLBEI.return_date.value],
         )
 
+    def lend_book(self, inventory_number: int, user_email: str) -> LoanInformationDTO:
+        loan_status: LOAN_STATUS = "loaned"
+        today = datetime.today()
+        try:
+            self.execute_in_database(
+                """UPDATE loan
+                        SET loanStatus = ?, checkoutDate = ?
+                        WHERE inventoryNumber = ? AND userEmail= ?""",
+                (loan_status, today, inventory_number, user_email),
+            )
+            loaned_book = self.query_database(
+                """SELECT *
+                        FROM loan
+                        AND loan.inventoryNumber = ? AND userEmail= ?""",
+                (inventory_number, user_email),
+            )
+            book_isbn = self.query_database(
+                """SELECT isbn
+                        FROM bookInventory
+                        AND inventoryNumber = ?""",
+                (inventory_number),
+            )
+            catalogue_data = self._catalogue_service.browse_by_isbn(book_isbn[0])
+
+            return LoanInformationDTO(
+                catalogue_data=catalogue_data,
+                inventory_number=loaned_book[1],
+                expiration_date=loaned_book[2],
+                user_email=loaned_book[3],
+                loan_status=loaned_book[4],
+                reservation_date=loaned_book[5],
+                checkout_date=loaned_book[6],
+                return_date=loaned_book[7],
+            )
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo registrar el prestamo."}
+
 
 class CLBEI(auto_index):
     """Consult Loans By Email Indexes"""

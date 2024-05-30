@@ -25,4 +25,22 @@ export class LoanService {
       throw new Error("Error al realizar la solicitud");
     }
   }
+
+  static async assignLoan(
+      inventory_number: number,
+      user_email: string,
+      token: string,
+    ) {
+      try {
+        const book = await baseFetch<void,ILoanInformation>({
+          token,
+          url: `${this.baseRoute}/assign_loan?inventory_number=${inventory_number}&user_email=${user_email}`,
+          method: "POST",
+        });
+        return book;
+      } catch (error) {
+        console.error("Error en asignar Prestamo:", error);
+        throw error;
+      }
+    }
 }
