@@ -139,7 +139,7 @@ async def get_users_by_role(
     return result
 
 
-# not used currently but it might be useful in the future
+# not currently used but it could be useful in the future
 @librarian_cd_router.get("/get_all_users", response_model=list[UserDTO])
 async def get_all_users(role: str = Query(...)):
     result = user_service.get_users(role)

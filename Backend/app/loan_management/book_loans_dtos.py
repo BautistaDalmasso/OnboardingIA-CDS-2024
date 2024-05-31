@@ -17,6 +17,7 @@ LOAN_STATUS = (
 
 
 class LoanInformationDTO(BaseModel):
+    id: int | None = None
     inventory_number: int
     catalogue_data: MarcBookData
     expiration_date: datetime
