@@ -15,6 +15,8 @@ class UnkwnownFilter(Exception): ...
 class BookDataWithLicence(BaseModel):
     book_data: MarcBookData
     licence_required: int
+    available_books: int
+    borrowed_books: int
 
     def __hash__(self) -> int:
         return hash(self.book_data.isbn)
@@ -38,8 +40,9 @@ class LicenceService(DatabaseUser):
             return None
 
         licence_level_required = self._consult_book_licence_req(isbn)
+        availability = self._consult_book_availability(isbn)
 
-        return create_book_with_licence(book, licence_level_required)
+        return create_book_with_licence(book, licence_level_required, availability)
 
     def _consult_book_licence_req(self, isbn: str) -> int:
         licence_level = self.query_database(
@@ -91,9 +94,14 @@ class LicenceService(DatabaseUser):
         consulted_licences = self._query_multiple_isbns(consulted_isbns)
         isbn_to_licence = defaultdict(default_licence)
         isbn_to_licence.update({entry[0]: entry[1] for entry in consulted_licences})
+        book_availability = self.consult_book_inventory(consulted_isbns)
 
         return [
-            create_book_with_licence(book, isbn_to_licence[book.isbn])
+            create_book_with_licence(
+                book,
+                isbn_to_licence[book.isbn],
+                book_availability.get(book.isbn, (0, 0)),
+            )
             for book in consulted_books
         ]
 
@@ -115,11 +123,48 @@ class LicenceService(DatabaseUser):
         )
         return consulted_licences
 
+    def consult_book_inventory(self, isbns: list[str]) -> dict[str, tuple[int, int]]:
+        if len(isbns) == 0:
+            isbns_str = "()"
+        else:
+            # (?, ?, ..., ?)
+            tmp = "".join([", ?" for _ in range(len(isbns) - 1)])
+            isbns_str = f"(?{tmp})"
+
+        result = self.query_multiple_rows(
+            f"""SELECT isbn,
+                    SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) AS available_books,
+                    SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) AS borrowed_books
+                FROM bookInventory
+                WHERE isbn IN {isbns_str}
+                GROUP BY isbn""",
+            isbns,
+        )
+
+        return {book[0]: (book[1], book[2]) for book in result}
+
+    def _consult_book_availability(self, isbn: str) -> int:
+        availability = self.query_database(
+            """SELECT
+                    SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) AS available_books,
+                    SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) AS borrowed_books
+                FROM bookInventory
+                WHERE isbn = ?""",
+            (isbn,),
+        )
+
+        if availability == (None, None):
+            return (0, 0)
+
+        return (availability[0], availability[1])
+
 
 def create_book_with_licence(
-    book_data: MarcBookData, licence_level: int
+    book_data: MarcBookData, licence_level: int, availability: tuple[int, int]
 ) -> BookDataWithLicence:
     return BookDataWithLicence(
         book_data=book_data,
         licence_required=licence_level,
+        available_books=availability[0],
+        borrowed_books=availability[1],
     )
