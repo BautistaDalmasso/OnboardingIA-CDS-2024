@@ -39,7 +39,6 @@ const useFinalizeLogin = () => {
   };
 
   const fetchDataForOfflineUse = async (access_token: string, user: IUser) => {
-    // TODO: also fetch user loans information.
     await fetchQrCode(access_token, user);
   };
 
