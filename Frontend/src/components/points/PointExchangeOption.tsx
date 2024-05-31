@@ -4,9 +4,10 @@ import usePointsExchange from "../../hooks/usePointsExchange";
 
 interface PointExchangeOptionProps {
   optionName: string;
-  optionDescription: string | null;
+  optionDescription?: string;
   pointsCost: number;
   onExchange: () => void;
+  disabled?: boolean;
 }
 
 const PointExchangeOption = ({
@@ -14,8 +15,15 @@ const PointExchangeOption = ({
   optionDescription,
   pointsCost,
   onExchange,
+  disabled,
 }: PointExchangeOptionProps) => {
   const { hasEnoughPoints } = usePointsExchange();
+
+  const isDisabled = () => {
+    return disabled === undefined
+      ? !hasEnoughPoints(pointsCost)
+      : disabled || !hasEnoughPoints(pointsCost);
+  };
 
   return (
     <View style={styles.container}>
@@ -36,18 +44,12 @@ const PointExchangeOption = ({
       </View>
 
       <TouchableOpacity
-        style={
-          hasEnoughPoints(pointsCost) ? styles.button : styles.buttonDisabled
-        }
+        style={isDisabled() ? styles.buttonDisabled : styles.button}
         onPress={onExchange}
-        disabled={!hasEnoughPoints(pointsCost)}
+        disabled={isDisabled()}
       >
         <Text
-          style={
-            hasEnoughPoints(pointsCost)
-              ? styles.buttonText
-              : styles.buttonDisabledText
-          }
+          style={isDisabled() ? styles.buttonDisabledText : styles.buttonText}
         >
           Canjear
         </Text>

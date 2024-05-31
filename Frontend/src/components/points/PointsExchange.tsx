@@ -27,11 +27,11 @@ const PointsExchange = () => {
       <View style={styles.optionsContainer}>
         <PointExchangeOption
           optionName={"Obtener Carnet Nivel Confiado"}
-          optionDescription={null}
           pointsCost={1000}
           onExchange={async () => {
             await exchangeForTrustedLicence();
           }}
+          disabled={(contextState.user.licenceLevel as number) >= 2}
         />
       </View>
     </View>

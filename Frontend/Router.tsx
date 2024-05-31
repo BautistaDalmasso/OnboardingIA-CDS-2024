@@ -75,6 +75,13 @@ const Router = () => {
                       component={ViewQR}
                       options={{ drawerItemStyle: { display: "none" } }}
                     />
+
+                    <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
+
+                    <Stack.Screen
+                      name={Routes.PointsExchange}
+                      component={PointsExchange}
+                    />
                   </>
                 ) : (
                   <>
@@ -89,12 +96,6 @@ const Router = () => {
                   component={RequestLoans}
                 />
 
-                <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
-
-                <Stack.Screen
-                  name={Routes.PointsExchange}
-                  component={PointsExchange}
-                />
                 {/* Librarian components */}
                 {contextState.user.role === "librarian" && (
                   <>
