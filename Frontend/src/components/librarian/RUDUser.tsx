@@ -13,7 +13,10 @@ import CustomTextInput from "../common/CustomTextInput";
 import TableDataUser from "./TableDataUser";
 import useRUDUsers from "../../hooks/useRUDUsers";
 import { IUserDTO } from "../../common/interfaces/User";
-import { LicenceLevel, licenceLevelToStr } from "../../common/enums/licenceLevels";
+import {
+  LicenceLevel,
+  licenceLevelToStr,
+} from "../../common/enums/licenceLevels";
 import { Picker } from "@react-native-picker/picker";
 import LinkButton from "../common/LinkButton";
 

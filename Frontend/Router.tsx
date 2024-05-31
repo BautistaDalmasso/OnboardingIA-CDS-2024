@@ -24,6 +24,7 @@ import CaptureQR from "./src/components/librarian/CaptureQR";
 import ViewQR from "./src/components/user/ViewQR";
 import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
+import PointsExchange from "./src/components/points/PointsExchange";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -90,6 +91,10 @@ const Router = () => {
 
                 <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
 
+                <Stack.Screen
+                  name={Routes.PointsExchange}
+                  component={PointsExchange}
+                />
                 {/* Librarian components */}
                 {contextState.user.role === "librarian" && (
                   <>
