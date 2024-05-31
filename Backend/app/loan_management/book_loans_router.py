@@ -9,20 +9,22 @@ from app.loan_management.book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
     PhysicalCopyDTO,
+    LoanValid,
 )
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
 from ..user.user_dtos import (
     TokenDataDTO,
 )
+from ..user.user_service import UserService
 from app.licence_levels.licence_service import BookWithLicenceBrowser
-
 from app.file_paths import DATABASE_PATH, CATALOGUE_PATH
 
 router = APIRouter(prefix="/loans", tags=["Loan"])
 
 loan_service = LoanService(DATABASE_PATH, CATALOGUE_PATH)
 licence_service = BookWithLicenceBrowser(DATABASE_PATH, CATALOGUE_PATH)
+use_service = UserService(DATABASE_PATH)
 
 
 @router.post("/reserve", response_model=LoanInformationDTO)
@@ -83,4 +85,36 @@ async def book_loans_by_title(title: str, token=Depends(HTTPBearer())):
         raise HTTPException(status_code=403, detail="Solo bibliotecarios.")
 
     result = loan_service.consult_book_loans_by_title(title)
+    return result
+
+
+@router.post("/assign_loan", response_model=LoanInformationDTO)
+async def create_loan(
+    inventory_number: int, user_email: str, token=Depends(HTTPBearer())
+) -> LoanInformationDTO:
+    user_data: TokenDataDTO = await verify_token(token.credentials)
+    if (
+        user_data.role == "librarian"
+        and use_service.get_user_by_email(user_email) is not None
+    ):
+        try:
+            result = loan_service.lend_book(inventory_number, user_email)
+            return result
+        except BookNotFound as e:
+            print(e)
+            raise HTTPException(status_code=404, detail=str(e))
+        except NoCopiesAvailable as e:
+            print(e)
+            raise HTTPException(status_code=409, detail=str(e))
+    else:
+        raise HTTPException(
+            status_code=403, detail="No tienes permisos para crear prestamo"
+        )
+
+
+@router.get("/check_loan_valid")
+async def check_loan_valid(inventory_number: int, user_email: str):
+    result = loan_service.check_valid_loan(inventory_number, user_email)
+    if not result:
+        raise HTTPException(status_code=401, detail="No es usuario")
     return result

@@ -10,6 +10,7 @@ from .book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
     PhysicalCopyDTO,
+    LoanValid,
 )
 
 from pathlib import Path
@@ -123,7 +124,7 @@ class LoanService(DatabaseUser):
         return [self.create_loan_data(entry) for entry in loans]
 
     def consult_book_loans_by_title(self, title: str) -> List[LoanInformationDTO]:
-
+       
         loans = self.query_multiple_rows(
             """SELECT loan.*, bookInventory.isbn
             FROM loan
@@ -162,6 +163,69 @@ class LoanService(DatabaseUser):
             checkout_date=db_entry[CLBEI.checkout_date.value],
             return_date=db_entry[CLBEI.return_date.value],
         )
+
+    def lend_book(self, inventory_number: int, user_email: str) -> LoanInformationDTO:
+        loan_status: LOAN_STATUS = "loaned"
+        today_str = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
+        try:
+            self.execute_in_database(
+                """UPDATE loan
+                SET loanStatus = ?, checkoutDate = ?
+                WHERE inventoryNumber = ? AND userEmail = ?""",
+                (loan_status, today_str, inventory_number, user_email),
+            )
+            self.execute_in_database(
+                """UPDATE bookInventory
+                SET status = ?
+                WHERE inventoryNumber = ?""",
+                (loan_status, inventory_number),
+            )
+
+            loaned_book = self.query_database(
+                """SELECT *
+                FROM loan
+                WHERE inventoryNumber = ? AND userEmail = ?""",
+                (inventory_number, user_email),
+            )
+            book_isbn = self.query_database(
+                """SELECT isbn
+                        FROM bookInventory
+                        WHERE inventoryNumber = ?""",
+                (inventory_number,),
+            )
+            catalogue_data = self._catalogue_service.browse_by_isbn(book_isbn[0])
+
+            return LoanInformationDTO(
+                catalogue_data=catalogue_data,
+                inventory_number=loaned_book[1],
+                expiration_date=loaned_book[2],
+                user_email=loaned_book[3],
+                loan_status=loaned_book[4],
+                reservation_date=loaned_book[5],
+                checkout_date=loaned_book[6],
+                return_date=loaned_book[7],
+            )
+        except sqlite3.IntegrityError:
+            return {"error": "No se pudo registrar el prestamo."}
+
+    def check_valid_loan(
+        self, inventory_number: int, user_email: str
+    ) -> LoanValid | None:
+
+        book = self.query_database(
+            """SELECT inventoryNumber
+                FROM loan
+                WHERE inventoryNumber = ? AND userEmail = ?""",
+            (inventory_number, user_email),
+        )
+        if bool(book):
+            return LoanValid(
+                inventory_number=inventory_number,
+                user_email=user_email,
+            )
+        else:
+            return None
 
 
 class CLBEI(auto_index):

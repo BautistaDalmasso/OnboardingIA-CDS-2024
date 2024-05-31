@@ -45,3 +45,8 @@ class PCDI(auto_index):
     inventoryNumber = auto()
     isbn = auto()
     status = auto()
+
+
+class LoanValid(BaseModel):
+    inventory_number: int
+    user_email: str

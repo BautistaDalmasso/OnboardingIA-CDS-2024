@@ -9,3 +9,8 @@ export interface ILoanInformation {
   loan_status: LoanStatusCode;
   detail?: string;
 }
+
+export interface LoanValid{
+    inventory_number:number;
+    user_email: string;
+}
