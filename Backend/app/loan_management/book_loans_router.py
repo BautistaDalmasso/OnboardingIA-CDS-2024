@@ -116,5 +116,5 @@ async def create_loan(
 async def check_loan_valid(inventory_number: int, user_email: str):
     result = loan_service.check_valid_loan(inventory_number, user_email)
     if not result:
-        raise HTTPException(status_code=401, detail="No es usuario")
+        raise HTTPException(status_code=403, detail="No tienes permisos para crear prestamo: número de inventario innexistente.")
     return result
