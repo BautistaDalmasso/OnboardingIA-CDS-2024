@@ -144,7 +144,6 @@ const Router = () => {
             )}
           </>
         )}
-
       </Drawer.Navigator>
     </NavigationContainer>
   );

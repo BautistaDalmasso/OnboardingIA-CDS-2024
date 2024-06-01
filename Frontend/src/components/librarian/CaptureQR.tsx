@@ -1,11 +1,15 @@
 import { useIsFocused } from "@react-navigation/native";
-import { BarCodeScanningResult, Camera, CameraType, FlashMode } from "expo-camera/legacy";
+import {
+  BarCodeScanningResult,
+  Camera,
+  CameraType,
+  FlashMode,
+} from "expo-camera/legacy";
 import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
 import { View, StyleSheet, Text } from "react-native";
 import React from "react";
-
 
 interface CaptureQrProps {
   onScan: (scanningResult: BarCodeScanningResult) => void;
@@ -38,24 +42,22 @@ const CaptureQR = ({ onScan }: CaptureQrProps) => {
 
   return (
     <>
-      {
-        isFocused && (
-          <View style={styles.cameraContainer}>
-            <Camera
-              style={styles.camera}
-              type={cameraType}
-              ref={cameraRef}
-              flashMode={flash}
-              barCodeScannerSettings={{
-                barCodeTypes: ["qr"],
-              }}
-              onBarCodeScanned={async (scanningResult) => {
-                await onScan(scanningResult);
-              }}
-            />
-          </View>
-        )
-        }
+      {isFocused && (
+        <View style={styles.cameraContainer}>
+          <Camera
+            style={styles.camera}
+            type={cameraType}
+            ref={cameraRef}
+            flashMode={flash}
+            barCodeScannerSettings={{
+              barCodeTypes: ["qr"],
+            }}
+            onBarCodeScanned={async (scanningResult) => {
+              await onScan(scanningResult);
+            }}
+          />
+        </View>
+      )}
     </>
   );
 };
