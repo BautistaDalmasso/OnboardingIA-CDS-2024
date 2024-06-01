@@ -20,6 +20,7 @@ from app.facial_recognition.facial_recognition_router import (
 from app.qr_code.qr_code_router import router as qr_code_router
 from app.librarian.librarian_router import router as librarian_router
 from app.librarian.librarian_router import librarian_cd_router as librarian_cd_router
+from app.points_exchange.points_exchange_router import router as points_exchange_router
 
 
 class QuestionRequest(BaseModel):
@@ -47,6 +48,7 @@ app.include_router(book_loans_router)
 app.include_router(qr_code_router)
 app.include_router(librarian_router)
 app.include_router(librarian_cd_router)
+app.include_router(points_exchange_router)
 
 
 @app.get("/ping")
