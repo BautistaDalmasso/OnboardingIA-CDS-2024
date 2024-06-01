@@ -56,7 +56,9 @@ async def consult_user_by_email(user_email: str, token=Depends(HTTPBearer())):
 
     user = librarian_service.get_user_by_email(user_email)
     if not user:
-        raise HTTPException(status_code=401, detail="No es usuario")
+        raise HTTPException(
+            status_code=404, detail=f"No existe un usuario con email: '{user_email}'."
+        )
     return user
 
 

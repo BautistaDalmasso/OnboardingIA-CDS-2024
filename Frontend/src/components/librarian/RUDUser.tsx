@@ -21,6 +21,7 @@ import { Picker } from "@react-native-picker/picker";
 import LinkButton from "../common/LinkButton";
 import CaptureQR from "./CaptureQR";
 import { BarCodeScanningResult } from "expo-camera/legacy";
+import SelectUser from "./RUDScreens/SelectUser";
 
 enum fieldOptions {
   FIRST_NAME = "Nombre",
@@ -148,7 +149,7 @@ const RUDUser = () => {
 
       const user = await consultUser(userEmail);
 
-      if (user == null) {
+      if (user === null) {
         Alert.alert("Error", "Usuario NO registrado");
         return;
       }
@@ -183,29 +184,10 @@ const RUDUser = () => {
       >
         {/* Select user page. */}
         <View key={pages.USER_SELECT} style={styles.page}>
-          <Text style={styles.instruction}>
-            Ingrese el email del usuario registrado o ingrese el QR.
-          </Text>
-          <CustomTextInput
-            placeholder={"email"}
-            value={inputValue}
-            onChangeText={(text) => setInputValue(text)}
+          <SelectUser inputValue={inputValue}
+                    onPressSearch={(userEmail: string) => handleLoadingData(userEmail)}
+                    onPressScanQr={() => setScanningQr(true)}
           />
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleLoadingData(inputValue)}
-          >
-            <Text style={styles.buttonText}>Buscar Usuario</Text>
-          </TouchableOpacity>
-
-          {/* TODO */}
-          <TouchableOpacity
-            style={styles.buttonQR}
-            onPress={() => setScanningQr(true)}
-          >
-            <Text style={styles.buttonText}>Escanear QR</Text>
-          </TouchableOpacity>
         </View>
 
         {/* View user's data page. */}
