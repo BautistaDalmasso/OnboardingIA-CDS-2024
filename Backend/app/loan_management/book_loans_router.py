@@ -9,7 +9,7 @@ from app.loan_management.book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
     PhysicalCopyDTO,
-    LoanValid,
+    LoanValidationDTO,
 )
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/loans", tags=["Loan"])
 
 loan_service = LoanService(DATABASE_PATH, CATALOGUE_PATH)
 licence_service = BookWithLicenceBrowser(DATABASE_PATH, CATALOGUE_PATH)
-use_service = UserService(DATABASE_PATH)
+user_service = UserService(DATABASE_PATH)
 
 
 @router.post("/reserve", response_model=LoanInformationDTO)
@@ -95,7 +95,7 @@ async def create_loan(
     user_data: TokenDataDTO = await verify_token(token.credentials)
     if (
         user_data.role == "librarian"
-        and use_service.get_user_by_email(user_email) is not None
+        and user_service.get_user_by_email(user_email) is not None
     ):
         try:
             result = loan_service.lend_book(inventory_number, user_email)
@@ -116,5 +116,8 @@ async def create_loan(
 async def check_loan_valid(inventory_number: int, user_email: str):
     result = loan_service.check_valid_loan(inventory_number, user_email)
     if not result:
-        raise HTTPException(status_code=403, detail="No tienes permisos para crear prestamo: número de inventario innexistente.")
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para crear prestamo: número de inventario innexistente.",
+        )
     return result

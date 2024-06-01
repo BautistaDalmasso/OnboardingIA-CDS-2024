@@ -1,89 +1,38 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import {
-  Alert,
   TouchableOpacity,
   TextInput,
   Text,
   View,
   StyleSheet,
 } from "react-native";
-import useRUDUsers from "../../hooks/useRUDUsers";
-import  {LoanService}  from "../../services/LoanManagementService";
-import { useContextState } from "../../ContexState";
-import { useFocusEffect } from '@react-navigation/native';
-import { checkIfConfigIsValid } from "react-native-reanimated/lib/typescript/reanimated2/animation/springUtils";
+import { useFocusEffect } from "@react-navigation/native";
+import useLoanCreation from "../../hooks/useLoanCreation";
 
 const LoanCreation = () => {
-  const { contextState } = useContextState();
-  const {consultUser,} = useRUDUsers();
-
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [inventoryNumber, setInventoryNumber] = useState(0);
-  const regexInventoryNumber = /^[0-9]+$/;
+  const { assignLoan } = useLoanCreation();
 
+  /*this function is used to return the screen to its original state, in case the user exits the screen */
   useFocusEffect(
     React.useCallback(() => {
-      return () => {
-      };
+      return () => {};
     }, []),
   );
 
   const handleSubmit = async () => {
     try {
-        setLoading(true);
-      if (inventoryNumber===0 || email==='' ) {
-        Alert.alert(
-          "Error",
-          "Por favor complete todos los datos antes de enviar.",
-        );
-        return;
-      }
-
-      if(!inventoryNumber || !regexInventoryNumber.test(inventoryNumber.toString())){
-        console.log(inventoryNumber.toString() )
-        Alert.alert(
-          "Error",
-          "Por favor ingrese el número de inventario sin espacios, puntos, guiones o comas.",
-        );
-        setInventoryNumber(0);
-        return;
-      }
-
-      const user = await consultUser(email);
-      const loanValid= await LoanService.check_loan_valid(inventoryNumber,email)
-      if (user?.email == null) {
-        Alert.alert("Error", "Usuario NO registrado");
-        return;
-      }
-      console.log(loanValid?.inventory_number)
-      if(loanValid?.inventory_number==null){
-        Alert.alert("Error", "Numero de Inventario innexistente.");
-        return;
-      }
-      else{
-        await LoanService.assignLoan(
-          inventoryNumber,
-          email,
-          contextState.accessToken as string,
-        );
-    
-          Alert.alert(
-            "¡Creación de prestamo exitosa!",
-            "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente."
-          );
-      }
-
-    }
-    catch (error) {
-      console.error("Error en creación de prestamo:", error);
-    }
-    finally {
-      setEmail('')
+      setLoading(true);
+      await assignLoan(inventoryNumber, email);
+    } catch (error) {
+      console.error("Error en asignar prestamo:", error);
+    } finally {
+      setEmail("");
       setInventoryNumber(0);
       setLoading(false);
     }
-
   };
 
   return (
@@ -103,10 +52,14 @@ const LoanCreation = () => {
         placeholder="Ingresar número de inventario..."
         keyboardType="numeric"
         maxLength={13}
-        value={inventoryNumber===0? '' : inventoryNumber.toString()}
-        onChangeText={ (text) => setInventoryNumber(Number(text))}
+        value={inventoryNumber === 0 ? "" : inventoryNumber.toString()}
+        onChangeText={(text) => setInventoryNumber(Number(text))}
       ></TextInput>
-      <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSubmit}
+        disabled={loading}
+      >
         <Text style={styles.buttonText}> Dar de alta el prestamo</Text>
       </TouchableOpacity>
     </View>

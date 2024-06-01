@@ -47,6 +47,6 @@ class PCDI(auto_index):
     status = auto()
 
 
-class LoanValid(BaseModel):
+class LoanValidationDTO(BaseModel):
     inventory_number: int
     user_email: str

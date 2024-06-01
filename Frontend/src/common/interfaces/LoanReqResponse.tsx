@@ -10,7 +10,7 @@ export interface ILoanInformation {
   detail?: string;
 }
 
-export interface LoanValid{
-    inventory_number:number;
-    user_email: string;
+export interface LoanValid {
+  inventory_number: number;
+  user_email: string;
 }
