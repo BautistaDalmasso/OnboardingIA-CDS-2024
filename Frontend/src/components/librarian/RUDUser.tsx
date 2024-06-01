@@ -19,6 +19,8 @@ import {
 } from "../../common/enums/licenceLevels";
 import { Picker } from "@react-native-picker/picker";
 import LinkButton from "../common/LinkButton";
+import CaptureQR from "./CaptureQR";
+import { BarCodeScanningResult } from "expo-camera/legacy";
 
 enum fieldOptions {
   FIRST_NAME = "Nombre",
@@ -48,11 +50,8 @@ const RUDUser = () => {
     fieldOptions.FIRST_NAME as string,
   );
   const [user, setUser] = useState<IUserDTO | null>(null);
-  const options = [
-    { label: fieldOptions.FIRST_NAME, value: fieldOptions.FIRST_NAME },
-    { label: fieldOptions.LAST_NAME, value: fieldOptions.LAST_NAME },
-    { label: fieldOptions.DNI, value: fieldOptions.DNI },
-  ];
+  const [scanningQr, setScanningQr] = useState(false)
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -136,6 +135,13 @@ const RUDUser = () => {
     handleLoadingData(user.email);
   };
 
+  const qrScanned = async (scanningResult: BarCodeScanningResult) => {
+    const parsedResult = JSON.parse(scanningResult.data);
+
+    handleLoadingData(parsedResult.email);
+    setScanningQr(false);
+  }
+
   const handleLoadingData = async (userEmail: string) => {
     try {
       setLoading(true);
@@ -156,6 +162,14 @@ const RUDUser = () => {
       setLoading(false);
     }
   };
+
+  if (scanningQr) {
+    return (
+        <CaptureQR
+            onScan={async (scanningResult) => await qrScanned(scanningResult)}
+        />
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -188,7 +202,7 @@ const RUDUser = () => {
           {/* TODO */}
           <TouchableOpacity
             style={styles.buttonQR}
-            onPress={() => console.log("TODO")}
+            onPress={() => setScanningQr(true)}
           >
             <Text style={styles.buttonText}>Escanear QR</Text>
           </TouchableOpacity>

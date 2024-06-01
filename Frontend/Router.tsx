@@ -20,7 +20,7 @@ import RequestLoans from "./src/components/book-catalogue/BrowseCatalogue";
 import LibrarianLoans from "./src/components/librarian/LibrarianLoans";
 import Licence from "./src/components/user/Licence";
 import UserConfiguration from "./src/components/user/UserConfiguration";
-import CaptureQR from "./src/components/librarian/CaptureQR";
+
 import ViewQR from "./src/components/user/ViewQR";
 import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
@@ -144,7 +144,7 @@ const Router = () => {
             )}
           </>
         )}
-        <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
+
       </Drawer.Navigator>
     </NavigationContainer>
   );
