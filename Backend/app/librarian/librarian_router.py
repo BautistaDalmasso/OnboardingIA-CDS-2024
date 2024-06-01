@@ -62,21 +62,21 @@ async def consult_user_by_email(user_email: str, token=Depends(HTTPBearer())):
     return user
 
 
-@router.get("/update_licence_user")
+@router.patch("/update_licence_user")
 async def update_licence(user_email: str, level: int, token=Depends(HTTPBearer())):
     await librarian_permissions_verification(token.credentials)
 
     return librarian_service.update_licence(user_email, level)
 
 
-@router.get("/update_name_user")
+@router.patch("/update_name_user")
 async def update_name(user_email: str, new_user_name: str, token=Depends(HTTPBearer())):
     await librarian_permissions_verification(token.credentials)
 
     return librarian_service.update_name(user_email, new_user_name)
 
 
-@router.get("/update_lastName_user")
+@router.patch("/update_lastName_user")
 async def update_lastname(
     user_email: str, new_user_last_name: str, token=Depends(HTTPBearer())
 ):
@@ -85,7 +85,7 @@ async def update_lastname(
     return librarian_service.update_lastName(user_email, new_user_last_name)
 
 
-@router.get("/update_dni_user")
+@router.patch("/update_dni_user")
 async def update_dni(user_email: str, new_user_dni: str, token=Depends(HTTPBearer())):
     await librarian_permissions_verification(token.credentials)
 
