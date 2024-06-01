@@ -6,27 +6,16 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import CustomTextInput from "../common/CustomTextInput";
-import TableDataUser from "./TableDataUser";
 import useRUDUsers from "../../hooks/useRUDUsers";
 import { IUserDTO } from "../../common/interfaces/User";
-import {
-  LicenceLevel,
-  licenceLevelToStr,
-} from "../../common/enums/licenceLevels";
-import { Picker } from "@react-native-picker/picker";
-import LinkButton from "../common/LinkButton";
 import CaptureQR from "./CaptureQR";
 import { BarCodeScanningResult } from "expo-camera/legacy";
-
-enum fieldOptions {
-  FIRST_NAME = "Nombre",
-  LAST_NAME = "Apellido",
-  DNI = "DNI",
-}
+import SelectUser from "./RUDScreens/SelectUser";
+import UpdateUser from "./RUDScreens/UpdateUser";
+import ViewUsersData from "./RUDScreens/ViewUsersData";
+import UpgradeUsersLicence from "./RUDScreens/UpgradeUsersLicence";
 
 enum pages {
   USER_SELECT = 0,
@@ -36,22 +25,12 @@ enum pages {
 }
 
 const RUDUser = () => {
-  const {
-    consultUser,
-    updateUsersName,
-    updateUsersLastName,
-    updateUsersDni,
-    updateUsersLicence,
-  } = useRUDUsers();
+  const { consultUser } = useRUDUsers();
   const [inputValue, setInputValue] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [_, setLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
-  const [fieldToUpdate, setFieldToUpdate] = useState(
-    fieldOptions.FIRST_NAME as string,
-  );
   const [user, setUser] = useState<IUserDTO | null>(null);
-  const [scanningQr, setScanningQr] = useState(false)
-
+  const [scanningQr, setScanningQr] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -70,6 +49,13 @@ const RUDUser = () => {
     });
   };
 
+  const qrScanned = async (scanningResult: BarCodeScanningResult) => {
+    const parsedResult = JSON.parse(scanningResult.data);
+
+    handleLoadingData(parsedResult.email);
+    setScanningQr(false);
+  };
+
   const gotoUpgradeLicenceLevel = async () => {
     if (!user?.dni) {
       Alert.alert(
@@ -81,66 +67,15 @@ const RUDUser = () => {
     handleChangePage(pages.UPGRADE_LICENCE);
   };
 
-  const handleLevel = async (level: LicenceLevel) => {
-    if (!user) {
-      throw Error("No user selected.");
-    }
-
-    updateUsersLicence(user.email, level);
-
-    Alert.alert("", "¡Actualizacion de nivel de carnet exitosa!");
-
+  const onUserUpdateFinished = () => {
     handleChangePage(pages.USER_DATA);
-    handleLoadingData(user.email);
+    handleLoadingData((user as IUserDTO).email);
   };
 
-  const updateUsersData = async () => {
-    setInputValue(inputValue.trim());
-    if (inputValue === "") {
-      Alert.alert(
-        "Error",
-        "Por favor ingrese un " + fieldToUpdate + " valido.",
-      );
-      return;
-    }
-
-    if (!user) {
-      throw Error("User wasn't selected.");
-    }
-
-    switch (fieldToUpdate) {
-      case fieldOptions.FIRST_NAME:
-        await updateUsersName(user.email, inputValue);
-        break;
-      case fieldOptions.LAST_NAME:
-        await updateUsersLastName(user.email, inputValue);
-        break;
-      case fieldOptions.DNI:
-        const wasUpdated = await updateUsersDni(
-          user.email,
-          inputValue,
-          user.dni,
-        );
-
-        if (!wasUpdated) {
-          setInputValue("");
-          return;
-        }
-      default:
-        break;
-    }
-
-    Alert.alert("Se cambio el " + fieldToUpdate + " del usuario exitosamente.");
+  const onLicenceUpgradeFinished = () => {
     handleChangePage(pages.USER_DATA);
-    handleLoadingData(user.email);
+    handleLoadingData((user as IUserDTO).email);
   };
-
-  const qrScanned = async (scanningResult: BarCodeScanningResult) => {
-    const parsedResult = JSON.parse(scanningResult.data);
-
-    handleLoadingData(parsedResult.email);
-    setScanningQr(false);
-  }
 
   const handleLoadingData = async (userEmail: string) => {
     try {
@@ -148,7 +83,7 @@ const RUDUser = () => {
 
       const user = await consultUser(userEmail);
 
-      if (user == null) {
+      if (user === null) {
         Alert.alert("Error", "Usuario NO registrado");
         return;
       }
@@ -165,10 +100,10 @@ const RUDUser = () => {
 
   if (scanningQr) {
     return (
-        <CaptureQR
-            onScan={async (scanningResult) => await qrScanned(scanningResult)}
-        />
-    )
+      <CaptureQR
+        onScan={async (scanningResult) => await qrScanned(scanningResult)}
+      />
+    );
   }
 
   return (
@@ -183,59 +118,20 @@ const RUDUser = () => {
       >
         {/* Select user page. */}
         <View key={pages.USER_SELECT} style={styles.page}>
-          <Text style={styles.instruction}>
-            Ingrese el email del usuario registrado o ingrese el QR.
-          </Text>
-          <CustomTextInput
-            placeholder={"email"}
-            value={inputValue}
-            onChangeText={(text) => setInputValue(text)}
+          <SelectUser
+            inputValue={inputValue}
+            onPressSearch={(userEmail: string) => handleLoadingData(userEmail)}
+            onPressScanQr={() => setScanningQr(true)}
           />
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleLoadingData(inputValue)}
-          >
-            <Text style={styles.buttonText}>Buscar Usuario</Text>
-          </TouchableOpacity>
-
-          {/* TODO */}
-          <TouchableOpacity
-            style={styles.buttonQR}
-            onPress={() => setScanningQr(true)}
-          >
-            <Text style={styles.buttonText}>Escanear QR</Text>
-          </TouchableOpacity>
         </View>
 
         {/* View user's data page. */}
         <View key={pages.USER_DATA} style={styles.page}>
-          {user && (
-            <TableDataUser
-              name={user.firstName}
-              lastName={user.lastName}
-              email={user.email}
-              dni={user.dni ? user.dni : "NO Registrado"}
-              licence={licenceLevelToStr(user.licenceLevel as LicenceLevel)}
-            />
-          )}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleChangePage(pages.UPDATE_DATA)}
-          >
-            <Text style={styles.buttonText}>Modificar datos</Text>
-          </TouchableOpacity>
-          {user && user.dni && (
-            <TouchableOpacity
-              style={styles.button}
-              onPress={gotoUpgradeLicenceLevel}
-            >
-              <Text style={styles.buttonText}>Mejorar nivel de carnet</Text>
-            </TouchableOpacity>
-          )}
-          <LinkButton
-            text="Buscar otro usuario"
-            onPress={() => (
+          <ViewUsersData
+            user={user}
+            onPressUpdateData={() => handleChangePage(pages.UPDATE_DATA)}
+            onPressUpdateLicence={gotoUpgradeLicenceLevel}
+            onPressSearchAnotherUser={() => (
               handleChangePage(pages.USER_SELECT), setInputValue("")
             )}
           />
@@ -243,72 +139,21 @@ const RUDUser = () => {
 
         {/* Update user's data page. */}
         <View key={pages.UPDATE_DATA} style={styles.page}>
-          <Picker
-            selectedValue={fieldToUpdate}
-            style={styles.picker}
-            onValueChange={(itemValue: string) => setFieldToUpdate(itemValue)}
-          >
-            <Picker.Item
-              label="Actualizar Nombre"
-              value={fieldOptions.FIRST_NAME}
-            />
-            <Picker.Item
-              label="Actualizar Apellido"
-              value={fieldOptions.LAST_NAME}
-            />
-            {user && user.dni && (
-              <Picker.Item label="Actualizar DNI" value={fieldOptions.DNI} />
-            )}
-          </Picker>
-
-          <View style={styles.inputContainer}>
-            <CustomTextInput
-              placeholder={`Ingrese nuevo ${fieldToUpdate}`}
-              value={inputValue}
-              onChangeText={(text) => setInputValue(text)}
-            />
-
-            <TouchableOpacity
-              style={styles.buttonUpdateData}
-              onPress={updateUsersData}
-            >
-              <Text style={styles.textButtonUpdateData}>Actualizar</Text>
-            </TouchableOpacity>
-          </View>
-
-          <LinkButton
-            text="Volver a datos del usuario >>"
-            onPress={() => handleChangePage(pages.USER_DATA)}
+          <UpdateUser
+            startingInputValue={inputValue}
+            user={user}
+            onFinishUpdate={onUserUpdateFinished}
+            onPressReturn={() => handleChangePage(pages.USER_DATA)}
           />
         </View>
 
         {/* Upgrade user's licence page */}
         <View key={pages.UPGRADE_LICENCE} style={styles.page}>
-          <Text style={styles.instruction}>
-            Cambiar nivel de carnet del usuario a{" "}
-          </Text>
-
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleLevel(LicenceLevel.TRUSTED)}
-              disabled={loading}
-            >
-              <Text style={styles.buttonText}>Confiado</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleLevel(LicenceLevel.RESEARCHER)}
-              disabled={loading}
-            >
-              <Text style={styles.buttonText}>Investigador</Text>
-            </TouchableOpacity>
-          </View>
-
-          <LinkButton
-            text="Volver a datos del usuario >>"
-            onPress={() => handleChangePage(pages.USER_DATA)}
+          <UpgradeUsersLicence
+            user={user}
+            disabled={false}
+            onUpgradeFinished={onLicenceUpgradeFinished}
+            onPressReturnToUsersData={() => handleChangePage(pages.USER_DATA)}
           />
         </View>
       </ScrollView>

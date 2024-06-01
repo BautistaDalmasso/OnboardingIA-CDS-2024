@@ -23,7 +23,7 @@ export class LibrarianService {
     return baseFetch<void, IUserDTO>({
       token: token,
       url: `${this.baseRoute}/update_licence_user?user_email=${email}&level=${level}`,
-      method: "GET",
+      method: "PATCH",
     });
   }
 
@@ -35,7 +35,7 @@ export class LibrarianService {
     return baseFetch<void, IUserDTO>({
       token: token,
       url: `${this.baseRoute}/update_name_user?user_email=${email}&new_user_name=${new_name}`,
-      method: "GET",
+      method: "PATCH",
     });
   }
 
@@ -47,7 +47,7 @@ export class LibrarianService {
     return baseFetch<void, IUserDTO>({
       token: token,
       url: `${this.baseRoute}/update_lastName_user?user_email=${email}&new_user_last_name=${new_last_name}`,
-      method: "GET",
+      method: "PATCH",
     });
   }
 
@@ -59,7 +59,7 @@ export class LibrarianService {
     return baseFetch<void, IUserDTO>({
       token: token,
       url: `${this.baseRoute}/update_dni_user?user_email=${email}&new_user_dni=${new_dni}`,
-      method: "GET",
+      method: "PATCH",
     });
   }
 }
