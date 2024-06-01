@@ -1,17 +1,16 @@
-import { NavigationProp, useIsFocused } from "@react-navigation/native";
-import { Camera, CameraType, FlashMode } from "expo-camera/legacy";
+import { useIsFocused } from "@react-navigation/native";
+import { BarCodeScanningResult, Camera, CameraType, FlashMode } from "expo-camera/legacy";
 import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
 import { View, StyleSheet, Text } from "react-native";
 import React from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import LinkButton from "../common/LinkButton";
 
-interface Props {
-  navigation: NavigationProp<any, any>;
+
+interface CaptureQrProps {
+  onScan: (scanningResult: BarCodeScanningResult) => void;
 }
-const CaptureQR = ({ navigation }: Props) => {
+const CaptureQR = ({ onScan }: CaptureQrProps) => {
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
   >(null);
@@ -39,7 +38,7 @@ const CaptureQR = ({ navigation }: Props) => {
 
   return (
     <>
-      {scanResult === "" ? (
+      {
         isFocused && (
           <View style={styles.cameraContainer}>
             <Camera
@@ -50,22 +49,13 @@ const CaptureQR = ({ navigation }: Props) => {
               barCodeScannerSettings={{
                 barCodeTypes: ["qr"],
               }}
-              onBarCodeScanned={(scanningResult) => {
-                setScanResult(scanningResult.data);
+              onBarCodeScanned={async (scanningResult) => {
+                await onScan(scanningResult);
               }}
             />
           </View>
         )
-      ) : (
-        <View style={styles.container}>
-          <Text>VISTA TEMPORAL DE INFORMACIÓN</Text>
-          <Text>{scanResult}</Text>
-          <LinkButton
-            text="Escanear Otro QR"
-            onPress={() => setScanResult("")}
-          />
-        </View>
-      )}
+        }
     </>
   );
 };
