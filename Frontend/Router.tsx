@@ -24,12 +24,8 @@ import UserConfiguration from "./src/components/user/UserConfiguration";
 import ViewQR from "./src/components/user/ViewQR";
 import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
-<<<<<<< HEAD
 import LoanCreation from "./src/components/librarian/LoanCreation";
-=======
 import PointsExchange from "./src/components/points/PointsExchange";
->>>>>>> 40daf592fb0db0586d5a2a2e778bd18dceab60a7
-
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
