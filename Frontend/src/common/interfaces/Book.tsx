@@ -45,3 +45,20 @@ export interface IPhysicalCopyData {
   copy_id: string;
   status: "available" | "borrowed";
 }
+
+export interface ILoanValid {
+  inventory_number: number;
+  isbn: string;
+  expiration_date: Date;
+  user_email: string;
+  licence_level: number;
+}
+
+export interface ILoanWithLicence {
+  book_data: IMarcBook;
+  inventory_number: number;
+  isbn: string;
+  expiration_date: Date;
+  user_email: string;
+  licence_level: number;
+}

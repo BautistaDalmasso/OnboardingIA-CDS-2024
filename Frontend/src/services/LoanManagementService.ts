@@ -1,10 +1,7 @@
 import { ServerAddress } from "../common/consts/serverAddress";
 import { baseFetch } from "./fetch";
-import { IReservationRequest } from "../common/interfaces/Book";
-import {
-  ILoanInformation,
-  LoanValid,
-} from "../common/interfaces/LoanReqResponse";
+import { IReservationRequest, ILoanValid } from "../common/interfaces/Book";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 
 export class LoanService {
   private static baseRoute: string = `${ServerAddress}loans`;
@@ -29,16 +26,13 @@ export class LoanService {
     }
   }
 
-  static async assignLoan(
-    inventory_number: number,
-    user_email: string,
-    token: string,
-  ) {
+  static async assignLoan(bookLoan: ILoanValid, token: string) {
     try {
-      const book = await baseFetch<void, ILoanInformation>({
-        token,
-        url: `${this.baseRoute}/assign_loan?inventory_number=${inventory_number}&user_email=${user_email}`,
+      const book = await baseFetch<ILoanValid, ILoanInformation>({
+        url: `${this.baseRoute}/assign_loan`,
         method: "POST",
+        data: bookLoan,
+        token,
       });
       return book;
     } catch (error) {
@@ -49,7 +43,7 @@ export class LoanService {
 
   static async check_loan_valid(inventory_number: number, user_email: string) {
     try {
-      const book = await baseFetch<void, LoanValid>({
+      const book = await baseFetch<void, ILoanValid>({
         url: `${this.baseRoute}/check_loan_valid?inventory_number=${inventory_number}&user_email=${user_email}`,
         method: "GET",
       });

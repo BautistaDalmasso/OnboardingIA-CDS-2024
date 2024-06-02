@@ -5,11 +5,14 @@ import {
   isEmptyTextInput,
   isValidInventoryNumber,
 } from "../common/utils/inputCheck";
-import useRUDUsers from "./useRUDUsers";
+
 import { LoanService } from "../services/LoanManagementService";
+import useRUDUsers from "./useRUDUsers";
+import { IUser, IUserDTO } from "../common/interfaces/User";
+import { ILoanValid, IReservationRequest } from "../common/interfaces/Book";
 
 const useLoanCreation = () => {
-  const { contextState } = useContextState();
+  const { contextState, setContextState } = useContextState();
   const { consultUser } = useRUDUsers();
 
   const assignLoan = async (inventoryNumber: number, userEmail: string) => {
@@ -25,24 +28,22 @@ const useLoanCreation = () => {
         );
         return;
       }
-      const user = await consultUser(userEmail);
-      if (user?.email == null) {
-        Alert.alert("Error", "Usuario NO registrado.");
-        return;
-      }
+
       const loanValid = await LoanService.check_loan_valid(
         inventoryNumber,
         userEmail,
       );
+
       if (loanValid?.inventory_number == null) {
         Alert.alert("Error", "Numero de Inventario innexistente.");
         return;
       } else {
+        const loanRequest = createLoanData(loanValid);
         await LoanService.assignLoan(
-          inventoryNumber,
-          userEmail,
+          loanRequest,
           contextState.accessToken as string,
         );
+
         Alert.alert(
           "¡Creación de prestamo exitosa!",
           "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente.",
@@ -52,8 +53,72 @@ const useLoanCreation = () => {
       console.error("Error en creación de prestamo:", error);
     }
   };
+
+  const checkUser = async (userEmail: string): Promise<IUserDTO | null> => {
+    try {
+      const user = await consultUser(userEmail);
+      if (user?.email == null) {
+        Alert.alert("Error", "Usuario NO registrado.");
+        return null;
+      }
+      if (user?.licenceLevel === 0) {
+        Alert.alert(
+          "Atención",
+          "Usuario sin Carnet, por lo tanto, No se le puede asignar un prestamo.",
+        );
+        return null;
+      } else {
+        return user;
+      }
+    } catch (error) {
+      console.error("Error en creación de prestamo:", error);
+      return null;
+    }
+  };
+
+  const assignLoanBook = async (email: string, isbn: string) => {
+    try {
+      //TO DO
+      Alert.alert(
+        "¡Creación de prestamo exitosa!",
+        "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente.",
+      );
+    } catch (error) {
+      console.error("Error en creación de prestamo:", error);
+    }
+  };
+
+  const createLoanData = (book: ILoanValid) => {
+    const futureDate: Date = new Date(new Date());
+    futureDate.setDate(futureDate.getDate() + 7);
+
+    const loanRequest: ILoanValid = {
+      isbn: book.isbn,
+      expiration_date: futureDate,
+      user_email: book.user_email,
+      inventory_number: book.inventory_number,
+      licence_level: 0,
+    };
+    return loanRequest;
+  };
+
+  const createReservationData = (isbn: string) => {
+    const futureDate: Date = new Date(new Date());
+    futureDate.setDate(futureDate.getDate() + 7);
+
+    const reservationRequest: IReservationRequest = {
+      isbn: isbn,
+      expiration_date: futureDate,
+      user_email: (contextState.user as IUser).email,
+    };
+
+    return reservationRequest;
+  };
+
   return {
     assignLoan,
+    checkUser,
+    assignLoanBook,
   };
 };
 export default useLoanCreation;

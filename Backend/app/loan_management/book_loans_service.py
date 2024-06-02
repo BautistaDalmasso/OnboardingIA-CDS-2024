@@ -10,7 +10,7 @@ from .book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
     PhysicalCopyDTO,
-    LoanValidationDTO,
+    LoanValidDTO,
 )
 
 from pathlib import Path
@@ -164,61 +164,58 @@ class LoanService(DatabaseUser):
             return_date=db_entry[CLBEI.return_date.value],
         )
 
-    def lend_book(self, inventory_number: int, user_email: str) -> LoanInformationDTO:
+    def lend_book(self, book: LoanValidDTO) -> LoanInformationDTO:
         loan_status: LOAN_STATUS = "loaned"
         today_str = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-        try:
-            self.execute_in_database(
-                """UPDATE loan
-                SET loanStatus = ?, checkoutDate = ?
-                WHERE inventoryNumber = ? AND userEmail = ?""",
-                (loan_status, today_str, inventory_number, user_email),
-            )
-            return self.create_lend_book(inventory_number, user_email)
-        except sqlite3.IntegrityError:
-            return {"error": "No se pudo registrar el prestamo."}
 
-    def create_lend_book(
-        self, inventory_number: int, user_email: str
-    ) -> LoanInformationDTO:
-        loan_status: LOAN_STATUS = "loaned"
-        book_isbn = self.query_database(
-            """SELECT isbn
-                        FROM bookInventory
-                        WHERE inventoryNumber = ?""",
-            (inventory_number,),
+        self.execute_in_database(
+            """UPDATE bookInventory
+                SET status = ?
+                WHERE inventoryNumber = ?""",
+            ("borrowed", book.inventory_number),
         )
-        loaned_book = self.query_database(
-            """SELECT *
-                FROM loan
-                WHERE inventoryNumber = ? AND userEmail = ? AND loanStatus = ?""",
-            (inventory_number, user_email, loan_status),
+
+        self.execute_in_database(
+            """INSERT INTO loan (inventoryNumber,expirationDate, userEmail, loanStatus, reservationDate ,checkoutDate)
+                            VALUES (?, ?, ?, ?, ?, ?)""",
+            (
+                book.inventory_number,
+                book.expiration_date,
+                book.user_email,
+                loan_status,
+                today_str,
+                today_str,
+            ),
         )
-        catalogue_data = self._catalogue_service.browse_by_isbn(book_isbn[0])
+        catalogue_data = self._catalogue_service.browse_by_isbn(book.isbn)
         return LoanInformationDTO(
+            inventory_number=book.inventory_number,
             catalogue_data=catalogue_data,
-            inventory_number=loaned_book[1],
-            expiration_date=loaned_book[2],
-            user_email=loaned_book[3],
-            loan_status=loaned_book[4],
-            reservation_date=loaned_book[5],
-            checkout_date=loaned_book[6],
-            return_date=loaned_book[7],
+            expiration_date=book.expiration_date,
+            user_email=book.user_email,
+            loan_status=loan_status,
+            reservation_date=today_str,
+            checkout_date=today_str,
+            return_date=None,
         )
 
     def check_valid_loan(
         self, inventory_number: int, user_email: str
-    ) -> LoanValidationDTO | None:
+    ) -> LoanValidDTO | None:
         book = self.query_database(
-            """SELECT inventoryNumber
-                FROM loan
-                WHERE inventoryNumber = ? AND userEmail = ? AND (loanStatus = returned OR loanStatus = reserved) """,
-            (inventory_number, user_email),
+            """SELECT inventoryNumber, isbn
+                FROM bookInventory
+                WHERE inventoryNumber = ? AND status =?  """,
+            (inventory_number, "available"),
         )
+
         if bool(book):
-            return LoanValidationDTO(
+            return LoanValidDTO(
                 inventory_number=inventory_number,
                 user_email=user_email,
+                isbn=book[1],
+                licence_level=1,
+                expiration_date=None,
             )
         else:
             return None

@@ -1,4 +1,5 @@
 from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException
 from app.loan_management.book_loans_service import (
     BookNotFound,
@@ -9,7 +10,7 @@ from app.loan_management.book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
     PhysicalCopyDTO,
-    LoanValidationDTO,
+    LoanValidDTO,
 )
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
@@ -90,15 +91,12 @@ async def book_loans_by_title(title: str, token=Depends(HTTPBearer())):
 
 @router.post("/assign_loan", response_model=LoanInformationDTO)
 async def create_loan(
-    inventory_number: int, user_email: str, token=Depends(HTTPBearer())
+    book: LoanValidDTO, token=Depends(HTTPBearer())
 ) -> LoanInformationDTO:
     user_data: TokenDataDTO = await verify_token(token.credentials)
-    if (
-        user_data.role == "librarian"
-        and user_service.get_user_by_email(user_email) is not None
-    ):
+    if user_data.role == "librarian":
         try:
-            result = loan_service.lend_book(inventory_number, user_email)
+            result = loan_service.lend_book(book)
             return result
         except BookNotFound as e:
             print(e)
