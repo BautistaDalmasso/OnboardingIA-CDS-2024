@@ -16,6 +16,7 @@ class UnkwnownFilter(Exception): ...
 class BookDataWithLicence(BaseModel):
     book_data: MarcBookData
     licence_required: int
+    availability: BookStatusDTO
 
     def __hash__(self) -> int:
         return hash(self.book_data.isbn)
@@ -92,9 +93,16 @@ class BookWithLicenceBrowser(DatabaseUser):
         consulted_licences = self._query_multiple_isbns(consulted_isbns)
         isbn_to_licence = defaultdict(default_licence)
         isbn_to_licence.update({entry[0]: entry[1] for entry in consulted_licences})
+        book_availability = self.consult_book_inventory(consulted_isbns)
 
         return [
-            create_book_with_licence(book, isbn_to_licence[book.isbn])
+            create_book_with_licence(
+                book,
+                isbn_to_licence[book.isbn],
+                book_availability.get(
+                    book.isbn, BookStatusDTO(available=0, borrowed=0)
+                ),
+            )
             for book in consulted_books
         ]
 
@@ -160,9 +168,10 @@ class BookWithLicenceBrowser(DatabaseUser):
 
 
 def create_book_with_licence(
-    book_data: MarcBookData, licence_level: int
+    book_data: MarcBookData, licence_level: int, book_status: BookStatusDTO
 ) -> BookDataWithLicence:
     return BookDataWithLicence(
         book_data=book_data,
         licence_required=licence_level,
+        availability=book_status,
     )

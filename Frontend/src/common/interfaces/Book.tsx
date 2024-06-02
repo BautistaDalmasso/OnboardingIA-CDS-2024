@@ -12,6 +12,11 @@ export interface IMarcBook {
   topics: string[];
 }
 
+export interface IBookStatus {
+  available: number;
+  borrowed: number;
+}
+
 export interface IAuthor {
   name: string;
   role: string | null;
@@ -20,6 +25,7 @@ export interface IAuthor {
 export interface IBookWithLicence {
   book_data: IMarcBook;
   licence_required: number;
+  availability: IBookStatus;
 }
 
 export interface IBook {

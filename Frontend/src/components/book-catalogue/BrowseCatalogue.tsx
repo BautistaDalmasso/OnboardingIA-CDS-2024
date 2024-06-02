@@ -32,6 +32,7 @@ const RequestLoans = () => {
   const fetchBooks = async () => {
     try {
       const books = await LibraryService.getBooks(currentPage);
+
       if (books.length > 0) {
         setIsAtLastPage(false);
         setBooks(books);

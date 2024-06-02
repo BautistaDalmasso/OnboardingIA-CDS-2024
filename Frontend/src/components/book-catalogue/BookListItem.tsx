@@ -163,6 +163,16 @@ const BookListItem = ({
         </Text>
       </View>
 
+      <View style={styles.mixedTextContainer}>
+        <Text style={styles.label}>Disponibles:</Text>
+        <Text style={styles.availability}> {book.availability.available}  </Text>
+      </View>
+
+      <View style={styles.mixedTextContainer}>
+        <Text style={styles.label}>Prestados:</Text>
+        <Text style={styles.availability}> {book.availability.borrowed}  </Text>
+      </View>
+
       <TouchableOpacity
         style={[
           styles.button,
@@ -262,6 +272,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: 5,
   },
+  availability: {
+    fontSize: 16,
+    marginTop: 10,
+  }
 });
 
 export default BookListItem;
