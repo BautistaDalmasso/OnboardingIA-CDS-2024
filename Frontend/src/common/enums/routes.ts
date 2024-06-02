@@ -18,5 +18,9 @@ export enum Routes {
   CreateDeleteLibrarian = "Alta de bibliotecarios",
   RUDUser = "Actualización de usuario",
   LibrarianLoans = "Prestamos solicitados por usuarios",
+<<<<<<< HEAD
   LoanCreation = "Alta de prestamo"
+=======
+  PointsExchange = "Canjear Puntos",
+>>>>>>> 40daf592fb0db0586d5a2a2e778bd18dceab60a7
 }

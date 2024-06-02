@@ -1,5 +1,6 @@
 from pathlib import Path
 import sqlite3
+from app.user.user_dtos import LOGIN_RESPONSE, TokenDataDTO
 from app.licence_levels.licence_level import LicenceLevel
 from app.licence_levels.modify_licence_service import ModifyLicenceService
 from app.points_exchange.point_addition_service import apply_minus_points_in_transaction
@@ -14,13 +15,16 @@ class PointExchangeService(DatabaseUser):
         super().__init__(db_path)
         self._modify_licence_service = ModifyLicenceService(db_path)
 
-    def exchange_for_trusted_licence(self, user_email: str):
+    def exchange_for_trusted_licence(self, token_data: TokenDataDTO) -> LOGIN_RESPONSE:
 
-        self._remove_points_if_theres_enough(user_email, TRUSTED_LICENCE_UPGRADE_COST)
+        self._remove_points_if_theres_enough(
+            token_data.email, TRUSTED_LICENCE_UPGRADE_COST
+        )
 
-        self._modify_licence_service.modify_licence_level(
-            user_email,
+        return self._modify_licence_service.modify_licence_level(
+            token_data.email,
             LicenceLevel.TRUSTED,
+            token_data,
         )
 
     def _remove_points_if_theres_enough(self, user_email: str, point_cost: int):
