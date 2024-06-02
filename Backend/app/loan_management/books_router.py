@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Query
+from app.licence_levels.licence_service import BookDataWithLicence
 from app.licence_levels.licence_service import (
     BookDataWithLicence,
     BookWithLicenceBrowser,

@@ -3,6 +3,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from app.loan_management.book_loans_dtos import BookStatusDTO
 from app.catalogue.book_models import MarcBookData
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
 from app.licence_levels.licence_level import default_licence
@@ -15,8 +16,7 @@ class UnkwnownFilter(Exception): ...
 class BookDataWithLicence(BaseModel):
     book_data: MarcBookData
     licence_required: int
-    available_books: int
-    borrowed_books: int
+    availability: BookStatusDTO
 
     def __hash__(self) -> int:
         return hash(self.book_data.isbn)
@@ -100,7 +100,9 @@ class BookWithLicenceBrowser(DatabaseUser):
             create_book_with_licence(
                 book,
                 isbn_to_licence[book.isbn],
-                book_availability.get(book.isbn, (0, 0)),
+                book_availability.get(
+                    book.isbn, BookStatusDTO(available=0, borrowed=0)
+                ),
             )
             for book in consulted_books
         ]
@@ -123,7 +125,7 @@ class BookWithLicenceBrowser(DatabaseUser):
         )
         return consulted_licences
 
-    def consult_book_inventory(self, isbns: list[str]) -> dict[str, tuple[int, int]]:
+    def consult_book_inventory(self, isbns: list[str]) -> dict[str, BookStatusDTO]:
         if len(isbns) == 0:
             isbns_str = "()"
         else:
@@ -141,9 +143,12 @@ class BookWithLicenceBrowser(DatabaseUser):
             isbns,
         )
 
-        return {book[0]: (book[1], book[2]) for book in result}
+        return {
+            book[0]: BookStatusDTO(available=book[1], borrowed=book[2])
+            for book in result
+        }
 
-    def _consult_book_availability(self, isbn: str) -> int:
+    def _consult_book_availability(self, isbn: str) -> BookStatusDTO:
         availability = self.query_database(
             """SELECT
                     SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) AS available_books,
@@ -154,17 +159,16 @@ class BookWithLicenceBrowser(DatabaseUser):
         )
 
         if availability == (None, None):
-            return (0, 0)
+            return BookStatusDTO(available=0, borrowed=0)
 
-        return (availability[0], availability[1])
+        return BookStatusDTO(available=availability[0], borrowed=availability[1])
 
 
 def create_book_with_licence(
-    book_data: MarcBookData, licence_level: int, availability: tuple[int, int]
+    book_data: MarcBookData, licence_level: int, book_status: BookStatusDTO
 ) -> BookDataWithLicence:
     return BookDataWithLicence(
         book_data=book_data,
         licence_required=licence_level,
-        available_books=availability[0],
-        borrowed_books=availability[1],
+        availability=book_status,
     )
