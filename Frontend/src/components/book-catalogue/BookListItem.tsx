@@ -165,30 +165,39 @@ const BookListItem = ({
 
       <View style={styles.mixedTextContainer}>
         <Text style={styles.label}>Disponibles:</Text>
-        <Text style={styles.availability}> {book.availability.available}  </Text>
+        <Text style={styles.availability}> {book.availability.available} </Text>
       </View>
 
       <View style={styles.mixedTextContainer}>
         <Text style={styles.label}>Prestados:</Text>
-        <Text style={styles.availability}> {book.availability.borrowed}  </Text>
+        <Text style={styles.availability}> {book.availability.borrowed} </Text>
       </View>
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          {
-            backgroundColor: isBookRequested(book.book_data.isbn)
-              ? "#ccc"
-              : "#007bff",
-          },
-        ]}
-        onPress={() => handleLoanRequest(book)}
-        disabled={isBookRequested(book.book_data.isbn)}
-      >
-        <Text style={styles.buttonText}>
-          {isBookRequested(book.book_data.isbn) ? "Solicitado" : "Solicitar"}
-        </Text>
-      </TouchableOpacity>
+      {book.availability.available > 0 ? (
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              backgroundColor: isBookRequested(book.book_data.isbn)
+                ? "#ccc"
+                : "#007bff",
+            },
+          ]}
+          onPress={() => handleLoanRequest(book)}
+          disabled={isBookRequested(book.book_data.isbn)}
+        >
+          <Text style={styles.buttonText}>
+            {isBookRequested(book.book_data.isbn) ? "Solicitado" : "Solicitar"}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#ccc" }]}
+          disabled={true}
+        >
+          <Text style={styles.buttonText}>{"Fuera de stock"}</Text>
+        </TouchableOpacity>
+      )}
     </>
   );
 };
@@ -275,7 +284,7 @@ const styles = StyleSheet.create({
   availability: {
     fontSize: 16,
     marginTop: 10,
-  }
+  },
 });
 
 export default BookListItem;
