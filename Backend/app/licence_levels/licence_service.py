@@ -4,7 +4,7 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from app.loan_management.book_loans_dtos import BookStatusDTO
-from app.catalogue.book_models import MarcBookData
+from app.catalogue.book_models import MarcBookData, TotalBooksDTO
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
 from app.licence_levels.licence_level import default_licence
 from app.database.database_user import DatabaseUser
@@ -162,6 +162,10 @@ class BookWithLicenceBrowser(DatabaseUser):
             return BookStatusDTO(available=0, borrowed=0)
 
         return BookStatusDTO(available=availability[0], borrowed=availability[1])
+
+    def get_users_length(self) -> TotalBooksDTO:
+        result = self.get_number_of_books()
+        return TotalBooksDTO(total_books=result)
 
 
 def create_book_with_licence(

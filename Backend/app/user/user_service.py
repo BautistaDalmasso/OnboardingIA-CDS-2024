@@ -21,6 +21,7 @@ from .user_dtos import (
     CreateUserDTO,
     LoginSuccessfulResponseDTO,
     TokenDataDTO,
+    TotalUsersDTO,
     UpdateUserDniDTO,
     UserDTO,
 )
@@ -243,16 +244,16 @@ class UserService(DatabaseUser):
             points=query_result[7],
         )
 
-    def get_users(self, role: string) -> List[UserDTO]:
+    def get_users_length(self, role: string) -> TotalUsersDTO:
         """Page numbering should start at 0"""
         query = """
-                SELECT firstName, lastName, email, dni, licenceLevel, role, lastPermissionUpdate, points
+                SELECT COUNT(*)
                 FROM users
                 WHERE role = ?;
             """
-        result = self.query_multiple_rows(query, (role,))
-
-        return [self.create_user_data(user_data) for user_data in result]
+        result = self.query_database(query, (role,))
+        total_users = result[0] if result else 0
+        return TotalUsersDTO(totalUsers=total_users)
 
     def finish_login_data(self, user: UserDTO) -> LOGIN_RESPONSE:
         user_loans = self._loans_service.consult_book_loans_by_user_email(user.email)

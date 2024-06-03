@@ -7,7 +7,7 @@ from app.user.user_service import UserService
 from app.catalogue.update_catalogue_service import UpdateCatalogueService
 from app.loan_management.book_loans_service import BookNotFound
 from app.middlewares import verify_token
-from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO, UserDTO
+from app.user.user_dtos import TokenDataDTO, TotalUsersDTO, UpdateUserRoleDTO, UserDTO
 from app.librarian.librarian_service import LibrarianService
 from app.catalogue import catalogue_db
 from app.catalogue.add_to_catalogue_service import AddToCatalogueService
@@ -142,7 +142,7 @@ async def get_users_by_role(
 
 
 # not currently used but it could be useful in the future
-@librarian_cd_router.get("/get_all_users", response_model=list[UserDTO])
-async def get_all_users(role: str = Query(...)):
-    result = user_service.get_users(role)
+@librarian_cd_router.get("/get_users_length_by_role", response_model=TotalUsersDTO)
+async def get_users_length(role: str = Query(...)):
+    result = user_service.get_users_length(role)
     return result

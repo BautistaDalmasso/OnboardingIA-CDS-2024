@@ -48,6 +48,10 @@ class UpdateUserRoleDTO(BaseModel):
     email: str
 
 
+class TotalUsersDTO(BaseModel):
+    totalUsers: int
+
+
 class TokenDataDTO(BaseModel):
     email: str
     role: Optional[str] = "basic"
