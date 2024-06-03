@@ -1,7 +1,8 @@
 from datetime import datetime
 from pathlib import Path
 import sqlite3
-from app.loan_management.points import (
+from app.points_exchange.point_addition_service import apply_minus_points_in_transaction
+from app.points_exchange.points import (
     LOAN_OVERDUE_PER_DAY_PENALITY,
     RESERVATION_OVERDUE_PENALITY,
 )
@@ -55,7 +56,9 @@ class LoanParser(DatabaseUser):
 
             cursor.execute("BEGIN")
 
-            self._apply_points(loan.user_email, RESERVATION_OVERDUE_PENALITY, cursor)
+            apply_minus_points_in_transaction(
+                loan.user_email, RESERVATION_OVERDUE_PENALITY, cursor
+            )
 
             cursor.execute(
                 """UPDATE loan SET loanStatus=?
@@ -87,7 +90,9 @@ class LoanParser(DatabaseUser):
 
             cursor.execute("BEGIN")
 
-            self._apply_points(loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor)
+            apply_minus_points_in_transaction(
+                loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor
+            )
 
             cursor.execute(
                 """UPDATE loan SET loanStatus=?
@@ -107,15 +112,11 @@ class LoanParser(DatabaseUser):
 
             cursor.execute("BEGIN")
 
-            self._apply_points(loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor)
+            apply_minus_points_in_transaction(
+                loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor
+            )
 
             cursor.execute("""COMMIT""")
         finally:
             cursor.close()
             connection.close()
-
-    def _apply_points(self, user_email: str, points: int, cursor: sqlite3.Cursor):
-        cursor.execute(
-            """UPDATE users SET points = points + ? WHERE email = ?""",
-            (points, user_email),
-        )

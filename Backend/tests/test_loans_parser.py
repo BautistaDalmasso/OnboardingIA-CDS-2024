@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import sqlite3
 import pytest
 
-from app.loan_management.points import (
+from app.points_exchange.points import (
     LOAN_OVERDUE_PER_DAY_PENALITY,
     RESERVATION_OVERDUE_PENALITY,
 )
@@ -38,10 +38,9 @@ def test_reservation_is_canceled(parser_service):
     all_loans = parser_service[SERVICE].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "reservation_canceled"
-    assert (
-        UserService(TEST_DB_PATH).get_user_by_email("user@email.com").points
-        == RESERVATION_OVERDUE_PENALITY
-    )
+    assert UserService(TEST_DB_PATH).get_user_by_email(
+        "user@email.com"
+    ).points == RESERVATION_OVERDUE_PENALITY * (-1)
     # Ensure copy is marked as available.
     parser_service[SERVICE].reserve_book(
         ReservationRequestDTO(
@@ -80,10 +79,9 @@ def test_loan_is_marked_as_overdue(parser_service):
     all_loans = parser_service[SERVICE].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "loan_return_overdue"
-    assert (
-        UserService(TEST_DB_PATH).get_user_by_email("user@email.com").points
-        == LOAN_OVERDUE_PER_DAY_PENALITY
-    )
+    assert UserService(TEST_DB_PATH).get_user_by_email(
+        "user@email.com"
+    ).points == LOAN_OVERDUE_PER_DAY_PENALITY * (-1)
 
 
 def test_loan_is_not_marked_as_overdue(parser_service):
@@ -110,10 +108,9 @@ def test_overdue_loan_is_penalized(parser_service):
     all_loans = parser_service[SERVICE].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "loan_return_overdue"
-    assert (
-        UserService(TEST_DB_PATH).get_user_by_email("user@email.com").points
-        == LOAN_OVERDUE_PER_DAY_PENALITY * 2
-    )
+    assert UserService(TEST_DB_PATH).get_user_by_email(
+        "user@email.com"
+    ).points == LOAN_OVERDUE_PER_DAY_PENALITY * 2 * (-1)
 
 
 def make_loaned_book(expiration_date: datetime):

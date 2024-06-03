@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useCallback} from "react";
+<<<<<<< loanStatus
+import React, { useState, useEffect, useCallback} from "rea=======
+import React, { useState, useEffect } from "react";
+>>>>>>> main
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { RequestedLoansService } from "../../services/requestedLoansService";
 import { ILoanInformation } from "../../common/interfaces/LoanReqResponse";
 import SearchBarComponent from "../common/SearchBar";
 import { useContextState } from "../../ContexState";
+<<<<<<< loanStatus
 import { NavigationProp , useFocusEffect} from "@react-navigation/native";
+=======
+import { NavigationProp } from "@react-navigation/native";
+>>>>>>> main
 
 interface Props {
   navigation: NavigationProp<any, any>;

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import pytest
 from app.catalogue.book_models import MarcBookData
 from app.loan_management.book_loans_dtos import LoanInformationDTO
-from app.loan_management.points_calculator import (
+from app.points_exchange.points_calculator import (
     DEFAULT_POINTS,
     POINTS_PER_EARLY_DAY,
     RESERVATION_CANCELED_POINTS,
