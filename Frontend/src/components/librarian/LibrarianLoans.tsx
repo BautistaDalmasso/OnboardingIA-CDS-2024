@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { RequestedLoansService } from "../../services/requestedLoansService";
 import { ILoanInformation } from "../../common/interfaces/LoanReqResponse";
 import SearchBarComponent from "../common/SearchBar";
 import { useContextState } from "../../ContexState";
+import { NavigationProp } from "@react-navigation/native";
 
-const LibrarianLoans = () => {
+interface Props {
+  navigation: NavigationProp<any, any>;
+}
+
+const LibrarianLoans = ({ navigation }: Props) => {
   const { contextState } = useContextState();
   const [loans, setLoans] = useState<ILoanInformation[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("user_email");
-  const [pickerItems, setPickerItems] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [pickerItems, setPickerItems] = useState<{ label: string; value: string }[]>([]);
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
@@ -90,6 +93,23 @@ const LibrarianLoans = () => {
     );
   };
 
+  function checkStatus(status: string) {
+    switch (status) {
+      case 'reserved':
+        return 'Reservado';
+      case 'loaned':
+        return 'Prestado';
+     case 'reservation_canceled':
+        return 'Reservación cancelada';
+     case 'loan_return_overdue':
+        return 'Devolución demorada';
+     case 'returned':
+        return 'Devuelto';
+     default:
+        return ('Unknown status');
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Prestamos</Text>
@@ -102,24 +122,37 @@ const LibrarianLoans = () => {
         onSearch={conductSearch}
         onClear={clearLoans}
       />
+      <Text style={styles.indications}>Seleccione el préstamo que desea gestionar: </Text>
       {showAlert && (
         <View style={styles.alertContainer}>
           <Text style={styles.alertText}>
             No se encontraron préstamos para la búsqueda realizada.
           </Text>
         </View>
+
       )}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.containerScroll}>
+      <ScrollView >
+
         {loans.map((Loan) => (
+          <TouchableOpacity
+          key={Loan.inventory_number}
+            onPress={() => navigation.navigate("Gestion de prestamos",{ loan: Loan })}
+        >
           <View style={styles.bookContainer} key={Loan.inventory_number}>
-            <Text style={styles.bookTitle}>{Loan.catalogue_data.title}</Text>
-            <Text style={styles.bookTitle}>{Loan.user_email}</Text>
+            <Text style={styles.bookTitle}>Préstamo id: {Loan.id}</Text>
+            <Text style={styles.bookTitle}>Usuario: {Loan.user_email}</Text>
+            <Text style={styles.cardLevel}>Libro: {Loan.catalogue_data.title}</Text>
+            <Text style={styles.cardLevel}>Estado: {checkStatus(Loan.loan_status)}</Text>
+
             <Text style={styles.cardLevel}>
               Vencimiento: {new Date(Loan.expiration_date).toLocaleDateString()}
             </Text>
           </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
+      </View>
     </View>
   );
 };
@@ -133,6 +166,17 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 8,
     overflow: "hidden",
+  },
+  containerScroll: {
+    flexGrow: 1,
+    overflow: "hidden",
+    height:400,
+  },
+  indications:{
+    textAlign:"center",
+    fontWeight: "bold",
+    margin: 20,
+    fontSize: 15,
   },
   alertContainer: {
     backgroundColor: "red",
@@ -161,30 +205,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
+    width: "100%",
   },
   bookTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
-  },
-  cardLevel: {
+    flexGrow: 1,
+    flexShrink: 1,
+  },cardLevel: {
     fontSize: 16,
     marginBottom: 10,
+    flexGrow: 1,
+    flexShrink: 1,
   },
-  button: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignSelf: "flex-end",
-  },
+
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
   },
   scrollContent: {
-    paddingBottom: 200,
+    paddingBottom: 260,
   },
+
 });
 
 export default LibrarianLoans;

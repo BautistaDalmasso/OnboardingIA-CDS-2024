@@ -8,4 +8,8 @@ export interface ILoanInformation {
   user_email: string;
   loan_status: LoanStatusCode;
   detail?: string;
+  id: number;
+  reservation_date: Date;
+  checkout_date: Date;
+  return_date: Date;
 }
