@@ -163,6 +163,27 @@ class LoanService(DatabaseUser):
             return_date=db_entry[CLBEI.return_date.value],
         )
 
+    def consult_limit_by_user_email(self, email: str) -> bool:
+        cant_reserved_loans = self.query_database(
+            """SELECT COUNT(*)
+                FROM loan
+                WHERE userEmail = ?
+                AND loanStatus = ? AND returnDate IS NULL""",
+            (email, "reserved"),
+        )
+        cant_loaned_books = self.query_database(
+            """SELECT COUNT(*)
+                FROM loan
+                WHERE userEmail = ?
+                AND loanStatus = ? AND returnDate IS NULL""",
+            (email, "loaned"),
+        )
+
+        if cant_reserved_loans[0] >= 3 or cant_loaned_books[0] >= 3:
+            return False
+        else:
+            return True
+
 
 class CLBEI(auto_index):
     """Consult Loans By Email Indexes"""

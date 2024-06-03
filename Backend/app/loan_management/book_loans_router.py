@@ -8,7 +8,6 @@ from app.loan_management.book_loans_service import (
 from app.loan_management.book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
-    PhysicalCopyDTO,
 )
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
@@ -83,4 +82,11 @@ async def book_loans_by_title(title: str, token=Depends(HTTPBearer())):
         raise HTTPException(status_code=403, detail="Solo bibliotecarios.")
 
     result = loan_service.consult_book_loans_by_title(title)
+    return result
+
+
+@router.get("/limitation_loans", response_model=bool)
+async def get_limitation_info(token=Depends(HTTPBearer())):
+    token_data = await verify_token(token.credentials)
+    result = loan_service.consult_limit_by_user_email(token_data.email)
     return result

@@ -1,7 +1,7 @@
 import { ServerAddress } from "../common/consts/serverAddress";
 import { baseFetch } from "./fetch";
 import { IReservationRequest } from "../common/interfaces/Book";
-import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
+import { ILoanInformation} from "../common/interfaces/LoanReqResponse";
 
 export class LoanService {
   private static baseRoute: string = `${ServerAddress}loans`;
@@ -24,5 +24,16 @@ export class LoanService {
       console.error("Error al realizar la solicitud:", error);
       throw new Error("Error al realizar la solicitud");
     }
+  }
+
+  static async checkLoanLimitation(
+    token: string
+  ): Promise<boolean> {
+    const value = await baseFetch<void, boolean>({
+      url: `${this.baseRoute}/limitation_loans`,
+      method: "GET",
+      token,
+    });
+    return value;
   }
 }
