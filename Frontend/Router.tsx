@@ -24,6 +24,9 @@ import CaptureQR from "./src/components/librarian/CaptureQR";
 import ViewQR from "./src/components/user/ViewQR";
 import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
+import ManagementLoan from "./src/components/librarian/ManagementLoan";
+import { Button } from "react-native";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -102,6 +105,22 @@ const Router = () => {
                       name={Routes.CreateDeleteLibrarian}
                       component={CreateDeleteLibrarian}
                     />
+                    <Drawer.Screen
+                    name={Routes.ManagementLoan}
+                    component={ManagementLoan}
+                    options={({ navigation }) => ({
+                        headerLeft: () => (
+                          <Icon.Button
+                              name="arrow-back"
+                              size={25}
+                              backgroundColor="transparent"
+                              color="#000"
+                              onPress={() => navigation.navigate("Prestamos")}
+                          />
+                         ),
+                        drawerItemStyle: { display: 'none' }
+                    })}
+                     />
                   </>
                 )}
 
