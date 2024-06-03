@@ -13,7 +13,7 @@ import { UserRole } from "../../common/enums/user";
 import { Picker } from "@react-native-picker/picker";
 import { SearchBar } from "@rneui/themed";
 import { librarianServiceCD } from "../../services/librarianCDService";
-import Pagination from "../../common/interfaces/Pagination";
+import Pagination from "../common/Pagination";
 import usePagination from "../../hooks/usePagination";
 
 //TODO: update the search bar and adapt it to the one currently being used if it's necessary.
@@ -24,12 +24,12 @@ const CDLibrarian = () => {
   const [selectedRole, setSelectedRole] = useState(UserRole.BASIC);
   const [searchTerm, setSearchTerm] = useState("");
   const {
-    setShowNextPage,
+    setIsAtLastPage,
     goToNextPage,
     goToPreviousPage,
     setCurrentPage,
     currentPage,
-    showNextPage,
+    isAtLastPage,
   } = usePagination();
 
   const fetchUsers = async () => {
@@ -38,7 +38,7 @@ const CDLibrarian = () => {
         selectedRole,
         currentPage,
       );
-      setShowNextPage(false);
+      setIsAtLastPage(false);
       if (data.length > 0) {
         setUsers(data);
 
@@ -47,7 +47,7 @@ const CDLibrarian = () => {
           .map((user) => user.email);
         setRequestedButtons(librarianEmails);
       } else {
-        setShowNextPage(true);
+        setIsAtLastPage(true);
       }
     } catch (error) {
       setUsers([]);
@@ -158,7 +158,7 @@ const CDLibrarian = () => {
       </ScrollView>
       <Pagination
         currentPage={currentPage}
-        showNextPage={showNextPage}
+        isAtLastPage={isAtLastPage}
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
       />

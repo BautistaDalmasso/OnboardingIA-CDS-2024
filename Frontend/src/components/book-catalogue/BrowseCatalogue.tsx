@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
 import { LibraryService } from "../../services/LibraryService";
-import { IRequestedBook, IBookWithLicence } from "../../common/interfaces/Book";
+import { IBookWithLicence } from "../../common/interfaces/Book";
 import { useContextState } from "../../ContexState";
 import BookListItem from "./BookListItem";
 import SearchBarComponent from "./BooksSearchBar";
 import useUserLoans from "../../hooks/useUserLoans";
-import Pagination from "../../common/interfaces/Pagination";
+import Pagination from "../common/Pagination";
 import usePagination from "../../hooks/usePagination";
 
 const RequestLoans = () => {
@@ -16,11 +16,11 @@ const RequestLoans = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("title");
   const {
-    setShowNextPage,
+    setIsAtLastPage,
     goToNextPage,
     goToPreviousPage,
     currentPage,
-    showNextPage,
+    isAtLastPage,
   } = usePagination();
 
   const isBookRequested = (isbn: string) => {
@@ -31,10 +31,10 @@ const RequestLoans = () => {
     try {
       const books = await LibraryService.getBooks(currentPage);
       if (books.length > 0) {
-        setShowNextPage(false);
+        setIsAtLastPage(false);
         setBooks(books);
       } else {
-        setShowNextPage(true);
+        setIsAtLastPage(true);
       }
     } catch (error) {
       console.error("Error al obtener libros:", error);
@@ -110,7 +110,7 @@ const RequestLoans = () => {
       </ScrollView>
       <Pagination
         currentPage={currentPage}
-        showNextPage={showNextPage}
+        isAtLastPage={isAtLastPage}
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
       />
