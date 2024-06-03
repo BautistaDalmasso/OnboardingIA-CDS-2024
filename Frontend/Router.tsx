@@ -30,7 +30,6 @@ import { Button } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import LoanCreation from "./src/components/librarian/LoanCreation";
 
-
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 

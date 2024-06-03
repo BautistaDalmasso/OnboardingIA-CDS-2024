@@ -127,8 +127,6 @@ class LoanService(DatabaseUser):
         )
         return [self.create_loan_data(entry) for entry in loans]
 
-    def consult_book_loans_by_title(self, title: str) -> List[LoanInformationDTO]:
-
         loans = self.query_multiple_rows(
             """SELECT loan.*, bookInventory.isbn
             FROM loan
@@ -266,10 +264,10 @@ class LoanService(DatabaseUser):
                 WHERE id = ? """,
                 (
                     loan_status,
+                    date_not_aviable,
+                    date_not_aviable,
+                    date_not_aviable,
                     loan_id,
-                    date_not_aviable,
-                    date_not_aviable,
-                    date_not_aviable,
                 ),
             )
             cursor.execute("""COMMIT""")
@@ -295,7 +293,12 @@ class LoanService(DatabaseUser):
                 """UPDATE loan
                 SET loanStatus = ?, returnDate = ?
                 WHERE id = ? """,
-                (loan_status, loan_id, date_not_aviable),
+                (
+                    loan_status,
+                    date_not_aviable,
+                    loan_id,
+                ),
+
             )
             cursor.execute("""COMMIT""")
 
