@@ -17,6 +17,9 @@ export enum Routes {
   ViewQr = "Ver QR",
   CreateDeleteLibrarian = "Alta de bibliotecarios",
   RUDUser = "Actualización de usuario",
-  LibrarianLoans = "Prestamos solicitados por usuarios",
   PointsExchange = "Canjear Puntos",
+   LibrarianLoans = "Prestamos",
+  ManagementLoan = "Gestion de prestamos",
+  LoanCreation = "Alta de prestamo"
 }
+  
