@@ -58,6 +58,7 @@ const RequestLicence = ({ navigation }: Props) => {
         user: {
           ...state.user,
           dni,
+          licenceLevel: result.licence_level,
         } as IUser,
       }));
 

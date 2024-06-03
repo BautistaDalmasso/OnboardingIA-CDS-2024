@@ -40,8 +40,9 @@ class BookWithLicenceBrowser(DatabaseUser):
             return None
 
         licence_level_required = self._consult_book_licence_req(isbn)
+        availability = self._consult_book_availability(isbn)
 
-        return create_book_with_licence(book, licence_level_required)
+        return create_book_with_licence(book, licence_level_required, availability)
 
     def _consult_book_licence_req(self, isbn: str) -> int:
         licence_level = self.query_database(

@@ -212,6 +212,7 @@ class UserService(DatabaseUser):
             return {
                 "dni": user.dni,
                 "access_token": self.create_access_token(access_token_data),
+                "licence_level": LicenceLevel.REGULAR,
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo actualizar el usuario"}

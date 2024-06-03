@@ -3,12 +3,15 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { IAuthor, IBookWithLicence } from "../../common/interfaces/Book";
 import { licenceLevelToStr } from "../../common/enums/licenceLevels";
 import LinkButton from "../common/LinkButton";
+import { useContextState } from "../../ContexState";
+import { IUser } from "../../common/interfaces/User";
 
 interface BookListItemProps {
   book: IBookWithLicence;
   isBookRequested: (isbn: string) => boolean;
   handleLoanRequest: (book: IBookWithLicence) => void;
   handleButtonSearch: (filterCategory: string, searchValue: string) => void;
+  user: IUser | null;
 }
 
 const BookListItem = ({
@@ -16,6 +19,7 @@ const BookListItem = ({
   isBookRequested,
   handleLoanRequest,
   handleButtonSearch,
+  user,
 }: BookListItemProps) => {
   const [creator, setCreator] = useState<IAuthor | null>(null);
   const [otherContributors, setOtherContributors] = useState<IAuthor[]>([]);
@@ -84,6 +88,13 @@ const BookListItem = ({
         ))}
       </View>
     );
+  };
+
+  const isUserLicenceSufficient = (user: IUser | null) => {
+    if (user != null && user.licenceLevel != undefined) {
+      if (book.licence_required <= user.licenceLevel) return true;
+    }
+    return false;
   };
 
   return (
@@ -165,30 +176,53 @@ const BookListItem = ({
 
       <View style={styles.mixedTextContainer}>
         <Text style={styles.label}>Disponibles:</Text>
-        <Text style={styles.availability}> {book.availability.available}  </Text>
+        <Text style={styles.availability}> {book.availability.available} </Text>
       </View>
 
       <View style={styles.mixedTextContainer}>
         <Text style={styles.label}>Prestados:</Text>
-        <Text style={styles.availability}> {book.availability.borrowed}  </Text>
+
+        <Text style={styles.availability}> {book.availability.borrowed} </Text>
       </View>
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          {
-            backgroundColor: isBookRequested(book.book_data.isbn)
-              ? "#ccc"
-              : "#007bff",
-          },
-        ]}
-        onPress={() => handleLoanRequest(book)}
-        disabled={isBookRequested(book.book_data.isbn)}
-      >
-        <Text style={styles.buttonText}>
-          {isBookRequested(book.book_data.isbn) ? "Solicitado" : "Solicitar"}
-        </Text>
-      </TouchableOpacity>
+      {book.availability.available > 0 && isUserLicenceSufficient(user) ? (
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              backgroundColor: isBookRequested(book.book_data.isbn)
+                ? "#ccc"
+                : "#007bff",
+            },
+          ]}
+          onPress={() => handleLoanRequest(book)}
+          disabled={isBookRequested(book.book_data.isbn)}
+        >
+          <Text style={styles.buttonText}>
+            {isBookRequested(book.book_data.isbn) ? "Solicitado" : "Solicitar"}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <>
+          {!isUserLicenceSufficient(user) ? (
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "#FF0000" }]}
+              disabled={true}
+            >
+              <Text style={styles.buttonText}>
+                {"Nivel de carnet insuficiente"}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "#ccc" }]}
+              disabled={true}
+            >
+              <Text style={styles.buttonText}>{"Fuera de stock"}</Text>
+            </TouchableOpacity>
+          )}
+        </>
+      )}
     </>
   );
 };
@@ -275,7 +309,9 @@ const styles = StyleSheet.create({
   availability: {
     fontSize: 16,
     marginTop: 10,
-  }
+
+  },
+
 });
 
 export default BookListItem;

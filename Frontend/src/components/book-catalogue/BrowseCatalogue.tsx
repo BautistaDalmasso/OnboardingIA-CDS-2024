@@ -123,6 +123,7 @@ const RequestLoans = () => {
               isBookRequested={isBookRequested}
               handleLoanRequest={() => reserveBook(book.book_data.isbn)}
               handleButtonSearch={conductSearchByButton}
+              user={contextState.user}
             />
           </View>
         ))}

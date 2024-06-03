@@ -21,7 +21,7 @@ import { ShowUserPage } from "../../common/enums/Page";
 const CDLibrarian = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const { contextState } = useContextState();
-  const [requestedButtons, setRequestedButtons] = useState<string[]>([]);
+  const [userStatus, setUserStatus] = useState<string[]>([]);
   const [selectedRole, setSelectedRole] = useState(UserRole.BASIC);
   const [searchTerm, setSearchTerm] = useState("");
   const [totalPages, setTotalPages] = useState(1);
@@ -48,7 +48,7 @@ const CDLibrarian = () => {
         const librarianEmails = data
           .filter((user) => user.role !== UserRole.BASIC)
           .map((user) => user.email);
-        setRequestedButtons(librarianEmails);
+        setUserStatus(librarianEmails);
       } else {
         setIsAtLastPage(true);
       }
@@ -65,7 +65,7 @@ const CDLibrarian = () => {
         contextState.accessToken as string,
       );
       if (response.role !== UserRole.BASIC) {
-        setRequestedButtons([...requestedButtons, user.email]);
+        setUserStatus([...userStatus, user.email]);
         Alert.alert(`Bibliotecario ${user.email} agregado con éxito`);
       }
     } catch (error) {
@@ -81,8 +81,8 @@ const CDLibrarian = () => {
         contextState.accessToken as string,
       );
       if (response.role === UserRole.BASIC) {
-        setRequestedButtons(
-          requestedButtons.filter((email) => email !== user.email),
+        setUserStatus(
+          userStatus.filter((email) => email !== user.email),
         );
         Alert.alert(`Bibliotecario ${user.email} eliminado con éxito`);
       }
@@ -153,19 +153,19 @@ const CDLibrarian = () => {
               style={[
                 styles.button,
                 {
-                  backgroundColor: requestedButtons.includes(user.email)
+                  backgroundColor: userStatus.includes(user.email)
                     ? "#0047ab"
                     : "#007bff",
                 },
               ]}
               onPress={() =>
-                requestedButtons.includes(user.email)
+                userStatus.includes(user.email)
                   ? handleDeleteLibrarian(user)
                   : handleAddLibrarian(user)
               }
             >
               <Text style={styles.buttonText}>
-                {requestedButtons.includes(user.email)
+                {userStatus.includes(user.email)
                   ? "Cambiar a básico"
                   : "Cambiar a bibliotecario"}
               </Text>
