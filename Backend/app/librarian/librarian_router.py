@@ -141,7 +141,6 @@ async def get_users_by_role(
     return result
 
 
-# not currently used but it could be useful in the future
 @librarian_cd_router.get("/get_users_length_by_role", response_model=TotalUsersDTO)
 async def get_users_length(role: str = Query(...)):
     result = user_service.get_users_length(role)
