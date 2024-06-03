@@ -10,6 +10,7 @@ from app.loan_management.book_loans_service import (
 from app.loan_management.book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
+    LoanValidDTO,
 )
 from fastapi.security import HTTPBearer
 from ..middlewares import verify_token
@@ -160,3 +161,42 @@ async def set_status_reservation_Canceled(loan_id: int, token=Depends(HTTPBearer
             status_code=403,
             detail="No se pudo modificar el prestamo",
         )
+
+
+@router.post("/assign_loan", response_model=LoanInformationDTO)
+async def create_loan(
+    book: LoanValidDTO, token=Depends(HTTPBearer())
+) -> LoanInformationDTO:
+    user_data: TokenDataDTO = await verify_token(token.credentials)
+    if user_data.role == "librarian":
+        try:
+            result = loan_service.lend_book(book)
+            return result
+        except BookNotFound as e:
+            print(e)
+            raise HTTPException(status_code=404, detail=str(e))
+        except NoCopiesAvailable as e:
+            print(e)
+            raise HTTPException(status_code=409, detail=str(e))
+    else:
+        raise HTTPException(
+            status_code=403, detail="No tienes permisos para crear prestamo"
+        )
+
+
+@router.get("/check_loan_valid")
+async def check_loan_valid(inventory_number: int, user_email: str):
+    result = loan_service.check_valid_loan(inventory_number, user_email)
+    if not result:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permisos para crear prestamo: número de inventario innexistente.",
+        )
+    return result
+
+
+@router.get("/limitation_loans", response_model=bool)
+async def get_limitation_info(token=Depends(HTTPBearer())):
+    token_data = await verify_token(token.credentials)
+    result = loan_service.consult_limit_by_user_email(token_data.email)
+    return result
