@@ -16,6 +16,7 @@ class User(BaseModel):
     licenceLevel: Optional[int] = None
     role: Optional[str] = None
     lastPermissionUpdate: datetime
+    points: int
 
 
 class auto_index(Enum):

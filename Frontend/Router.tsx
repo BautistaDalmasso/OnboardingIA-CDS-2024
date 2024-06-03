@@ -20,10 +20,15 @@ import RequestLoans from "./src/components/book-catalogue/BrowseCatalogue";
 import LibrarianLoans from "./src/components/librarian/LibrarianLoans";
 import Licence from "./src/components/user/Licence";
 import UserConfiguration from "./src/components/user/UserConfiguration";
-import CaptureQR from "./src/components/librarian/CaptureQR";
+
 import ViewQR from "./src/components/user/ViewQR";
 import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
+import PointsExchange from "./src/components/points/PointsExchange";
+import ManagementLoan from "./src/components/librarian/ManagementLoan";
+import { Button } from "react-native";
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -74,6 +79,13 @@ const Router = () => {
                       component={ViewQR}
                       options={{ drawerItemStyle: { display: "none" } }}
                     />
+
+                    <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
+
+                    <Stack.Screen
+                      name={Routes.PointsExchange}
+                      component={PointsExchange}
+                    />
                   </>
                 ) : (
                   <>
@@ -88,8 +100,6 @@ const Router = () => {
                   component={RequestLoans}
                 />
 
-                <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
-
                 {/* Librarian components */}
                 {contextState.user.role === "librarian" && (
                   <>
@@ -102,6 +112,22 @@ const Router = () => {
                       name={Routes.CreateDeleteLibrarian}
                       component={CreateDeleteLibrarian}
                     />
+                    <Drawer.Screen
+                    name={Routes.ManagementLoan}
+                    component={ManagementLoan}
+                    options={({ navigation }) => ({
+                        headerLeft: () => (
+                          <Icon.Button
+                              name="arrow-back"
+                              size={25}
+                              backgroundColor="transparent"
+                              color="#000"
+                              onPress={() => navigation.navigate("Prestamos")}
+                          />
+                         ),
+                        drawerItemStyle: { display: 'none' }
+                    })}
+                     />
                   </>
                 )}
 
@@ -138,7 +164,6 @@ const Router = () => {
             )}
           </>
         )}
-        <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

@@ -15,12 +15,16 @@ const useRUDUsers = () => {
     }
 
     try {
-      const user = await LibrarianService.consultUser(
+      const response = await LibrarianService.consultUser(
         userEmail,
         contextState.accessToken as string,
       );
 
-      return user;
+      if (response.detail) {
+        return null;
+      }
+
+      return response;
     } catch (error) {
       console.error(error);
 
