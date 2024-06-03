@@ -148,7 +148,7 @@ class BookWithLicenceBrowser(DatabaseUser):
         }
 
     def _consult_book_availability(self, isbn: str) -> BookStatusDTO:
-        availability = self.query_database(
+        result = self.query_database(
             """SELECT
                     SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) AS available_books,
                     SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) AS borrowed_books
@@ -157,10 +157,10 @@ class BookWithLicenceBrowser(DatabaseUser):
             (isbn,),
         )
 
-        if availability == (None, None):
+        if result == (None, None):
             return BookStatusDTO(available=0, borrowed=0)
 
-        return BookStatusDTO(available=availability[0], borrowed=availability[1])
+        return BookStatusDTO(available=result[0], borrowed=result[1])
 
     def get_users_length(self) -> TotalBooksDTO:
         result = self.get_number_of_books()
