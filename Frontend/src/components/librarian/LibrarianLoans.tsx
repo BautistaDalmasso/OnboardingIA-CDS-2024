@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { RequestedLoansService } from "../../services/requestedLoansService";
 import { ILoanInformation } from "../../common/interfaces/LoanReqResponse";
 import SearchBarComponent from "../common/SearchBar";
 import { useContextState } from "../../ContexState";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp , useFocusEffect} from "@react-navigation/native";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -18,37 +18,13 @@ const LibrarianLoans = ({ navigation }: Props) => {
   const [pickerItems, setPickerItems] = useState<{ label: string; value: string }[]>([]);
   const [showAlert, setShowAlert] = useState(false);
 
-  useEffect(() => {
-    const fetchLoans = async () => {
-      try {
-        const loans = await RequestedLoansService.getAllLoans(
-          contextState.accessToken as string,
-        );
-        setLoans(loans);
-
-        setPickerItems([
-          { label: "Buscar por E-mail", value: "user_email" },
-          { label: "Bucar por Título", value: "title" },
-        ]);
-      } catch (error) {
-        console.error(
-          "An error occurred, loans could not be retrieved:",
-          error,
-        );
-      }
-    };
-
-    fetchLoans();
-  }, []);
-
-  const [fetchLoans, setFetchLoans] = useState(() => async () => {
+  const fetchLoans = async () => {
     try {
       const loans = await RequestedLoansService.getAllLoans(
         contextState.accessToken as string,
       );
       setLoans(loans);
-      setShowAlert(false);
-      setSearchValue("");
+
       setPickerItems([
         { label: "Buscar por E-mail", value: "user_email" },
         { label: "Bucar por Título", value: "title" },
@@ -56,12 +32,28 @@ const LibrarianLoans = ({ navigation }: Props) => {
     } catch (error) {
       console.error("An error occurred, loans could not be retrieved:", error);
     }
-  });
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setSearchValue("");
+      setLoans([]);
+      fetchLoans();
+      setPickerItems([]);
+      fetchLoans();
+      setShowAlert(false)
+      return() =>{};
+    }, [])
+  );
+
+
+   useEffect (() => {
+    setLoans([]);
+  }, [])
 
   const clearLoans = () => {
     fetchLoans();
   };
-
   const conductSearch = async () => {
     try {
       let loans: ILoanInformation[] = [];
