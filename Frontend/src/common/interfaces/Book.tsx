@@ -40,6 +40,10 @@ export interface IReservationRequest {
   user_email: string;
 }
 
+export interface ITotalBooks {
+  total_books: number;
+}
+
 export interface IPhysicalCopyData {
   isbn: string;
   copy_id: string;

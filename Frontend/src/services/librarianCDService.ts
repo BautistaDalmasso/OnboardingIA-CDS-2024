@@ -6,6 +6,7 @@ import {
   IDowngradeRoleResponse,
   IDowngradeUserRole,
   IUser,
+  ITotalUsers,
 } from "../common/interfaces/User";
 import { baseFetch } from "./fetch";
 
@@ -55,10 +56,10 @@ export class librarianServiceCD {
     }
   }
 
-  static async getAllUsers(role: string): Promise<IUser[]> {
+  static async countOfUsersByRole(role: string): Promise<ITotalUsers> {
     try {
-      const value = await baseFetch<void, IUser[]>({
-        url: `${this.baseRoute}/get_all_users?role=${role}`,
+      const value = await baseFetch<void, ITotalUsers>({
+        url: `${this.baseRoute}/get_users_length_by_role?role=${role}`,
         method: "GET",
       });
 

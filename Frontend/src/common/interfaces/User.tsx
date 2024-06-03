@@ -77,6 +77,10 @@ export interface IDowngradeUserRole {
   email: string;
 }
 
+export interface ITotalUsers {
+  totalUsers: number;
+}
+
 export interface IUserDTO {
   firstName: string;
   lastName: string;

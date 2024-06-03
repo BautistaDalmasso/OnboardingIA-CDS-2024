@@ -8,6 +8,7 @@ import SearchBarComponent from "./BooksSearchBar";
 import useUserLoans from "../../hooks/useUserLoans";
 import Pagination from "../common/Pagination";
 import usePagination from "../../hooks/usePagination";
+import { BookPage } from "../../common/enums/Page";
 
 const RequestLoans = () => {
   const { reserveBook } = useUserLoans();
@@ -15,6 +16,7 @@ const RequestLoans = () => {
   const { contextState } = useContextState();
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("title");
+  const [totalPages, setTotalPages] = useState(0);
   const {
     setIsAtLastPage,
     goToNextPage,
@@ -85,6 +87,22 @@ const RequestLoans = () => {
     }
   };
 
+  const totalBooks = async () => {
+    try {
+      const result = await LibraryService.getCountOfBooks();
+
+      if (result != null) {
+        setTotalPages(result.total_books / BookPage.PAGE_SIZE);
+      } else {
+        setIsAtLastPage(true);
+      }
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
+    }
+  };
+
+  totalBooks();
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Libros</Text>
@@ -113,6 +131,7 @@ const RequestLoans = () => {
         isAtLastPage={isAtLastPage}
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
+        lastPage={totalPages}
       />
     </View>
   );

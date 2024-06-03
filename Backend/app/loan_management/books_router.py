@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Query
+from app.catalogue.book_models import TotalBooksDTO
+from app.licence_levels.licence_service import BookDataWithLicence
 from app.licence_levels.licence_service import (
     BookDataWithLicence,
     BookWithLicenceBrowser,
@@ -35,3 +37,9 @@ async def consult_book_by_isbn(isbn: str):
     return [
         book,
     ]
+
+
+@router.get("/get_books_length", response_model=TotalBooksDTO)
+async def get_users_length():
+    result = licence_service.get_users_length()
+    return result

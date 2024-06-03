@@ -15,6 +15,7 @@ import { SearchBar } from "@rneui/themed";
 import { librarianServiceCD } from "../../services/librarianCDService";
 import Pagination from "../common/Pagination";
 import usePagination from "../../hooks/usePagination";
+import { ShowUserPage } from "../../common/enums/Page";
 
 //TODO: update the search bar and adapt it to the one currently being used if it's necessary.
 const CDLibrarian = () => {
@@ -23,6 +24,7 @@ const CDLibrarian = () => {
   const [requestedButtons, setRequestedButtons] = useState<string[]>([]);
   const [selectedRole, setSelectedRole] = useState(UserRole.BASIC);
   const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
   const {
     setIsAtLastPage,
     goToNextPage,
@@ -38,6 +40,7 @@ const CDLibrarian = () => {
         selectedRole,
         currentPage,
       );
+      totalUsers();
       setIsAtLastPage(false);
       if (data.length > 0) {
         setUsers(data);
@@ -95,6 +98,20 @@ const CDLibrarian = () => {
         user.role === selectedRole &&
         user.email.includes(searchTerm.toLowerCase()),
     );
+  };
+
+  const totalUsers = async () => {
+    try {
+      const response =
+        await librarianServiceCD.countOfUsersByRole(selectedRole);
+      if (response != null) {
+        const total = Math.ceil(response.totalUsers / ShowUserPage.PAGE_SIZE);
+        setTotalPages(total - 1);
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(`${error}`);
+    }
   };
 
   useEffect(() => {
@@ -161,6 +178,7 @@ const CDLibrarian = () => {
         isAtLastPage={isAtLastPage}
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
+        lastPage={totalPages}
       />
     </View>
   );

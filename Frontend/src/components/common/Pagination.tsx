@@ -6,6 +6,7 @@ interface PaginationProps {
   isAtLastPage: boolean;
   goToPreviousPage: () => void;
   goToNextPage: () => void;
+  lastPage: number;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -13,6 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
   isAtLastPage,
   goToPreviousPage,
   goToNextPage,
+  lastPage,
 }) => {
   return (
     <View style={styles.pageContainer}>
@@ -28,7 +30,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <TouchableOpacity
         style={styles.pageButton}
         onPress={goToNextPage}
-        disabled={isAtLastPage}
+        disabled={lastPage === currentPage}
       >
         <Text style={styles.pageButtonText}>
           Pág {currentPage + 1} {">>"}
