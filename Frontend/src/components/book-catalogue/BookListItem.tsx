@@ -3,12 +3,15 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { IAuthor, IBookWithLicence } from "../../common/interfaces/Book";
 import { licenceLevelToStr } from "../../common/enums/licenceLevels";
 import LinkButton from "../common/LinkButton";
+import { useContextState } from "../../ContexState";
+import { IUser } from "../../common/interfaces/User";
 
 interface BookListItemProps {
   book: IBookWithLicence;
   isBookRequested: (isbn: string) => boolean;
   handleLoanRequest: (book: IBookWithLicence) => void;
   handleButtonSearch: (filterCategory: string, searchValue: string) => void;
+  user: IUser | null;
 }
 
 const BookListItem = ({
@@ -16,6 +19,7 @@ const BookListItem = ({
   isBookRequested,
   handleLoanRequest,
   handleButtonSearch,
+  user,
 }: BookListItemProps) => {
   const [creator, setCreator] = useState<IAuthor | null>(null);
   const [otherContributors, setOtherContributors] = useState<IAuthor[]>([]);
@@ -84,6 +88,13 @@ const BookListItem = ({
         ))}
       </View>
     );
+  };
+
+  const isUserLicenceSufficient = (user: IUser | null) => {
+    if (user != null && user.licenceLevel != undefined) {
+      if (book.licence_required <= user.licenceLevel) return true;
+    }
+    return false;
   };
 
   return (
@@ -173,7 +184,7 @@ const BookListItem = ({
         <Text style={styles.availability}> {book.availability.borrowed} </Text>
       </View>
 
-      {book.availability.available > 0 ? (
+      {book.availability.available > 0 && isUserLicenceSufficient(user) ? (
         <TouchableOpacity
           style={[
             styles.button,
@@ -191,12 +202,25 @@ const BookListItem = ({
           </Text>
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#ccc" }]}
-          disabled={true}
-        >
-          <Text style={styles.buttonText}>{"Fuera de stock"}</Text>
-        </TouchableOpacity>
+        <>
+          {!isUserLicenceSufficient(user) ? (
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "#FF0000" }]}
+              disabled={true}
+            >
+              <Text style={styles.buttonText}>
+                {"Nivel de carnet insuficiente"}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "#ccc" }]}
+              disabled={true}
+            >
+              <Text style={styles.buttonText}>{"Fuera de stock"}</Text>
+            </TouchableOpacity>
+          )}
+        </>
       )}
     </>
   );

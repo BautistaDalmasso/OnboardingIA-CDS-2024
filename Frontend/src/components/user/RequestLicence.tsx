@@ -21,6 +21,7 @@ interface Props {
 
 const RequestLicence = ({ navigation }: Props) => {
   const [dni, setDni] = useState("");
+  const [licenceLevel, setLicenceLevel] = useState(0);
   const [showDniInput, setShowDniInput] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
   const { contextState, setContextState } = useContextState();
@@ -58,6 +59,7 @@ const RequestLicence = ({ navigation }: Props) => {
         user: {
           ...state.user,
           dni,
+          licenceLevel: result.licence_level,
         } as IUser,
       }));
 
