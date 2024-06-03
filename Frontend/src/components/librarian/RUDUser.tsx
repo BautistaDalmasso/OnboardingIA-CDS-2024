@@ -10,27 +10,12 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import useRUDUsers from "../../hooks/useRUDUsers";
 import { IUserDTO } from "../../common/interfaces/User";
-<<<<<<< HEAD
-import {
-  LicenceLevel,
-  licenceLevelToStr,
-} from "../../common/enums/licenceLevels";
-import { Picker } from "@react-native-picker/picker";
-import LinkButton from "../common/LinkButton";
-
-enum fieldOptions {
-  FIRST_NAME = "Nombre",
-  LAST_NAME = "Apellido",
-  DNI = "DNI",
-}
-=======
 import CaptureQR from "./CaptureQR";
 import { BarCodeScanningResult } from "expo-camera/legacy";
 import SelectUser from "./RUDScreens/SelectUser";
 import UpdateUser from "./RUDScreens/UpdateUser";
 import ViewUsersData from "./RUDScreens/ViewUsersData";
 import UpgradeUsersLicence from "./RUDScreens/UpgradeUsersLicence";
->>>>>>> 40daf592fb0db0586d5a2a2e778bd18dceab60a7
 
 enum pages {
   USER_SELECT = 0,
