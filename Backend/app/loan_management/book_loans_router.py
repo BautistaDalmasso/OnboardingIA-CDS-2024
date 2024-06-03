@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from app.loan_management.book_loans_service import (
     BookNotFound,
+    LoanNotFound,
     LoanService,
     NoCopiesAvailable,
 )
@@ -50,20 +52,6 @@ async def request_book_reservation(
         )
 
 
-@router.get("/loan_by_email", response_model=list[LoanInformationDTO])
-async def book_loans_by_user_email(user_email: str, token=Depends(HTTPBearer())):
-    token_data = await verify_token(token.credentials)
-
-    if token_data.email == user_email or token_data.role == "librarian":
-        result = loan_service.consult_book_loans_by_user_email(user_email)
-        return result
-
-    raise HTTPException(
-        status_code=403,
-        detail="No puedes acceder a prestamos de otro usario sin ser bibliotecario.",
-    )
-
-
 @router.get("/all_loans", response_model=list[LoanInformationDTO])
 async def all_book_loans(token=Depends(HTTPBearer())):
     token_data = await verify_token(token.credentials)
@@ -84,6 +72,95 @@ async def book_loans_by_title(title: str, token=Depends(HTTPBearer())):
 
     result = loan_service.consult_book_loans_by_title(title)
     return result
+
+
+@router.get("/loan_by_email", response_model=list[LoanInformationDTO])
+async def book_loans_by_user_email(user_email: str, token=Depends(HTTPBearer())):
+    token_data = await verify_token(token.credentials)
+
+    if token_data.email == user_email or token_data.role == "librarian":
+        result = loan_service.consult_book_loans_by_user_email(user_email)
+        return result
+
+    raise HTTPException(
+        status_code=403,
+        detail="No puedes acceder a prestamos de otro usario sin ser bibliotecario.",
+    )
+
+
+@router.patch("/set_status_loaned")
+async def set_status_loaned(loan_id: int, due_date: str, token=Depends(HTTPBearer())):
+    expiration_date = datetime.strptime(due_date, "%Y-%m-%d")
+    try:
+        token_data = await verify_token(token.credentials)
+
+        if token_data.role == "librarian":
+            result = loan_service.set_status_loaned(loan_id, expiration_date)
+
+    except LoanNotFound as e:
+        raise HTTPException(
+            status_code=403,
+            detail="No se pudo modificar el prestamo",
+        )
+
+
+@router.patch("/set_status_reserved")
+async def set_status_reserved(loan_id: int, due_date: str, token=Depends(HTTPBearer())):
+    expiration_date = datetime.strptime(due_date, "%Y-%m-%d")
+    try:
+        token_data = await verify_token(token.credentials)
+
+        if token_data.role == "librarian":
+            result = loan_service.set_status_reserved(loan_id, expiration_date)
+
+    except LoanNotFound as e:
+        raise HTTPException(
+            status_code=403,
+            detail="No se pudo modificar el prestamo",
+        )
+
+
+@router.patch("/set_status_returned")
+async def set_status_returned(loan_id: int, token=Depends(HTTPBearer())):
+    try:
+        token_data = await verify_token(token.credentials)
+
+        if token_data.role == "librarian":
+            result = loan_service.set_status_returned(loan_id)
+
+    except LoanNotFound as e:
+        raise HTTPException(
+            status_code=403,
+            detail="No se pudo modificar el prestamo",
+        )
+
+
+@router.patch("/set_status_returned_overdue")
+async def set_status_returned_overdue(loan_id: int, token=Depends(HTTPBearer())):
+    try:
+        token_data = await verify_token(token.credentials)
+        if token_data.role == "librarian":
+            result = loan_service.set_status_loan_return_overdue(loan_id)
+    except LoanNotFound as e:
+        raise HTTPException(
+            status_code=403,
+            detail="No se pudo modificar el prestamo",
+        )
+
+
+@router.patch("/set_status_reservation_Canceled")
+async def set_status_reservation_Canceled(loan_id: int, token=Depends(HTTPBearer())):
+    try:
+        token_data = await verify_token(token.credentials)
+
+        if token_data.role == "librarian":
+            result = loan_service.set_status_reservation_Canceled(loan_id)
+
+    except LoanNotFound as e:
+        raise HTTPException(
+            status_code=403,
+            detail="No se pudo modificar el prestamo",
+        )
 
 
 @router.post("/assign_loan", response_model=LoanInformationDTO)
