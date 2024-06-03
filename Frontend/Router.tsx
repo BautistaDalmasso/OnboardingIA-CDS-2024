@@ -33,6 +33,7 @@ import PointsExchange from "./src/components/points/PointsExchange";
 import ManagementLoan from "./src/components/librarian/ManagementLoan";
 import { Button } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
+import LoanCreation from "./src/components/librarian/LoanCreation";
 
 >>>>>>> main
 
@@ -117,6 +118,10 @@ const Router = () => {
                     <Stack.Screen
                       name={Routes.CreateDeleteLibrarian}
                       component={CreateDeleteLibrarian}
+                    />
+                     <Stack.Screen
+                      name={Routes.LoanCreation}
+                      component={LoanCreation}
                     />
                     <Drawer.Screen
                     name={Routes.ManagementLoan}
