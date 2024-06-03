@@ -84,4 +84,5 @@ export interface IUserDTO {
   email: string;
   dni?: string;
   licenceLevel?: number;
+  detail?: string;
 }

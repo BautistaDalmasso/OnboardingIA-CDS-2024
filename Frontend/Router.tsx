@@ -20,10 +20,11 @@ import RequestLoans from "./src/components/book-catalogue/BrowseCatalogue";
 import LibrarianLoans from "./src/components/librarian/LibrarianLoans";
 import Licence from "./src/components/user/Licence";
 import UserConfiguration from "./src/components/user/UserConfiguration";
-import CaptureQR from "./src/components/librarian/CaptureQR";
+
 import ViewQR from "./src/components/user/ViewQR";
 import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
+import PointsExchange from "./src/components/points/PointsExchange";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -74,6 +75,13 @@ const Router = () => {
                       component={ViewQR}
                       options={{ drawerItemStyle: { display: "none" } }}
                     />
+
+                    <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
+
+                    <Stack.Screen
+                      name={Routes.PointsExchange}
+                      component={PointsExchange}
+                    />
                   </>
                 ) : (
                   <>
@@ -87,8 +95,6 @@ const Router = () => {
                   name={Routes.RequestLoans}
                   component={RequestLoans}
                 />
-
-                <Stack.Screen name={Routes.MyLoans} component={MyLoans} />
 
                 {/* Librarian components */}
                 {contextState.user.role === "librarian" && (
@@ -138,7 +144,6 @@ const Router = () => {
             )}
           </>
         )}
-        <Stack.Screen name={Routes.TempQr} component={CaptureQR} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
