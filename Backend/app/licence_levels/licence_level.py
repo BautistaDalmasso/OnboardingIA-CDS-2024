@@ -9,4 +9,4 @@ class LicenceLevel:
 
 
 def default_licence():
-    return LicenceLevel.REGULAR
+    return LicenceLevel.RESEARCHER

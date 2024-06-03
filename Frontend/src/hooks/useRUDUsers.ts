@@ -1,12 +1,12 @@
 import { Alert } from "react-native";
 import { LibrarianService } from "../services/librarianService";
 import { useContextState } from "../ContexState";
-import { IUserDTO } from "../common/interfaces/User";
+import { IUser, IUserDTO } from "../common/interfaces/User";
 import { LicenceLevel } from "../common/enums/licenceLevels";
 import { isValidDni, isValidEmail } from "../common/utils/inputCheck";
 
 const useRUDUsers = () => {
-  const { contextState } = useContextState();
+  const { contextState, setContextState } = useContextState();
 
   const consultUser = async (userEmail: string): Promise<IUserDTO | null> => {
     if (!isValidEmail(userEmail)) {
@@ -85,11 +85,20 @@ const useRUDUsers = () => {
     userEmail: string,
     newLicenceLevel: LicenceLevel,
   ) => {
-    await LibrarianService.updateLicence(
+    const result = await LibrarianService.updateLicence(
       userEmail,
       newLicenceLevel,
       contextState.accessToken as string,
     );
+
+    setContextState((state) => ({
+      ...state,
+      user: {
+        ...state.user,
+        licenceLevel: result.licenceLevel
+      } as IUser,
+    }));
+
   };
 
   return {
