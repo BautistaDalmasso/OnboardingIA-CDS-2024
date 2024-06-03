@@ -1,15 +1,16 @@
 import { ServerAddress } from "../common/consts/serverAddress";
 import { baseFetch } from "./fetch";
-import { IReservationRequest } from "../common/interfaces/Book";
-import { ILoanInformation} from "../common/interfaces/LoanReqResponse";
+import { ILoanValid, IReservationRequest } from "../common/interfaces/Book";
+import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
 
 export class LoanService {
   private static baseRoute: string = `${ServerAddress}loans`;
 
   constructor() {}
+
   static async requestBookReservation(
     book: IReservationRequest,
-    token: string,
+    token: string
   ) {
     try {
       const response = await baseFetch<IReservationRequest, ILoanInformation>({
@@ -26,9 +27,35 @@ export class LoanService {
     }
   }
 
-  static async checkLoanLimitation(
-    token: string
-  ): Promise<boolean> {
+  static async assignLoan(bookLoan: ILoanValid, token: string) {
+    try {
+      const book = await baseFetch<ILoanValid, ILoanInformation>({
+        url: `${this.baseRoute}/assign_loan`,
+        method: "POST",
+        data: bookLoan,
+        token,
+      });
+      return book;
+    } catch (error) {
+      console.error("Error en asignar Prestamo:", error);
+      throw error;
+    }
+  }
+
+  static async check_loan_valid(inventory_number: number, user_email: string) {
+    try {
+      const book = await baseFetch<void, ILoanValid>({
+        url: `${this.baseRoute}/check_loan_valid?inventory_number=${inventory_number}&user_email=${user_email}`,
+        method: "GET",
+      });
+      return book;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  }
+
+  static async checkLoanLimitation(token: string): Promise<boolean> {
     const value = await baseFetch<void, boolean>({
       url: `${this.baseRoute}/limitation_loans`,
       method: "GET",

@@ -25,6 +25,7 @@ import ViewQR from "./src/components/user/ViewQR";
 import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
 import PointsExchange from "./src/components/points/PointsExchange";
+import LoanCreation from "./src/components/librarian/LoanCreation";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -107,6 +108,10 @@ const Router = () => {
                     <Stack.Screen
                       name={Routes.CreateDeleteLibrarian}
                       component={CreateDeleteLibrarian}
+                    />
+                    <Stack.Screen
+                    name={Routes.LoanCreation}
+                    component={LoanCreation}
                     />
                   </>
                 )}

@@ -10,6 +10,7 @@ from .book_loans_dtos import (
     ReservationRequestDTO,
     LoanInformationDTO,
     PhysicalCopyDTO,
+    LoanValidDTO,
 )
 
 from pathlib import Path
@@ -162,6 +163,62 @@ class LoanService(DatabaseUser):
             checkout_date=db_entry[CLBEI.checkout_date.value],
             return_date=db_entry[CLBEI.return_date.value],
         )
+
+    def lend_book(self, book: LoanValidDTO) -> LoanInformationDTO:
+        loan_status: LOAN_STATUS = "loaned"
+        today_str = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
+        self.execute_in_database(
+            """UPDATE bookInventory
+                SET status = ?
+                WHERE inventoryNumber = ?""",
+            ("borrowed", book.inventory_number),
+        )
+
+        self.execute_in_database(
+            """INSERT INTO loan (inventoryNumber,expirationDate, userEmail, loanStatus, reservationDate ,checkoutDate)
+                            VALUES (?, ?, ?, ?, ?, ?)""",
+            (
+                book.inventory_number,
+                book.expiration_date,
+                book.user_email,
+                loan_status,
+                today_str,
+                today_str,
+            ),
+        )
+        catalogue_data = self._catalogue_service.browse_by_isbn(book.isbn)
+        return LoanInformationDTO(
+            inventory_number=book.inventory_number,
+            catalogue_data=catalogue_data,
+            expiration_date=book.expiration_date,
+            user_email=book.user_email,
+            loan_status=loan_status,
+            reservation_date=today_str,
+            checkout_date=today_str,
+            return_date=None,
+        )
+
+    def check_valid_loan(
+        self, inventory_number: int, user_email: str
+    ) -> LoanValidDTO | None:
+        book = self.query_database(
+            """SELECT inventoryNumber, isbn
+                FROM bookInventory
+                WHERE inventoryNumber = ? AND status =?  """,
+            (inventory_number, "available"),
+        )
+
+        if bool(book):
+            return LoanValidDTO(
+                inventory_number=inventory_number,
+                user_email=user_email,
+                isbn=book[1],
+                licence_level=1,
+                expiration_date=None,
+            )
+        else:
+            return None
 
     def consult_limit_by_user_email(self, email: str) -> bool:
         cant_reserved_loans = self.query_database(
