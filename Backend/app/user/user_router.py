@@ -17,7 +17,6 @@ from .user_dtos import (
     TokenDataDTO,
     UpdateRSADTO,
     UpdateUserDniDTO,
-    UserDTO,
 )
 
 user_service = UserService(DATABASE_PATH)

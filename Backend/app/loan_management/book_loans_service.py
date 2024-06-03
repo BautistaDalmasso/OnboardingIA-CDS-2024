@@ -127,6 +127,7 @@ class LoanService(DatabaseUser):
         return [self.create_loan_data(entry) for entry in loans]
 
     def consult_book_loans_by_title(self, title: str) -> List[LoanInformationDTO]:
+      
         loans = self.query_multiple_rows(
             """SELECT loan.*, bookInventory.isbn
             FROM loan

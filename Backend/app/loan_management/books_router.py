@@ -1,10 +1,13 @@
 from fastapi import APIRouter
-from app.licence_levels.licence_service import BookDataWithLicence, LicenceService
+from app.licence_levels.licence_service import (
+    BookDataWithLicence,
+    BookWithLicenceBrowser,
+)
 from app.file_paths import DATABASE_PATH, CATALOGUE_PATH
 
 router = APIRouter(prefix="/books", tags=["Library"])
 
-licence_service = LicenceService(DATABASE_PATH, CATALOGUE_PATH)
+licence_service = BookWithLicenceBrowser(DATABASE_PATH, CATALOGUE_PATH)
 
 
 @router.get("/show_books", response_model=list[BookDataWithLicence])

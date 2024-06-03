@@ -2,7 +2,7 @@ import pytest
 
 from app.librarian.librarian_service import LibrarianService
 from app.loan_management.book_loans_service import LoanService
-from app.licence_levels.licence_service import LicenceService
+from app.licence_levels.licence_service import BookWithLicenceBrowser
 from app.facial_recognition.facial_recognition_service import FacialRecognitionService
 from app.user.user_service import UserService
 from app.database import initialize_db
@@ -29,7 +29,7 @@ def licence_req_service():
     initialize_db.initialize_database(TEST_DB_PATH)
 
     try:
-        yield LicenceService(TEST_DB_PATH, CATALOGUE_PATH)
+        yield BookWithLicenceBrowser(TEST_DB_PATH, CATALOGUE_PATH)
     finally:
         TEST_DB_PATH.unlink()
 

@@ -16,14 +16,14 @@ from ..middlewares import verify_token
 from ..user.user_dtos import (
     TokenDataDTO,
 )
-from app.licence_levels.licence_service import LicenceService
+from app.licence_levels.licence_service import BookWithLicenceBrowser
 
 from app.file_paths import DATABASE_PATH, CATALOGUE_PATH
 
 router = APIRouter(prefix="/loans", tags=["Loan"])
 
 loan_service = LoanService(DATABASE_PATH, CATALOGUE_PATH)
-licence_service = LicenceService(DATABASE_PATH, CATALOGUE_PATH)
+licence_service = BookWithLicenceBrowser(DATABASE_PATH, CATALOGUE_PATH)
 
 
 @router.post("/reserve", response_model=LoanInformationDTO)

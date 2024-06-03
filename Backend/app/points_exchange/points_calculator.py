@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.loan_management.points import (
+from app.points_exchange.points import (
     DEFAULT_POINTS,
     POINTS_PER_EARLY_DAY,
     RESERVATION_CANCELED_POINTS,
@@ -38,7 +38,6 @@ def _reservation_returned_in_time_points(
     loan: LoanInformationDTO, today: datetime
 ) -> bool:
     days_before_expiry = (loan.expiration_date - today).days
-    print(days_before_expiry)
 
     if days_before_expiry > 5:
         return 0
