@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
 import { LibraryService } from "../../services/LibraryService";
-import { IRequestedBook, IBookWithLicence } from "../../common/interfaces/Book";
+import { IBookWithLicence } from "../../common/interfaces/Book";
 import { useContextState } from "../../ContexState";
 import BookListItem from "./BookListItem";
 import SearchBarComponent from "./BooksSearchBar";
 import useUserLoans from "../../hooks/useUserLoans";
+import Pagination from "../common/Pagination";
+import usePagination from "../../hooks/usePagination";
+import { BookPage } from "../../common/enums/Page";
 
 const RequestLoans = () => {
   const { reserveBook } = useUserLoans();
@@ -13,6 +16,14 @@ const RequestLoans = () => {
   const { contextState } = useContextState();
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("title");
+  const [totalPages, setTotalPages] = useState(0);
+  const {
+    setIsAtLastPage,
+    goToNextPage,
+    goToPreviousPage,
+    currentPage,
+    isAtLastPage,
+  } = usePagination();
 
   const isBookRequested = (isbn: string) => {
     return contextState.loans.some((loan) => loan.catalogue_data.isbn === isbn);
@@ -20,8 +31,14 @@ const RequestLoans = () => {
 
   const fetchBooks = async () => {
     try {
-      const books = await LibraryService.getBooks();
-      setBooks(books);
+      const books = await LibraryService.getBooks(currentPage);
+
+      if (books.length > 0) {
+        setIsAtLastPage(false);
+        setBooks(books);
+      } else {
+        setIsAtLastPage(true);
+      }
     } catch (error) {
       console.error("Error al obtener libros:", error);
     }
@@ -29,7 +46,7 @@ const RequestLoans = () => {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [currentPage]);
 
   const conductSearch = async () => {
     try {
@@ -71,6 +88,22 @@ const RequestLoans = () => {
     }
   };
 
+  const totalBooks = async () => {
+    try {
+      const result = await LibraryService.getCountOfBooks();
+
+      if (result != null) {
+        setTotalPages(result.total_books / BookPage.PAGE_SIZE);
+      } else {
+        setIsAtLastPage(true);
+      }
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
+    }
+  };
+
+  totalBooks();
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Lista de Libros</Text>
@@ -90,10 +123,18 @@ const RequestLoans = () => {
               isBookRequested={isBookRequested}
               handleLoanRequest={() => reserveBook(book.book_data.isbn)}
               handleButtonSearch={conductSearchByButton}
+              user={contextState.user}
             />
           </View>
         ))}
       </ScrollView>
+      <Pagination
+        currentPage={currentPage}
+        isAtLastPage={isAtLastPage}
+        goToPreviousPage={goToPreviousPage}
+        goToNextPage={goToNextPage}
+        lastPage={totalPages}
+      />
     </View>
   );
 };

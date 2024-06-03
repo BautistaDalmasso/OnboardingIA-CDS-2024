@@ -23,6 +23,10 @@ class MarcBookData(BaseModel):
     topics: list[str]
 
 
+class TotalBooksDTO(BaseModel):
+    total_books: int
+
+
 class MBDI(auto_index):
     """Marc Book Data Indices"""
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import auto
-from typing import Literal
+from typing import Dict, Literal, Tuple
 from pydantic import BaseModel
 
 from app.catalogue.book_models import MarcBookData
@@ -38,6 +38,11 @@ class PhysicalCopyDTO(BaseModel):
     inventoryNumber: int
     isbn: str
     status: Literal["available"] | Literal["borrowed"]
+
+
+class BookStatusDTO(BaseModel):
+    available: int
+    borrowed: int
 
 
 class PCDI(auto_index):

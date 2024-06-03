@@ -53,6 +53,7 @@ export interface IUpdateUserDNI {
 export interface IUpgradeBasicResponse {
   dni: string;
   access_token: string;
+  licence_level: number;
 }
 
 export interface IDeviceUIDResponse {
@@ -75,6 +76,10 @@ export interface IUpgradeUserRole {
 export interface IDowngradeUserRole {
   role: string;
   email: string;
+}
+
+export interface ITotalUsers {
+  totalUsers: number;
 }
 
 export interface IUserDTO {
