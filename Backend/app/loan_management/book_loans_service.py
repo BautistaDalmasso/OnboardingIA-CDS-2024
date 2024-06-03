@@ -264,10 +264,10 @@ class LoanService(DatabaseUser):
                 WHERE id = ? """,
                 (
                     loan_status,
+                    date_not_aviable,
+                    date_not_aviable,
+                    date_not_aviable,
                     loan_id,
-                    date_not_aviable,
-                    date_not_aviable,
-                    date_not_aviable,
                 ),
             )
             cursor.execute("""COMMIT""")
@@ -293,7 +293,11 @@ class LoanService(DatabaseUser):
                 """UPDATE loan
                 SET loanStatus = ?, returnDate = ?
                 WHERE id = ? """,
-                (loan_status, loan_id, date_not_aviable),
+                (
+                    loan_status,
+                    date_not_aviable,
+                    loan_id,
+                ),
             )
             cursor.execute("""COMMIT""")
 

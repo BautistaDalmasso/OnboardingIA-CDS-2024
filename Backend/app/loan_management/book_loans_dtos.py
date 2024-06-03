@@ -20,7 +20,7 @@ class LoanInformationDTO(BaseModel):
     id: int | None = None
     inventory_number: int
     catalogue_data: MarcBookData
-    expiration_date: datetime
+    expiration_date: datetime | None
     user_email: str
     loan_status: LOAN_STATUS
     reservation_date: datetime | None
