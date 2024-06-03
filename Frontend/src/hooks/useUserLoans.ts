@@ -1,4 +1,4 @@
-import { Alert } from "react-native";
+import { Alert} from "react-native";
 import { useContextState } from "../ContexState";
 import { IReservationRequest } from "../common/interfaces/Book";
 import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
@@ -10,7 +10,14 @@ const useUserLoans = () => {
   const { contextState, setContextState } = useContextState();
   const { saveUserLoans } = useOfflineStorage();
 
+
   const reserveBook = async (isbn: string) => {
+    const checkLimite= await LoanService.checkLoanLimitation(contextState.accessToken as string,);
+    if(!checkLimite){
+      Alert.alert("¡Atención, ha solicitado demasiados libros!" , "Para poder solicitar otro libro debera acercarse a la Biblioteca.");
+      return;
+    }else{
+
     const reservationRequest = createReservationData(isbn);
 
     const reservedBookData = await LoanService.requestBookReservation(
@@ -23,6 +30,7 @@ const useUserLoans = () => {
       return;
     }
     extendLoanData(reservedBookData);
+    }
   };
 
   const createReservationData = (isbn: string) => {
@@ -36,6 +44,7 @@ const useUserLoans = () => {
     };
 
     return reservationRequest;
+
   };
 
   const extendLoanData = async (loanInformation: ILoanInformation) => {

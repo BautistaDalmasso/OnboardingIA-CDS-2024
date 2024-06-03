@@ -19,5 +19,7 @@ export enum Routes {
   RUDUser = "Actualización de usuario",
   PointsExchange = "Canjear Puntos",
    LibrarianLoans = "Prestamos",
-  ManagementLoan = "Gestion de prestamos"
+  ManagementLoan = "Gestion de prestamos",
+  LoanCreation = "Alta de prestamo"
 }
+  
