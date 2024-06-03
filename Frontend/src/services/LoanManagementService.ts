@@ -26,7 +26,6 @@ export class LoanService {
       throw new Error("Error al realizar la solicitud");
     }
   }
-<<<<<<< HEAD
 
   static async assignLoan(bookLoan: ILoanValid, token: string) {
     try {
@@ -63,7 +62,7 @@ export class LoanService {
       token,
     });
     return value;
-=======
+
   static async setLoanStatusReserved(
     loan_id: number,
     due_date: string,
@@ -123,6 +122,5 @@ export class LoanService {
       method: "PATCH",
       data: { loan_id},
     });
->>>>>>> 3b3b8499ee342de3d5b9388c87e27e1184f7df10
   }
 }
