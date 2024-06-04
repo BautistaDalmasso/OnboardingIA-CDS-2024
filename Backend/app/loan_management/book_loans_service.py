@@ -118,14 +118,14 @@ class LoanService(DatabaseUser):
             connection.close()
 
     def consult_book_loans_by_id(self, id: int) -> LoanInformationDTO:
-        loans = self.query_multiple_rows(
+        loan = self.query_database(
             """SELECT loan.*, bookInventory.isbn
             FROM loan
             INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
             WHERE loan.id = ?""",
             (id,),
         )
-        return [self.create_loan_data(entry) for entry in loans]
+        return self.create_loan_data(loan)
 
     def consult_book_loans_by_user_email(self, email: str) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(

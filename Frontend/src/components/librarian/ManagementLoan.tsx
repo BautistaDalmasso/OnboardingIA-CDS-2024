@@ -17,6 +17,7 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
   const [showPickerDate, setshowPickerDate] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const { contextState, setContextState } = useContextState();
+  const [confirmedChanges, setConfirmedChanges] = useState(false);
 
   useEffect(() => {
     setCurrentLoan(loan);
@@ -66,7 +67,7 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
       }
     };
 
-    const formatDate = (rawDate : Date) => {
+  const formatDate = (rawDate : Date) => {
       let date = new Date (rawDate);
       let year = date.getFullYear();
       let month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -74,7 +75,7 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
       return `${year}-${month}-${day}`
     };
 
-    const handleSelectedLoanStatus = async () => {
+  const handleSelectedLoanStatus = async () => {
       switch (selectedLoanStatus) {
         case LoanStatusCode.RESERVED:
           await updateLoan(setLoanStatusReserved);
@@ -94,16 +95,15 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
         default:
           return null;
       }
-    };
+  };
 
-const updateLoan = async (updateFunc: () => Promise<ILoanInformation | undefined>) => {
+  const updateLoan = async (updateFunc: () => Promise<ILoanInformation | undefined>) => {
     try {
       const updatedLoan = await updateFunc();
       if (updatedLoan) {
         setCurrentLoan(updatedLoan);
         setSelectedLoanStatus(updatedLoan.loan_status);
-        Alert.alert("Modificación exitosa");
-        navigation.setParams({ loan: updatedLoan }); // Update the route params with the new loan data
+        navigation.setParams({ loan: updatedLoan });
       }
     } catch (error) {
       Alert.alert("Error", "No se pudo modificar el préstamo");
@@ -181,8 +181,8 @@ const updateLoan = async (updateFunc: () => Promise<ILoanInformation | undefined
           loan?.id,
           contextState.accessToken as string,
       );
-      Alert.alert("Modificación exitosa");
-      return await getUpdatedLoan(loan.id); ;}
+    Alert.alert("Modificación exitosa");
+    return await getUpdatedLoan(loan.id);}
     } catch (error) {
       Alert.alert("Error", "No se pudo modificar el prestamo");
     }
@@ -190,9 +190,24 @@ const updateLoan = async (updateFunc: () => Promise<ILoanInformation | undefined
 
   const getUpdatedLoan = async (loanId: number): Promise<ILoanInformation | undefined> => {
     return await RequestedLoansService.getLoansById(loanId, contextState.accessToken as string);
-
   };
 
+  function checkStatus(status: string) {
+    switch (status) {
+      case 'reserved':
+        return 'Reservado';
+      case 'loaned':
+        return 'Prestado';
+     case 'reservation_canceled':
+        return 'Reservación cancelada';
+     case 'loan_return_overdue':
+        return 'Devolución retrasada';
+     case 'returned':
+        return 'Devuelto';
+     default:
+        return ('Unknown status');
+    }
+  }
 
     return (
       <View style={styles.container}>
@@ -201,13 +216,14 @@ const updateLoan = async (updateFunc: () => Promise<ILoanInformation | undefined
         <View style={styles.containerData}>
           <Text style={styles.text1}>Detalles del Préstamo</Text>
           <Text style={styles.text}>Usuario: {loan?.user_email}</Text>
+          <Text style={styles.text}>Titulo del libro: {loan?.catalogue_data.title}</Text>
+          <Text style={styles.text}>ISBN: {loan?.catalogue_data.isbn}</Text>
+          <Text style={styles.text}>IDcopia: {loan?.inventory_number}</Text>
           <Text style={styles.text}>Fecha de reserva: {loan?.reservation_date? new Date(loan.reservation_date).toLocaleDateString() : 'No disponible'}</Text>
           <Text style={styles.text}>Fecha de retiro: {loan?.checkout_date? new Date(loan.reservation_date).toLocaleDateString() : 'No disponible'}</Text>
           <Text style={styles.text}>Fecha de devolución: {loan?.return_date? new Date(loan.return_date).toLocaleDateString() : 'No disponible'}</Text>
-          <Text style={styles.text}>ISBN: {loan?.catalogue_data.isbn}</Text>
-          <Text style={styles.text}>IDcopia: {loan?.inventory_number}</Text>
           <Text style={styles.text}>Fecha de vencimiento: {loan?.expiration_date ? new Date(loan.expiration_date).toLocaleDateString() : 'No disponible'}</Text>
-          <Text style={styles.text}>Estado actual del prestamo: {loan?.loan_status}</Text>
+          <Text style={styles.text}>Estado actual del prestamo: {checkStatus(loan?.loan_status ?? 'default_status')} </Text>
         <View style={styles.containerChanges}>
           <Text style={styles.text1}>Modificar Prestamo</Text>
           <Text style={styles.text}>Seleccione el estado que desee asignar: </Text>
