@@ -25,7 +25,7 @@ class LibrarianService(DatabaseUser):
         if inventory_number:
             self.execute_in_database(
                 """INSERT INTO bookInventory (inventoryNumber, isbn, status)
-                VALUES (?, ?)""",
+                VALUES (?, ?, ?)""",
                 (inventory_number, isbn, "available"),
             )
 
