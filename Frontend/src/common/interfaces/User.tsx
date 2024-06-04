@@ -90,3 +90,11 @@ export interface IUserDTO {
   licenceLevel?: number;
   detail?: string;
 }
+
+export interface IQrCodeInfo {
+  email: string;
+  first_name: string;
+  last_name: string;
+  dni: string;
+  licence_level: number;
+}

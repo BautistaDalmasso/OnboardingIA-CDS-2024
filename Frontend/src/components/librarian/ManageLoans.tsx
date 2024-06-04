@@ -3,13 +3,16 @@ import { View, Text, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import ScanReturnedBook from "./BarcodeScanningScreens/ScanReturnedBook";
 import { useFocusEffect } from "@react-navigation/native";
+import ScanForLoan from "./BarcodeScanningScreens/ScanForLoan";
 
 const ManageLoans = () => {
   const [scanningReturnedBook, setScanningReturnedBook] = useState(false);
+  const [scanningForLoan, setScanningForLoan] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
       setScanningReturnedBook(false);
+      setScanningForLoan(false);
 
       return () => {};
     }, []),
@@ -23,12 +26,20 @@ const ManageLoans = () => {
     );
   }
 
+  if (scanningForLoan) {
+    return <ScanForLoan onBookLoanFinished={() => setScanningForLoan(false)} />;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Gestión de prestamo</Text>
 
       <TouchableOpacity onPress={() => setScanningReturnedBook(true)}>
         <Text>Escanear libro devuelto.</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => setScanningForLoan(true)}>
+        <Text>Escanear QR y Libro para préstamo.</Text>
       </TouchableOpacity>
     </View>
   );

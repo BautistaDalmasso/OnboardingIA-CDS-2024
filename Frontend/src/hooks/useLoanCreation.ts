@@ -19,14 +19,14 @@ const useLoanCreation = () => {
     try {
       if (isEmptyNumberInput(inventoryNumber) || isEmptyTextInput(userEmail)) {
         Alert.alert("Por favor", "Complete todos los datos antes de enviar.");
-        return;
+        return false;
       }
       if (!isValidInventoryNumber(inventoryNumber)) {
         Alert.alert(
           "Por favor",
           "Ingrese el número de inventario sin espacios, puntos, guiones o comas.",
         );
-        return;
+        return false;
       }
 
       const loanValid = await LoanService.check_loan_valid(
@@ -36,7 +36,7 @@ const useLoanCreation = () => {
 
       if (loanValid?.inventory_number == null) {
         Alert.alert("Error", "Numero de Inventario innexistente.");
-        return;
+        return false;
       } else {
         const loanRequest = createLoanData(loanValid);
         await LoanService.assignLoan(
@@ -48,9 +48,11 @@ const useLoanCreation = () => {
           "¡Creación de prestamo exitosa!",
           "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente.",
         );
+        return true;
       }
     } catch (error) {
       console.error("Error en creación de prestamo:", error);
+      return false;
     }
   };
 
