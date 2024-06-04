@@ -181,7 +181,7 @@ async def check_loan_valid(inventory_number: int, user_email: str):
     return result
 
 
-@router.get("/limitation_loans", response_model=bool)
+@router.get("/loan_limit", response_model=bool)
 async def get_limitation_info(token=Depends(HTTPBearer())):
     token_data = await verify_token(token.credentials)
     result = loan_service.consult_limit_by_user_email(token_data.email)
