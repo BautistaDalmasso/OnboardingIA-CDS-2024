@@ -81,9 +81,7 @@ const CDLibrarian = () => {
         contextState.accessToken as string,
       );
       if (response.role === UserRole.BASIC) {
-        setUserStatus(
-          userStatus.filter((email) => email !== user.email),
-        );
+        setUserStatus(userStatus.filter((email) => email !== user.email));
         Alert.alert(`Bibliotecario ${user.email} eliminado con éxito`);
       }
     } catch (error) {

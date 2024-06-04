@@ -1,8 +1,11 @@
 import { baseFetch } from "./fetch";
 import { ILoanValid, IReservationRequest } from "../common/interfaces/Book";
-import { IBookReturnRequestDTO, IBookReturnResponseDTO, ILoanInformation } from "../common/interfaces/LoanReqResponse";
+import {
+  IBookReturnRequestDTO,
+  IBookReturnResponseDTO,
+  ILoanInformation,
+} from "../common/interfaces/LoanReqResponse";
 import { ServerAddress } from "../common/consts/serverAddress";
-
 
 export class LoanService {
   private static baseRoute: string = `${ServerAddress}loans`;
@@ -11,7 +14,7 @@ export class LoanService {
 
   static async requestBookReservation(
     book: IReservationRequest,
-    token: string
+    token: string,
   ) {
     try {
       const response = await baseFetch<IReservationRequest, ILoanInformation>({
@@ -30,7 +33,7 @@ export class LoanService {
   static async setLoanStatusReserved(
     loan_id: number,
     due_date: string,
-    token: string
+    token: string,
   ): Promise<ILoanInformation> {
     return baseFetch<{ loan_id: number; due_date: string }, ILoanInformation>({
       token,
@@ -43,7 +46,7 @@ export class LoanService {
   static async setLoanStatusLoaned(
     loan_id: number,
     due_date: string,
-    token: string
+    token: string,
   ): Promise<ILoanInformation> {
     return baseFetch<{ loan_id: number; due_date: string }, ILoanInformation>({
       token,
@@ -55,7 +58,7 @@ export class LoanService {
 
   static async setLoanStatusReturned(
     inventory_number: number,
-    token: string
+    token: string,
   ): Promise<IBookReturnResponseDTO> {
     return baseFetch<IBookReturnRequestDTO, IBookReturnResponseDTO>({
       token,
@@ -67,7 +70,7 @@ export class LoanService {
 
   static async setLoanStatusReturnOverdue(
     loan_id: number,
-    token: string
+    token: string,
   ): Promise<ILoanInformation> {
     return baseFetch<{ loan_id: number }, ILoanInformation>({
       token,
@@ -79,7 +82,7 @@ export class LoanService {
 
   static async setLoanStatusReservationCanceled(
     loan_id: number,
-    token: string
+    token: string,
   ): Promise<ILoanInformation> {
     return baseFetch<{ loan_id: number }, ILoanInformation>({
       token,

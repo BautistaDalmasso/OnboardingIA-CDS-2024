@@ -26,7 +26,7 @@ import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrar
 import RUDUser from "./src/components/librarian/RUDUser";
 import PointsExchange from "./src/components/points/PointsExchange";
 import ManagementLoan from "./src/components/librarian/ManagementLoan";
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from "react-native-vector-icons/Ionicons";
 import LoanCreation from "./src/components/librarian/LoanCreation";
 import ManageLoans from "./src/components/librarian/ManageLoans";
 
@@ -112,27 +112,30 @@ const Router = () => {
                       name={Routes.CreateDeleteLibrarian}
                       component={CreateDeleteLibrarian}
                     />
-                     <Stack.Screen
+                    <Stack.Screen
                       name={Routes.LoanCreation}
                       component={LoanCreation}
                     />
                     <Drawer.Screen
-                    name={Routes.ManagementLoan}
-                    component={ManagementLoan}
-                    options={({ navigation }) => ({
+                      name={Routes.ManagementLoan}
+                      component={ManagementLoan}
+                      options={({ navigation }) => ({
                         headerLeft: () => (
                           <Icon.Button
-                              name="arrow-back"
-                              size={25}
-                              backgroundColor="transparent"
-                              color="#000"
-                              onPress={() => navigation.navigate("Prestamos")}
+                            name="arrow-back"
+                            size={25}
+                            backgroundColor="transparent"
+                            color="#000"
+                            onPress={() => navigation.navigate("Prestamos")}
                           />
-                         ),
-                        drawerItemStyle: { display: 'none' }
-                    })}
-                     />
-                    <Drawer.Screen name={Routes.ManageLoans} component={ManageLoans} />
+                        ),
+                        drawerItemStyle: { display: "none" },
+                      })}
+                    />
+                    <Drawer.Screen
+                      name={Routes.ManageLoans}
+                      component={ManageLoans}
+                    />
                   </>
                 )}
 

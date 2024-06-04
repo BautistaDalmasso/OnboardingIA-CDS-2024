@@ -24,14 +24,14 @@ const useLoanCreation = () => {
       if (!isValidInventoryNumber(inventoryNumber)) {
         Alert.alert(
           "Por favor",
-          "Ingrese el número de inventario sin espacios, puntos, guiones o comas."
+          "Ingrese el número de inventario sin espacios, puntos, guiones o comas.",
         );
         return;
       }
 
       const loanValid = await LoanService.check_loan_valid(
         inventoryNumber,
-        userEmail
+        userEmail,
       );
 
       if (loanValid?.inventory_number == null) {
@@ -41,12 +41,12 @@ const useLoanCreation = () => {
         const loanRequest = createLoanData(loanValid);
         await LoanService.assignLoan(
           loanRequest,
-          contextState.accessToken as string
+          contextState.accessToken as string,
         );
 
         Alert.alert(
           "¡Creación de prestamo exitosa!",
-          "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente."
+          "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente.",
         );
       }
     } catch (error) {
@@ -64,7 +64,7 @@ const useLoanCreation = () => {
       if (user?.licenceLevel === 0) {
         Alert.alert(
           "Atención",
-          "Usuario sin Carnet, por lo tanto, No se le puede asignar un prestamo."
+          "Usuario sin Carnet, por lo tanto, No se le puede asignar un prestamo.",
         );
         return null;
       } else {

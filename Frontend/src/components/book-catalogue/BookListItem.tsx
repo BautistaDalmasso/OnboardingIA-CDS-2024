@@ -309,9 +309,7 @@ const styles = StyleSheet.create({
   availability: {
     fontSize: 16,
     marginTop: 10,
-
   },
-
 });
 
 export default BookListItem;

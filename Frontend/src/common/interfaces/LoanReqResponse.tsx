@@ -15,10 +15,10 @@ export interface ILoanInformation {
 }
 
 export interface IBookReturnRequestDTO {
-    inventory_number: number;
+  inventory_number: number;
 }
 
 export interface IBookReturnResponseDTO {
-    success: boolean;
-    detail?: string;
+  success: boolean;
+  detail?: string;
 }

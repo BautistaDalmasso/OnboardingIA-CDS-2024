@@ -35,7 +35,7 @@ const LoanCreation = () => {
       handleChangePage(pages.CHECK_USER);
 
       return () => {};
-    }, [])
+    }, []),
   );
 
   const handleChangePageCheckUser = () => {

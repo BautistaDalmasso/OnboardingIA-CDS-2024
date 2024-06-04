@@ -13,11 +13,9 @@ import React from "react";
 import useScanBarcodes from "../../../hooks/useScanBarcodes";
 import useManageLoans from "../../../hooks/useManageLoans";
 
-
 interface ScanReturnedBookProps {
-    onBookReturnFinished: () => void;
+  onBookReturnFinished: () => void;
 }
-
 
 const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
   const { verifyBookInventoryBarcode } = useScanBarcodes();
@@ -38,7 +36,7 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
       setPauseScan(false);
 
       return () => {};
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
@@ -49,7 +47,6 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
     })();
   }, []);
 
-
   const onScan = async (scanningResult: BarCodeScanningResult) => {
     if (scanPaused) {
       return;
@@ -58,26 +55,31 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
     setPauseScan(true);
 
     if (!verifyBookInventoryBarcode(scanningResult)) {
-      Alert.alert("Error escaneando el código de barras", "Código de barras no es de un formato conocido.", alertButton);
+      Alert.alert(
+        "Error escaneando el código de barras",
+        "Código de barras no es de un formato conocido.",
+        alertButton,
+      );
       return;
     }
 
-    const result = await markBookAsReturned(parseInt(scanningResult.data), alertButton);
+    const result = await markBookAsReturned(
+      parseInt(scanningResult.data),
+      alertButton,
+    );
 
     if (result) {
       onBookReturnFinished();
     }
-};
+  };
 
-  const alertButton: AlertButton[] =
-        [
-            {
-              text: "OK",
-              onPress: () => setPauseScan(false),
-              style: "cancel",
-            },
-        ];
-
+  const alertButton: AlertButton[] = [
+    {
+      text: "OK",
+      onPress: () => setPauseScan(false),
+      style: "cancel",
+    },
+  ];
 
   if (!hasCameraPermission) {
     return (
@@ -88,9 +90,7 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
   }
 
   if (manualEntry) {
-    return (
-        <></>
-    )
+    return <></>;
   }
 
   return (
