@@ -17,7 +17,6 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
   const [showPickerDate, setshowPickerDate] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const { contextState, setContextState } = useContextState();
-  const [confirmedChanges, setConfirmedChanges] = useState(false);
 
   useEffect(() => {
     setCurrentLoan(loan);
@@ -215,15 +214,24 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
         <ScrollView style={styles.scroll}>
         <View style={styles.containerData}>
           <Text style={styles.text1}>Detalles del Préstamo</Text>
+          <View style={styles.containerDetail}>
+          <Text style={styles.textSubtitle}>Datos del usuario</Text>
           <Text style={styles.text}>Usuario: {loan?.user_email}</Text>
+          </View>
+          <View style={styles.containerData}>
+          <Text style={styles.textSubtitle}>Datos del libro</Text>
           <Text style={styles.text}>Titulo del libro: {loan?.catalogue_data.title}</Text>
           <Text style={styles.text}>ISBN: {loan?.catalogue_data.isbn}</Text>
           <Text style={styles.text}>IDcopia: {loan?.inventory_number}</Text>
+          </View>
+          <View style={styles.containerData}>
+          <Text style={styles.textSubtitle}>Datos del préstamo</Text>
           <Text style={styles.text}>Fecha de reserva: {loan?.reservation_date? new Date(loan.reservation_date).toLocaleDateString() : 'No disponible'}</Text>
           <Text style={styles.text}>Fecha de retiro: {loan?.checkout_date? new Date(loan.reservation_date).toLocaleDateString() : 'No disponible'}</Text>
           <Text style={styles.text}>Fecha de devolución: {loan?.return_date? new Date(loan.return_date).toLocaleDateString() : 'No disponible'}</Text>
           <Text style={styles.text}>Fecha de vencimiento: {loan?.expiration_date ? new Date(loan.expiration_date).toLocaleDateString() : 'No disponible'}</Text>
-          <Text style={styles.text}>Estado actual del prestamo: {checkStatus(loan?.loan_status ?? 'default_status')} </Text>
+          <Text style={styles.text}>Estado del prestamo: {checkStatus(loan?.loan_status ?? 'default_status')} </Text>
+          </View>
         <View style={styles.containerChanges}>
           <Text style={styles.text1}>Modificar Prestamo</Text>
           <Text style={styles.text}>Seleccione el estado que desee asignar: </Text>
@@ -291,6 +299,15 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
       borderRadius: 8,
       overflow: "hidden",
     },
+    containerDetail:{
+      flexGrow: 1,
+      backgroundColor: "white",
+      padding: 10,
+      borderWidth: 1,
+      borderColor: "#ddd",
+      borderRadius: 8,
+      overflow: "hidden"
+    },
     containerData:{
       flexGrow: 1,
       backgroundColor: "white",
@@ -350,6 +367,11 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
       fontSize: 18,
 
     },
+    textSubtitle:{
+      marginTop:3,
+      fontSize: 18,
+      fontWeight: "bold",
+    },
     placeholderContainer: {
       height: 200,
       justifyContent: 'center',
@@ -358,7 +380,7 @@ const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) 
       flex:1,
     },
     text1: {
-      marginVertical:15,
+      marginVertical:5,
       textAlign:"center",
       fontSize: 24,
       fontWeight: "bold",
