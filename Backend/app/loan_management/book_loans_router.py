@@ -63,6 +63,7 @@ async def all_book_loans(token=Depends(HTTPBearer())):
     return result
 
 
+# TODO: delete
 @router.get("/loans_by_title", response_model=list[LoanInformationDTO])
 async def book_loans_by_title(title: str, token=Depends(HTTPBearer())):
     token_data = await verify_token(token.credentials)
@@ -95,7 +96,7 @@ async def set_status_loaned(loan_id: int, due_date: str, token=Depends(HTTPBeare
         token_data = await verify_token(token.credentials)
 
         if token_data.role == "librarian":
-            result = loan_service.set_status_loaned(loan_id, expiration_date)
+            loan_service.set_status_loaned(loan_id, expiration_date)
 
     except LoanNotFound as e:
         raise HTTPException(
@@ -106,61 +107,46 @@ async def set_status_loaned(loan_id: int, due_date: str, token=Depends(HTTPBeare
 
 @router.patch("/set_status_reserved")
 async def set_status_reserved(loan_id: int, due_date: str, token=Depends(HTTPBearer())):
-    expiration_date = datetime.strptime(due_date, "%Y-%m-%d")
+    # TODO: delete this endpoint.
+    raise HTTPException(
+        status_code=410,
+        detail="TODO: delete this endpoint.",
+    )
+
+
+@router.patch("/book_returned")
+async def set_status_returned(inventory_number: int, token=Depends(HTTPBearer())):
     try:
         token_data = await verify_token(token.credentials)
 
         if token_data.role == "librarian":
-            result = loan_service.set_status_reserved(loan_id, expiration_date)
+            loan_service.return_book(inventory_number)
+
+            return {"success": True}
 
     except LoanNotFound as e:
         raise HTTPException(
-            status_code=403,
-            detail="No se pudo modificar el prestamo",
-        )
-
-
-@router.patch("/set_status_returned")
-async def set_status_returned(loan_id: int, token=Depends(HTTPBearer())):
-    try:
-        token_data = await verify_token(token.credentials)
-
-        if token_data.role == "librarian":
-            result = loan_service.set_status_returned(loan_id)
-
-    except LoanNotFound as e:
-        raise HTTPException(
-            status_code=403,
-            detail="No se pudo modificar el prestamo",
+            status_code=404,
+            detail=str(e),
         )
 
 
 @router.patch("/set_status_returned_overdue")
 async def set_status_returned_overdue(loan_id: int, token=Depends(HTTPBearer())):
-    try:
-        token_data = await verify_token(token.credentials)
-        if token_data.role == "librarian":
-            result = loan_service.set_status_loan_return_overdue(loan_id)
-    except LoanNotFound as e:
-        raise HTTPException(
-            status_code=403,
-            detail="No se pudo modificar el prestamo",
-        )
+    # TODO: delete this endpoint.
+    raise HTTPException(
+        status_code=410,
+        detail="TODO: delete this endpoint.",
+    )
 
 
 @router.patch("/set_status_reservation_Canceled")
 async def set_status_reservation_Canceled(loan_id: int, token=Depends(HTTPBearer())):
-    try:
-        token_data = await verify_token(token.credentials)
-
-        if token_data.role == "librarian":
-            result = loan_service.set_status_reservation_Canceled(loan_id)
-
-    except LoanNotFound as e:
-        raise HTTPException(
-            status_code=403,
-            detail="No se pudo modificar el prestamo",
-        )
+    # TODO: delete this endpoint.
+    raise HTTPException(
+        status_code=410,
+        detail="TODO: delete this endpoint.",
+    )
 
 
 @router.post("/assign_loan", response_model=LoanInformationDTO)

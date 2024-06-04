@@ -45,9 +45,9 @@ async def update_book_data(url: str):
 
 
 @router.post("/add_exemplar")
-async def add_exemplar(isbn: str):
+async def add_exemplar(isbn: str, inventory_number: int | None = None):
     # TODO: add error handling.
-    librarian_service.add_exemplar(isbn)
+    librarian_service.add_exemplar(isbn, inventory_number)
 
 
 @router.get("/consult_user")

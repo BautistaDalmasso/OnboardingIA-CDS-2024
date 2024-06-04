@@ -1,8 +1,8 @@
 import { baseFetch } from "./fetch";
 import { ILoanValid, IReservationRequest } from "../common/interfaces/Book";
-import { ILoanInformation } from "../common/interfaces/LoanReqResponse";
-import { LoanStatusCode } from "../common/enums/loanStatus";
+import { IBookReturnRequestDTO, IBookReturnResponseDTO, ILoanInformation } from "../common/interfaces/LoanReqResponse";
 import { ServerAddress } from "../common/consts/serverAddress";
+
 
 export class LoanService {
   private static baseRoute: string = `${ServerAddress}loans`;
@@ -54,14 +54,14 @@ export class LoanService {
   }
 
   static async setLoanStatusReturned(
-    loan_id: number,
+    inventory_number: number,
     token: string
-  ): Promise<ILoanInformation> {
-    return baseFetch<{ loan_id: number }, ILoanInformation>({
+  ): Promise<IBookReturnResponseDTO> {
+    return baseFetch<IBookReturnRequestDTO, IBookReturnResponseDTO>({
       token,
-      url: `${this.baseRoute}/set_status_returned?loan_id=${loan_id}`,
+      url: `${this.baseRoute}/book_returned?inventory_number=${inventory_number}`,
       method: "PATCH",
-      data: { loan_id },
+      data: { inventory_number },
     });
   }
 

@@ -75,7 +75,7 @@ def generic_loan():
             topics=[],
         ),
         loan_status="reserved",
-        expiration_date=datetime.today(),
+        expiration_date=datetime.now(),
         reservation_date=None,
         checkout_date=None,
         return_date=None,

@@ -20,6 +20,6 @@ export enum Routes {
   PointsExchange = "Canjear Puntos",
    LibrarianLoans = "Prestamos",
   ManagementLoan = "Gestion de prestamos",
-  LoanCreation = "Alta de prestamo"
+  LoanCreation = "Alta de prestamo",
+  ManageLoans = "Gestión de Préstamos",
 }
-  

@@ -13,3 +13,12 @@ export interface ILoanInformation {
   checkout_date: Date;
   return_date: Date;
 }
+
+export interface IBookReturnRequestDTO {
+    inventory_number: number;
+}
+
+export interface IBookReturnResponseDTO {
+    success: boolean;
+    detail?: string;
+}

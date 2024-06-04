@@ -26,9 +26,9 @@ import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrar
 import RUDUser from "./src/components/librarian/RUDUser";
 import PointsExchange from "./src/components/points/PointsExchange";
 import ManagementLoan from "./src/components/librarian/ManagementLoan";
-import { Button } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import LoanCreation from "./src/components/librarian/LoanCreation";
+import ManageLoans from "./src/components/librarian/ManageLoans";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -132,6 +132,7 @@ const Router = () => {
                         drawerItemStyle: { display: 'none' }
                     })}
                      />
+                    <Drawer.Screen name={Routes.ManageLoans} component={ManageLoans} />
                   </>
                 )}
 

@@ -1,7 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import auto
 import json
 import sqlite3
+from app.points_exchange.point_addition_service import PointAdditionService
+from app.points_exchange.points_calculator import calculate_points_for_returned_book
 from app.models import auto_index
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
 from .book_loans_dtos import (
@@ -34,13 +36,15 @@ class BookAlreadyReturned(Exception):
     pass
 
 
-class UnkwnownFilter(Exception): ...
+class UnkwnownFilter(Exception):
+    pass
 
 
 class LoanService(DatabaseUser):
     def __init__(self, db_path: Path, catalogue_path: Path) -> None:
         super().__init__(db_path)
         self._catalogue_service = BrowseCatalogueService(catalogue_path)
+        self._point_addition_service = PointAdditionService(db_path)
 
     def reserve_book(self, book_request: ReservationRequestDTO) -> LoanInformationDTO:
         """Mark a copy of a book as reserved.."""
@@ -48,7 +52,7 @@ class LoanService(DatabaseUser):
         catalogue_data = self._catalogue_service.browse_by_isbn(book_request.isbn)
 
         loan_status: LOAN_STATUS = "reserved"
-        today = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         loan_information = LoanInformationDTO(
             inventory_number=copy_data.inventoryNumber,
@@ -127,17 +131,53 @@ class LoanService(DatabaseUser):
         )
         return [self.create_loan_data(entry) for entry in loans]
 
-        loans = self.query_multiple_rows(
-            """SELECT loan.*, bookInventory.isbn
-            FROM loan
-            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber""",
-            tuple(),
+    def return_book(
+        self, inventory_number: int, today: datetime = datetime.now(timezone.utc)
+    ):
+
+        actual_loan_status = "loaned"
+        new_loan_status = "returned"
+
+        loan = self.get_loaned_loan_by_inventory_number(inventory_number)
+
+        if loan is None:
+            raise LoanNotFound(
+                f"Libro con número de inventario {inventory_number} no se encuentra en préstamo."
+            )
+
+        self.execute_in_database(
+            """UPDATE loan
+            SET loanStatus=?, returnDate=?
+            WHERE inventoryNumber=? AND loanStatus=?""",
+            (new_loan_status, today, inventory_number, actual_loan_status),
         )
-        query_result: List[LoanInformationDTO] = [
-            self.create_loan_data(entry) for entry in loans
-        ]
-        filtered_result = list(filter(lambda x: x.title == title, query_result))
-        return filtered_result
+        self.execute_in_database(
+            """UPDATE bookInventory
+            SET status=?
+            WHERE inventoryNumber=?""",
+            ("available", inventory_number),
+        )
+
+        points = calculate_points_for_returned_book(loan, today=today)
+        self._point_addition_service.apply_points(loan.user_email, points)
+
+    def get_loaned_loan_by_inventory_number(
+        self, inventory_number: int
+    ) -> LoanInformationDTO | None:
+
+        loan = self.query_database(
+            """SELECT loan.*, bookInventory.isbn
+               FROM loan
+               INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
+               WHERE loan.inventoryNumber = ? AND loanStatus = ?
+            """,
+            (inventory_number, "loaned"),
+        )
+
+        if loan:
+            return self.create_loan_data(loan)
+        else:
+            return None
 
     def consult_all_book_loans(self) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(
@@ -164,43 +204,9 @@ class LoanService(DatabaseUser):
             return_date=db_entry[CLBEI.return_date.value],
         )
 
-    def set_status_reserved(self, loan_id: int, due_date: datetime):
-        loan_status = "reserved"
-        reservation_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-        date_not_aviable = None
-
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-            cursor.execute("BEGIN")
-
-            cursor.execute(
-                """UPDATE loan
-                SET loanStatus = ?, expirationDate = ? , reservationDate = ?, checkoutDate = ? , returnDate = ?
-                WHERE id = ? """,
-                (
-                    loan_status,
-                    due_date,
-                    reservation_date,
-                    date_not_aviable,
-                    date_not_aviable,
-                    loan_id,
-                ),
-            )
-            cursor.execute("""COMMIT""")
-
-        except sqlite3.Error as e:
-            if connection:
-                connection.rollback()
-            print(f"An error occurred: {e}")
-
-        finally:
-            cursor.close()
-            connection.close()
-
     def set_status_loaned(self, loan_id: int, due_date: datetime):
         loan_status = "loaned"
-        checkout_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        checkout_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         date_not_aviable = None
         try:
             connection = sqlite3.connect(self._db_path)
@@ -224,96 +230,9 @@ class LoanService(DatabaseUser):
             cursor.close()
             connection.close()
 
-    def set_status_returned(self, loan_id: int):
-        loan_status = "returned"
-        checkout_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
-        print(checkout_date)
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-            cursor.execute("BEGIN")
-
-            cursor.execute(
-                """UPDATE loan
-                SET loanStatus = ? , returnDate = ?
-                WHERE id = ? """,
-                (loan_status, checkout_date, loan_id),
-            )
-            cursor.execute("""COMMIT""")
-
-        except sqlite3.Error as e:
-            if connection:
-                connection.rollback()
-            print(f"An error occurred: {e}")
-
-        finally:
-            cursor.close()
-            connection.close()
-
-    def set_status_reservation_Canceled(self, loan_id: int):
-        loan_status = "reservation_canceled"
-        date_not_aviable = None
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-            cursor.execute("BEGIN")
-
-            cursor.execute(
-                """UPDATE loan
-                SET loanStatus = ?, expirationDate = ? , checkoutDate = ? , returnDate = ?
-                WHERE id = ? """,
-                (
-                    loan_status,
-                    date_not_aviable,
-                    date_not_aviable,
-                    date_not_aviable,
-                    loan_id,
-                ),
-            )
-            cursor.execute("""COMMIT""")
-
-        except sqlite3.Error as e:
-            if connection:
-                connection.rollback()
-            print(f"An error occurred: {e}")
-
-        finally:
-            cursor.close()
-            connection.close()
-
-    def set_status_loan_return_overdue(self, loan_id: int):
-        loan_status = "loan_return_overdue"
-        date_not_aviable = None
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-            cursor.execute("BEGIN")
-
-            cursor.execute(
-                """UPDATE loan
-                SET loanStatus = ?, returnDate = ?
-                WHERE id = ? """,
-                (
-                    loan_status,
-                    date_not_aviable,
-                    loan_id,
-                ),
-
-            )
-            cursor.execute("""COMMIT""")
-
-        except sqlite3.Error as e:
-            if connection:
-                connection.rollback()
-            print(f"An error occurred: {e}")
-
-        finally:
-            cursor.close()
-            connection.close()
-
     def lend_book(self, book: LoanValidDTO) -> LoanInformationDTO:
         loan_status: LOAN_STATUS = "loaned"
-        today_str = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        today_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         self.execute_in_database(
             """UPDATE bookInventory
@@ -383,6 +302,7 @@ class LoanService(DatabaseUser):
             (email, "loaned"),
         )
 
+        # TODO: fix
         if cant_reserved_loans[0] >= 3 or cant_loaned_books[0] >= 3:
             return False
         else:
