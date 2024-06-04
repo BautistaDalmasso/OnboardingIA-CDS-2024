@@ -34,6 +34,21 @@ export class RequestedLoansService {
       throw error;
     }
   }
+  ///////////////////////////////////////////////////////////////////7
+  static async getLoansById(id: number, token: string) {
+    try {
+      const loans = await baseFetch<void, ILoanInformation>({
+        token: token,
+        url: `${this.loansRoute}/loan_by_id?id=${id}`,
+        method: "GET",
+      });
+//////////////////////////////////////////////////////////////
+      return loans;
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      throw error;
+    }
+  }
 
   static async getAllLoans(token: string) {
     try {

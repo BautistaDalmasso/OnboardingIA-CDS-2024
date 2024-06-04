@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import {View, Text, StyleSheet, TouchableOpacity, Alert, Platform, ScrollView} from "react-native";
 import {Picker} from '@react-native-picker/picker';
 import { ILoanInformation } from "../../common/interfaces/LoanReqResponse";
@@ -7,14 +7,21 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { TextInput } from "react-native-gesture-handler";
 import { LoanService } from "../../services/LoanManagementService";
 import { useContextState } from "../../ContexState";
+import { RequestedLoansService } from "../../services/requestedLoansService";
 
-const ManagementLoan = ({ route }: { route: any }) => {
+const ManagementLoan = ({ route, navigation }: { route: any, navigation: any }) => {
   const { loan }: { loan?: ILoanInformation } = route.params;
+  const [currentLoan, setCurrentLoan] = useState<ILoanInformation | undefined>(loan);
   const [selectedLoanStatus, setSelectedLoanStatus] = useState<LoanStatusCode | undefined>(loan?.loan_status);
   const [date, setDate] = useState(new Date());
   const [showPickerDate, setshowPickerDate] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const { contextState, setContextState } = useContextState();
+
+  useEffect(() => {
+    setCurrentLoan(loan);
+    setSelectedLoanStatus(loan?.loan_status);
+  }, [loan]);
 
   const showDueOptions = () => {
     if (selectedLoanStatus === LoanStatusCode.RESERVED || selectedLoanStatus === LoanStatusCode.LOANED)
@@ -66,23 +73,44 @@ const ManagementLoan = ({ route }: { route: any }) => {
       let day = date.getDate().toString().padStart(2, '0');
       return `${year}-${month}-${day}`
     };
-  const handleSelectedLoanStatus = () => {
-    switch (selectedLoanStatus) {
-      case LoanStatusCode.RESERVED:
-        return setLoanStatusReserved();
-      case LoanStatusCode.LOANED:
-        return setLoanStatusLoaned();
-      case LoanStatusCode.RETURNED:
-        return setLoanStatusReturned();
-      case LoanStatusCode.LOAN_RETURN_OVERDUE:
-        return setLoanStatusReturnOverdue();
-        case LoanStatusCode.RESERVATION_CANCELED:
-          return setLoanStatusReservationCanceled();
-      default:
-        return null;
+
+    const handleSelectedLoanStatus = async () => {
+      switch (selectedLoanStatus) {
+        case LoanStatusCode.RESERVED:
+          await updateLoan(setLoanStatusReserved);
+          break;
+        case LoanStatusCode.LOANED:
+          await updateLoan(setLoanStatusLoaned);
+          break;
+        case LoanStatusCode.RETURNED:
+          await updateLoan(setLoanStatusReturned);
+          break;
+        case LoanStatusCode.LOAN_RETURN_OVERDUE:
+          await updateLoan(setLoanStatusReturnOverdue);
+          break;
+          case LoanStatusCode.RESERVATION_CANCELED:
+            await updateLoan(setLoanStatusReservationCanceled);
+            break;
+        default:
+          return null;
+      }
+    };
+
+const updateLoan = async (updateFunc: () => Promise<ILoanInformation | undefined>) => {
+    try {
+      const updatedLoan = await updateFunc();
+      if (updatedLoan) {
+        setCurrentLoan(updatedLoan);
+        setSelectedLoanStatus(updatedLoan.loan_status);
+        Alert.alert("Modificación exitosa");
+        navigation.setParams({ loan: updatedLoan }); // Update the route params with the new loan data
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudo modificar el préstamo");
     }
   };
-  const setLoanStatusReserved = async () => {
+
+  const setLoanStatusReserved = async (): Promise<ILoanInformation | undefined> => {
     try {
       if (loan && loan.id !== undefined && selectedDate !== undefined){
         const date = new Date(selectedDate);
@@ -91,13 +119,14 @@ const ManagementLoan = ({ route }: { route: any }) => {
           selectedDate,
           contextState.accessToken as string,
       );
-        Alert.alert("Modificación exitosa");}
+        Alert.alert("Modificación exitosa");
+        return await getUpdatedLoan(loan.id);}
     } catch (error) {
       Alert.alert("Error", "No se pudo modificar el prestamo");
     }
   };
 
-  const setLoanStatusLoaned = async () => {
+  const setLoanStatusLoaned = async (): Promise<ILoanInformation | undefined> => {
     try {
       if (loan && loan.id !== undefined && selectedDate !== undefined){
         const date = new Date(selectedDate);
@@ -106,13 +135,14 @@ const ManagementLoan = ({ route }: { route: any }) => {
           selectedDate,
           contextState.accessToken as string,
       );
-      Alert.alert("Modificación exitosa");}
+      Alert.alert("Modificación exitosa");
+      return await getUpdatedLoan(loan.id);}
     } catch (error) {
       Alert.alert("Error", "No se pudo modificar el prestamo");
     }
   };
 
-  const setLoanStatusReturned = async () => {
+  const setLoanStatusReturned = async (): Promise<ILoanInformation | undefined> => {
 
     try {
       if (loan && loan.id !== undefined ){
@@ -121,13 +151,14 @@ const ManagementLoan = ({ route }: { route: any }) => {
           loan?.id,
           contextState.accessToken as string,
       );
-      Alert.alert("Modificación exitosa");}
+      Alert.alert("Modificación exitosa");
+      return await getUpdatedLoan(loan.id);}
     } catch (error) {
       Alert.alert("Error", "No se pudo modificar el prestamo");
     }
   };
 
-  const setLoanStatusReturnOverdue = async () => {
+  const setLoanStatusReturnOverdue = async (): Promise<ILoanInformation | undefined> => {
     try {
       if (loan && loan.id !== undefined ){
         const date = new Date(selectedDate);
@@ -135,13 +166,14 @@ const ManagementLoan = ({ route }: { route: any }) => {
           loan?.id,
           contextState.accessToken as string,
       );
-      Alert.alert("Modificación exitosa");}
+      Alert.alert("Modificación exitosa");
+      return await getUpdatedLoan(loan.id);}
     } catch (error) {
       Alert.alert("Error", "No se pudo modificar el prestamo");
     }
   };
 
-  const setLoanStatusReservationCanceled = async () => {
+  const setLoanStatusReservationCanceled = async (): Promise<ILoanInformation | undefined> => {
     try {
       if (loan && loan.id !== undefined ){
         const date = new Date(selectedDate);
@@ -149,11 +181,18 @@ const ManagementLoan = ({ route }: { route: any }) => {
           loan?.id,
           contextState.accessToken as string,
       );
-      Alert.alert("Modificación exitosa");}
+      Alert.alert("Modificación exitosa");
+      return await getUpdatedLoan(loan.id); ;}
     } catch (error) {
       Alert.alert("Error", "No se pudo modificar el prestamo");
     }
   };
+
+  const getUpdatedLoan = async (loanId: number): Promise<ILoanInformation | undefined> => {
+    return await RequestedLoansService.getLoansById(loanId, contextState.accessToken as string);
+
+  };
+
 
     return (
       <View style={styles.container}>
@@ -162,7 +201,6 @@ const ManagementLoan = ({ route }: { route: any }) => {
         <View style={styles.containerData}>
           <Text style={styles.text1}>Detalles del Préstamo</Text>
           <Text style={styles.text}>Usuario: {loan?.user_email}</Text>
-          <Text style={styles.text}>Titulo del libro: {loan?.catalogue_data.title}</Text>
           <Text style={styles.text}>Fecha de reserva: {loan?.reservation_date? new Date(loan.reservation_date).toLocaleDateString() : 'No disponible'}</Text>
           <Text style={styles.text}>Fecha de retiro: {loan?.checkout_date? new Date(loan.reservation_date).toLocaleDateString() : 'No disponible'}</Text>
           <Text style={styles.text}>Fecha de devolución: {loan?.return_date? new Date(loan.return_date).toLocaleDateString() : 'No disponible'}</Text>
