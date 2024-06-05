@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import Constants from "expo-constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import ScanReturnedBook from "./BarcodeScanningScreens/ScanReturnedBook";
 import { useFocusEffect } from "@react-navigation/native";
@@ -31,104 +32,57 @@ const ManageLoans = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Gestión de prestamo</Text>
+    <View style={styles.contentContainer}>
+      <Text style={styles.title}>Gestión de Préstamo</Text>
 
-      <TouchableOpacity onPress={() => setScanningReturnedBook(true)}>
-        <Text>Escanear libro devuelto.</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setScanningReturnedBook(true)}
+        >
+          <Text style={styles.buttonText}>Escanear Libro Devuelto</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => setScanningForLoan(true)}>
-        <Text>Escanear QR y Libro para préstamo.</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setScanningForLoan(true)}
+        >
+          <Text style={styles.buttonText}>
+            Escanear QR y Libro para Préstamo
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  containerData: {
-    flexGrow: 1,
-    backgroundColor: "white",
-    padding: 10,
-
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  picker: {
-    marginTop: 8,
-    backgroundColor: "#F3F3F3",
-    width: "100%",
-  },
-  containerChanges: {
-    flexGrow: 0.4,
-    backgroundColor: "white",
-    padding: 10,
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  input: {
-    marginTop: 10,
-    backgroundColor: "#F3F3F3",
-    height: 50,
-    fontSize: 17,
-    fontWeight: "500",
-    color: "#111827cc",
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
   },
-  header: {
-    fontSize: 24,
+  title: {
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
-    marginTop: 30,
     textAlign: "center",
   },
+  buttonContainer: {
+    justifyContent: "center",
+  },
   button: {
-    marginTop: 50,
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: "#9ACD32",
     borderRadius: 5,
-    alignSelf: "flex-end",
+    padding: 15,
+    marginHorizontal: 10,
+    marginVertical: 5,
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "bold",
-  },
-  text: {
-    marginTop: 6,
-    fontSize: 18,
-  },
-  placeholderContainer: {
-    height: 200,
-    justifyContent: "center",
-  },
-  scroll: {
-    flex: 1,
-  },
-  text1: {
-    marginVertical: 15,
+    fontSize: 16,
     textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  due: {
-    flex: 1,
-    marginVertical: 10,
-    flexDirection: "column",
   },
 });
 

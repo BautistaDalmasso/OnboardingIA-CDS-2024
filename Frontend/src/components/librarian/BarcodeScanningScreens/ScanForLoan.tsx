@@ -31,7 +31,6 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
   const [flash] = useState(FlashMode.off);
   const cameraRef = useRef<Camera>(null);
 
-  const [manualEntry, setManualEntry] = useState(false);
   const [scanPaused, setPauseScan] = useState(false);
 
   const [qrData, setQrData] = useState<IQrCodeInfo | null>(null);
@@ -143,60 +142,170 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
     );
   }
 
-  if (manualEntry) {
-    return <></>;
-  }
-
   if (qrData && barcodeData) {
     return (
-      <View style={{ margin: 60 }}>
-        <Text>
-          Prestandole libro {barcodeData} a {qrData.first_name}{" "}
-          {qrData.last_name}.
-        </Text>
-        <TouchableOpacity onPress={confirmLoan}>
-          <Text>Confirmar</Text>
-        </TouchableOpacity>
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>Creando Préstamo</Text>
+        <View style={styles.dataContainer}>
+          <Text style={styles.dataText}>Usuario: {qrData.email}</Text>
+          <Text style={styles.dataText}>Libro: {barcodeData}</Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.confirmButton} onPress={confirmLoan}>
+            <Text style={styles.buttonText}>Confirmar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => {
+              setBarcodeData(null);
+              setQrData(null);
+            }}
+          >
+            <Text style={styles.buttonText}>Cancelar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
 
   return (
-    <>
+    <View style={styles.cameraContainer}>
       {isFocused && (
-        <View style={styles.cameraContainer}>
-          <Camera
-            style={styles.camera}
-            type={cameraType}
-            ref={cameraRef}
-            flashMode={flash}
-            onBarCodeScanned={async (scanningResult) => {
-              await onScan(scanningResult);
-            }}
-          />
-        </View>
+        <Camera
+          style={styles.camera}
+          type={cameraType}
+          ref={cameraRef}
+          flashMode={flash}
+          onBarCodeScanned={async (scanningResult) => {
+            await onScan(scanningResult);
+          }}
+        />
       )}
-    </>
+      <View style={styles.overlay}>
+        <View style={styles.streakContainer}>
+          {qrData ? (
+            <View style={[styles.streak, styles.obtainedStreak]}>
+              <Text style={styles.streakText}>
+                Usuario: {qrData.first_name} {qrData.last_name}
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.streak, styles.waitingStreak]}>
+              <Text style={styles.streakText}>Esperando QR con Carnet...</Text>
+            </View>
+          )}
+          {barcodeData ? (
+            <View style={[styles.streak, styles.obtainedStreak]}>
+              <Text style={styles.streakText}>
+                Número de Inventario: {barcodeData}
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.streak, styles.waitingStreak]}>
+              <Text style={styles.streakText}>
+                Esperando Código de Barras...
+              </Text>
+            </View>
+          )}
+        </View>
+        <TouchableOpacity
+          style={styles.largeButton}
+          onPress={onBookLoanFinished}
+        >
+          <Text style={styles.buttonText}>Volver</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: Constants.statusBarHeight,
-    padding: 8,
-  },
   cameraContainer: {
     flex: 1,
     justifyContent: "center",
-    paddingTop: Constants.statusBarHeight,
     backgroundColor: "#000",
-    padding: 8,
   },
   camera: {
-    flex: 5,
+    flex: 1,
     borderRadius: 20,
+  },
+  overlay: {
+    position: "absolute",
+    bottom: 20,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  dataContainer: {
+    marginBottom: 20,
+  },
+  dataText: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  confirmButton: {
+    backgroundColor: "#9ACD32",
+    borderRadius: 5,
+    padding: 15,
+    marginHorizontal: 10,
+  },
+  cancelButton: {
+    backgroundColor: "#FF6347",
+    borderRadius: 5,
+    padding: 15,
+    marginHorizontal: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  streakContainer: {
+    marginBottom: 10,
+  },
+  streak: {
+    backgroundColor: "#006694",
+    borderRadius: 50,
+    marginBottom: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    marginRight: 10,
+  },
+  waitingStreak: {
+    backgroundColor: "#ddd",
+  },
+  obtainedStreak: {
+    backgroundColor: "#9ACD32",
+  },
+  streakText: {
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "center",
+  },
+  largeButton: {
+    backgroundColor: "#006694",
+    borderRadius: 5,
+    padding: 15,
+    marginVertical: 10,
+    alignItems: "center",
+    width: "90%",
   },
 });
 

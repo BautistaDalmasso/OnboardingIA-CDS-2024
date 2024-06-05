@@ -28,9 +28,16 @@ const useScanBarcodes = () => {
     }
   };
 
+  const getBook = async (inventoryNumber: number) => {
+    // TODO
+
+    return inventoryNumber;
+  };
+
   return {
     verifyBookInventoryBarcode,
     getQrCodeInfo,
+    getBook,
   };
 };
 
