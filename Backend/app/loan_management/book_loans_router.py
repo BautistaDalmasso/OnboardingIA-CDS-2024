@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
-from app.loan_management.book_loans_service import (
+from app.loan_management.consult_loans_service import ConsultLoansService
+from app.loan_management.manage_loans_service import (
     BookNotFound,
     LoanNotFound,
     LoanService,
@@ -24,6 +25,7 @@ from app.file_paths import DATABASE_PATH, CATALOGUE_PATH
 router = APIRouter(prefix="/loans", tags=["Loan"])
 
 loan_service = LoanService(DATABASE_PATH, CATALOGUE_PATH)
+consult_loans_service = ConsultLoansService(DATABASE_PATH, CATALOGUE_PATH)
 licence_service = BookWithLicenceBrowser(DATABASE_PATH, CATALOGUE_PATH)
 
 
@@ -59,7 +61,7 @@ async def all_book_loans(token=Depends(HTTPBearer())):
     if token_data.role != "librarian":
         raise HTTPException(status_code=403, detail="Solo bibliotecarios.")
 
-    result = loan_service.consult_all_book_loans()
+    result = consult_loans_service.consult_all_book_loans()
     return result
 
 
@@ -80,7 +82,7 @@ async def book_loans_by_user_email(user_email: str, token=Depends(HTTPBearer()))
     token_data = await verify_token(token.credentials)
 
     if token_data.email == user_email or token_data.role == "librarian":
-        result = loan_service.consult_book_loans_by_user_email(user_email)
+        result = consult_loans_service.consult_book_loans_by_user_email(user_email)
         return result
 
     raise HTTPException(
@@ -94,7 +96,7 @@ async def book_loans_by_id(id: int, token=Depends(HTTPBearer())):
     token_data = await verify_token(token.credentials)
 
     if token_data.role == "librarian":
-        result = loan_service.consult_book_loans_by_id(id)
+        result = consult_loans_service.consult_book_loans_by_id(id)
         return result
 
     raise HTTPException(

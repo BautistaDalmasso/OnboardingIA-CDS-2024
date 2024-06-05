@@ -1,7 +1,8 @@
 import pytest
 
+from app.loan_management.consult_loans_service import ConsultLoansService
 from app.librarian.librarian_service import LibrarianService
-from app.loan_management.book_loans_service import LoanService
+from app.loan_management.manage_loans_service import LoanService
 from app.licence_levels.licence_service import BookWithLicenceBrowser
 from app.facial_recognition.facial_recognition_service import FacialRecognitionService
 from app.user.user_service import UserService
@@ -42,6 +43,7 @@ def loan_librarian_service():
         yield (
             LoanService(TEST_DB_PATH, CATALOGUE_PATH),
             LibrarianService(TEST_DB_PATH),
+            ConsultLoansService(TEST_DB_PATH, CATALOGUE_PATH),
         )
     finally:
         TEST_DB_PATH.unlink()

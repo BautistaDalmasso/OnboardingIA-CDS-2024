@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer
 
 from app.user.user_service import UserService
 from app.catalogue.update_catalogue_service import UpdateCatalogueService
-from app.loan_management.book_loans_service import BookNotFound
+from app.loan_management.manage_loans_service import BookNotFound
 from app.middlewares import verify_token
 from app.user.user_dtos import TokenDataDTO, TotalUsersDTO, UpdateUserRoleDTO, UserDTO
 from app.librarian.librarian_service import LibrarianService

@@ -1,9 +1,8 @@
 from datetime import datetime, timezone
-from enum import auto
 import sqlite3
+from app.loan_management.consult_loans_service import ConsultLoansService
 from app.points_exchange.point_addition_service import PointAdditionService
 from app.points_exchange.points_calculator import calculate_points_for_returned_book
-from app.models import auto_index
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
 from .book_loans_dtos import (
     LOAN_STATUS,
@@ -15,8 +14,6 @@ from .book_loans_dtos import (
 )
 from pathlib import Path
 from app.database.database_user import DatabaseUser
-from typing import List
-from typing import Any
 
 
 class BookNotFound(Exception):
@@ -44,6 +41,7 @@ class LoanService(DatabaseUser):
         super().__init__(db_path)
         self._catalogue_service = BrowseCatalogueService(catalogue_path)
         self._point_addition_service = PointAdditionService(db_path)
+        self._consult_loans_service = ConsultLoansService(db_path, catalogue_path)
 
     def reserve_book(self, book_request: ReservationRequestDTO) -> LoanInformationDTO:
         """Mark a copy of a book as reserved.."""
@@ -107,26 +105,6 @@ class LoanService(DatabaseUser):
             copy_data.status = "borrowed"
             return copy_data
 
-    def consult_book_loans_by_id(self, id: int) -> LoanInformationDTO:
-        loan = self.query_database(
-            """SELECT loan.*, bookInventory.isbn
-            FROM loan
-            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
-            WHERE loan.id = ?""",
-            (id,),
-        )
-        return self.create_loan_data(loan)
-
-    def consult_book_loans_by_user_email(self, email: str) -> List[LoanInformationDTO]:
-        loans = self.query_multiple_rows(
-            """SELECT loan.*, bookInventory.isbn
-            FROM loan
-            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
-            WHERE loan.userEmail = ?""",
-            (email,),
-        )
-        return [self.create_loan_data(entry) for entry in loans]
-
     def return_book(
         self, inventory_number: int, today: datetime = datetime.now(timezone.utc)
     ):
@@ -134,7 +112,10 @@ class LoanService(DatabaseUser):
         actual_loan_status = "loaned"
         new_loan_status = "returned"
 
-        loan = self.get_loaned_loan_by_inventory_number(inventory_number)
+        loan = self._consult_loans_service.get_loan_by_inventory_number_and_status(
+            inventory_number,
+            status=actual_loan_status,
+        )
 
         if loan is None:
             raise LoanNotFound(
@@ -156,49 +137,6 @@ class LoanService(DatabaseUser):
 
         points = calculate_points_for_returned_book(loan, today=today)
         self._point_addition_service.apply_points(loan.user_email, points)
-
-    def get_loaned_loan_by_inventory_number(
-        self, inventory_number: int
-    ) -> LoanInformationDTO | None:
-
-        loan = self.query_database(
-            """SELECT loan.*, bookInventory.isbn
-               FROM loan
-               INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
-               WHERE loan.inventoryNumber = ? AND loanStatus = ?
-            """,
-            (inventory_number, "loaned"),
-        )
-
-        if loan:
-            return self.create_loan_data(loan)
-        else:
-            return None
-
-    def consult_all_book_loans(self) -> List[LoanInformationDTO]:
-        loans = self.query_multiple_rows(
-            """SELECT loan.*, bookInventory.isbn
-            FROM loan
-            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber""",
-            tuple(),
-        )
-        return [self.create_loan_data(entry) for entry in loans]
-
-    def create_loan_data(self, db_entry: list[Any]) -> LoanInformationDTO:
-        catalogue_data = self._catalogue_service.browse_by_isbn(
-            db_entry[CLBEI.isbn.value]
-        )
-        return LoanInformationDTO(
-            id=db_entry[CLBEI.id.value],
-            catalogue_data=catalogue_data,
-            inventory_number=db_entry[CLBEI.inventory_number.value],
-            expiration_date=db_entry[CLBEI.expiration_date.value],
-            user_email=db_entry[CLBEI.user_email.value],
-            loan_status=db_entry[CLBEI.loan_status.value],
-            reservation_date=db_entry[CLBEI.reservation_date.value],
-            checkout_date=db_entry[CLBEI.checkout_date.value],
-            return_date=db_entry[CLBEI.return_date.value],
-        )
 
     def set_status_loaned(self, loan_id: int, due_date: datetime):
         loan_status = "loaned"
@@ -303,17 +241,3 @@ class LoanService(DatabaseUser):
             return False
         else:
             return True
-
-
-class CLBEI(auto_index):
-    """Consult Loans By Email Indexes"""
-
-    id = auto()
-    inventory_number = auto()
-    expiration_date = auto()
-    user_email = auto()
-    loan_status = auto()
-    reservation_date = auto()
-    checkout_date = auto()
-    return_date = auto()
-    isbn = auto()

@@ -1,6 +1,6 @@
 from pathlib import Path
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
-from app.loan_management.book_loans_service import BookNotFound
+from app.loan_management.manage_loans_service import BookNotFound
 from app.catalogue.read_mods import ReadMod
 from app.catalogue.book_models import BookContributor, MarcBookData
 from app.database.database_user import DatabaseUser
