@@ -54,11 +54,11 @@ export class LibraryService {
   }
 
   static async getBookByInventoryNumber(
-    inventoryNumber: string,
+    inventoryNumber: number,
   ): Promise<IBookWithLicence> {
     try {
       const books = await baseFetch<void, IBookWithLicence>({
-        url: `${this.booksRoute}/show_books/isbn?inventory_number=${inventoryNumber}`,
+        url: `${this.booksRoute}/show_books/inventory_number?inventory_number=${inventoryNumber}`,
         method: "GET",
       });
 

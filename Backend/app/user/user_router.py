@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
-from app.loan_management.book_loans_service import LoanService
+from app.loan_management.manage_loans_service import LoanService
 from app.user.user_service import UserService, create_UserDTO_from_login
 from app.file_paths import CATALOGUE_PATH, DATABASE_PATH
 

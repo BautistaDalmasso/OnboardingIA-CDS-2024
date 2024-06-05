@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
 import { LibraryService } from "../../services/LibraryService";
 import { IBookWithLicence } from "../../common/interfaces/Book";
@@ -25,6 +25,8 @@ const RequestLoans = () => {
     isAtLastPage,
   } = usePagination();
 
+  const scrollViewRef = useRef<ScrollView>(null);
+
   const isBookRequested = (isbn: string) => {
     return contextState.loans.some((loan) => loan.catalogue_data.isbn === isbn);
   };
@@ -38,6 +40,9 @@ const RequestLoans = () => {
         setBooks(books);
       } else {
         setIsAtLastPage(true);
+      }
+      if (scrollViewRef.current) {
+        scrollViewRef.current?.scrollTo({ y: 0, animated: true });
       }
     } catch (error) {
       console.error("Error al obtener libros:", error);
@@ -59,6 +64,7 @@ const RequestLoans = () => {
       }
 
       setBooks(books);
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
     } catch (error) {
       console.error("Error al obtener libros:", error);
     }
@@ -83,6 +89,7 @@ const RequestLoans = () => {
       );
 
       setBooks(books);
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
     } catch (error) {
       console.error("Error al obtener libros:", error);
     }
@@ -115,7 +122,8 @@ const RequestLoans = () => {
         onSearch={conductSearch}
         onClear={fetchBooks}
       />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent}
+      ref={scrollViewRef}>
         {books.map((book) => (
           <View style={styles.bookContainer} key={book.book_data.isbn}>
             <BookListItem
@@ -131,8 +139,14 @@ const RequestLoans = () => {
       <Pagination
         currentPage={currentPage}
         isAtLastPage={isAtLastPage}
-        goToPreviousPage={goToPreviousPage}
-        goToNextPage={goToNextPage}
+        goToPreviousPage={() => {
+          goToPreviousPage();
+          scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+        }}
+        goToNextPage={() => {
+          goToNextPage();
+          scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+        }}
         lastPage={totalPages}
       />
     </View>

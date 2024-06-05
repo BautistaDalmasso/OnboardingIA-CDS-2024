@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import sqlite3
 import pytest
 
+from app.loan_management.consult_loans_service import ConsultLoansService
 from app.points_exchange.points import (
     LOAN_OVERDUE_PER_DAY_PENALITY,
     RESERVATION_OVERDUE_PENALITY,
@@ -12,20 +13,21 @@ from app.database.initialize_db import initialize_database
 from app.file_paths import CATALOGUE_PATH, TEST_DB_PATH
 from app.librarian.librarian_service import LibrarianService
 from app.loan_management.book_loans_dtos import ReservationRequestDTO
-from app.loan_management.book_loans_service import LoanService
+from app.loan_management.manage_loans_service import LoanService
 from app.loan_management.loan_parser import LoanParser
 
 # TODO: DeprecationWarning: The default datetime adapter is deprecated as of Python 3.12; see the sqlite3 documentation for suggested replacement recipes
 pytestmark = pytest.mark.filterwarnings("ignore")
 
 PARSER = 0
-SERVICE = 1
+MANAGE = 1
+CONSULT = 2
 
 
 def test_reservation_is_canceled(parser_service):
     current_date = datetime(2024, 12, 31)
     delta = timedelta(days=1)
-    parser_service[SERVICE].reserve_book(
+    parser_service[MANAGE].reserve_book(
         ReservationRequestDTO(
             isbn="9789875662445",
             expiration_date=current_date - delta,
@@ -35,14 +37,14 @@ def test_reservation_is_canceled(parser_service):
 
     parser_service[PARSER].parse_non_historic_loans(today=current_date)
 
-    all_loans = parser_service[SERVICE].consult_all_book_loans()
+    all_loans = parser_service[CONSULT].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "reservation_canceled"
     assert UserService(TEST_DB_PATH).get_user_by_email(
         "user@email.com"
     ).points == RESERVATION_OVERDUE_PENALITY * (-1)
     # Ensure copy is marked as available.
-    parser_service[SERVICE].reserve_book(
+    parser_service[MANAGE].reserve_book(
         ReservationRequestDTO(
             isbn="9789875662445",
             expiration_date=current_date,
@@ -53,7 +55,7 @@ def test_reservation_is_canceled(parser_service):
 
 def test_reservation_is_not_canceled(parser_service):
     current_date = datetime(2024, 12, 31)
-    parser_service[SERVICE].reserve_book(
+    parser_service[MANAGE].reserve_book(
         ReservationRequestDTO(
             isbn="9789875662445",
             expiration_date=current_date,
@@ -63,7 +65,7 @@ def test_reservation_is_not_canceled(parser_service):
 
     parser_service[PARSER].parse_non_historic_loans(today=current_date)
 
-    all_loans = parser_service[SERVICE].consult_all_book_loans()
+    all_loans = parser_service[CONSULT].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "reserved"
 
@@ -76,7 +78,7 @@ def test_loan_is_marked_as_overdue(parser_service):
 
     parser_service[PARSER].parse_non_historic_loans(today=current_date)
 
-    all_loans = parser_service[SERVICE].consult_all_book_loans()
+    all_loans = parser_service[CONSULT].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "loan_return_overdue"
     assert UserService(TEST_DB_PATH).get_user_by_email(
@@ -91,7 +93,7 @@ def test_loan_is_not_marked_as_overdue(parser_service):
 
     parser_service[PARSER].parse_non_historic_loans(today=current_date)
 
-    all_loans = parser_service[SERVICE].consult_all_book_loans()
+    all_loans = parser_service[CONSULT].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "loaned"
 
@@ -105,7 +107,7 @@ def test_overdue_loan_is_penalized(parser_service):
     parser_service[PARSER].parse_non_historic_loans(today=current_date)
     parser_service[PARSER].parse_non_historic_loans(today=current_date)
 
-    all_loans = parser_service[SERVICE].consult_all_book_loans()
+    all_loans = parser_service[CONSULT].consult_all_book_loans()
 
     assert all_loans[0].loan_status == "loan_return_overdue"
     assert UserService(TEST_DB_PATH).get_user_by_email(
@@ -139,6 +141,7 @@ def parser_service():
         yield (
             LoanParser(TEST_DB_PATH, CATALOGUE_PATH),
             LoanService(TEST_DB_PATH, CATALOGUE_PATH),
+            ConsultLoansService(TEST_DB_PATH, CATALOGUE_PATH),
         )
     finally:
         TEST_DB_PATH.unlink()

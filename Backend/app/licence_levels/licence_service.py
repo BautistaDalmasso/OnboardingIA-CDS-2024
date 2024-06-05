@@ -3,7 +3,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from app.loan_management.book_loans_service import BookNotFound
+from app.loan_management.manage_loans_service import BookNotFound
 from app.loan_management.book_loans_dtos import BookStatusDTO
 from app.catalogue.book_models import MarcBookData, TotalBooksDTO
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
@@ -43,7 +43,7 @@ class BookWithLicenceBrowser(DatabaseUser):
         )
 
         if book_isbn:
-            return self.consult_book_data(book_isbn)
+            return self.consult_book_data(book_isbn[0])
         else:
             return None
 

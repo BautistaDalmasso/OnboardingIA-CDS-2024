@@ -19,13 +19,14 @@ import {
 import React from "react";
 import useScanBarcodes from "../../../hooks/useScanBarcodes";
 import useManageLoans from "../../../hooks/useManageLoans";
+import { IBookWithLicence } from "../../../common/interfaces/Book";
 
 interface ScanReturnedBookProps {
   onBookReturnFinished: () => void;
 }
 
 const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
-  const { verifyBookInventoryBarcode } = useScanBarcodes();
+  const { verifyBookInventoryBarcode, getBook } = useScanBarcodes();
   const { markBookAsReturned } = useManageLoans();
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
@@ -36,7 +37,8 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
   const cameraRef = useRef<Camera>(null);
 
   const [scanPaused, setPauseScan] = useState(false);
-  const [barcodeData, setBarcodeData] = useState<number | null>(null);
+  const [inventoryNumberFromBarcode, setInventoryNumberFromBarcode] = useState<number | null>(null);
+  const [scannedBook, setScannedBook] = useState<IBookWithLicence | null>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -70,11 +72,14 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
       return;
     }
 
-    setBarcodeData(parseInt(scanningResult.data));
+    const inventoryNumber = parseInt(scanningResult.data);
+    setInventoryNumberFromBarcode(inventoryNumber);
+    const book = await getBook(inventoryNumber);
+    setScannedBook(book);
   };
 
   const confirmReturn = async () => {
-    const result = await markBookAsReturned(barcodeData as number, alertButton);
+    const result = await markBookAsReturned(inventoryNumberFromBarcode as number, alertButton);
 
     if (result) {
       onBookReturnFinished();
@@ -91,12 +96,12 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
     },
   ];
 
-  if (barcodeData) {
+  if (inventoryNumberFromBarcode) {
     return (
       <View style={styles.contentContainer}>
         <Text style={styles.title}>Marcando Devolución</Text>
         <View style={styles.dataContainer}>
-          <Text style={styles.dataText}>Libro: {barcodeData}</Text>
+          <Text style={styles.dataText}>{scannedBook?.book_data.title}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -108,7 +113,7 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={() => {
-              setBarcodeData(null);
+              setInventoryNumberFromBarcode(null);
             }}
           >
             <Text style={styles.buttonText}>Cancelar</Text>

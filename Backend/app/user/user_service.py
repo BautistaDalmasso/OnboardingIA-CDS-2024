@@ -9,8 +9,8 @@ from typing import List
 import jwt
 from passlib.context import CryptContext
 
+from app.loan_management.consult_loans_service import ConsultLoansService
 from app.file_paths import CATALOGUE_PATH
-from app.loan_management.book_loans_service import LoanService
 from app.licence_levels.licence_level import LicenceLevel
 from app.database.database_user import DatabaseUser
 
@@ -32,7 +32,7 @@ class UserService(DatabaseUser):
         super().__init__(db_path)
 
         self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        self._loans_service = LoanService(db_path, CATALOGUE_PATH)
+        self._loans_service = ConsultLoansService(db_path, CATALOGUE_PATH)
 
     def create_user(self, register_information: CreateUserDTO):
         hashed_password = self._pwd_context.hash(register_information.password)

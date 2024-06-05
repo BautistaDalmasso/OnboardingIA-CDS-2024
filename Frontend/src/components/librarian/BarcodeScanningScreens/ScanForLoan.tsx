@@ -15,13 +15,14 @@ import useManageLoans from "../../../hooks/useManageLoans";
 import { IQrCodeInfo } from "../../../common/interfaces/User";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import useLoanCreation from "../../../hooks/useLoanCreation";
+import { IBookWithLicence } from "../../../common/interfaces/Book";
 
 interface ScanForLoanProps {
   onBookLoanFinished: () => void;
 }
 
 const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
-  const { verifyBookInventoryBarcode, getQrCodeInfo } = useScanBarcodes();
+  const { verifyBookInventoryBarcode, getQrCodeInfo, getBook } = useScanBarcodes();
   const { assignLoan } = useLoanCreation();
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
@@ -34,7 +35,8 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
   const [scanPaused, setPauseScan] = useState(false);
 
   const [qrData, setQrData] = useState<IQrCodeInfo | null>(null);
-  const [barcodeData, setBarcodeData] = useState<number | null>(null);
+  const [inventoryNumberFromBarcode, setInventoryNumberFromBarcode] = useState<number | null>(null);
+  const [scannedBook, setScannedBook] = useState<IBookWithLicence | null>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -62,11 +64,11 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
     const scanningResultType = scanningResult.type as unknown as number;
     switch (scanningResultType) {
       case 2:
-        if (barcodeData) {
+        if (inventoryNumberFromBarcode) {
           setPauseScan(false);
           return;
         }
-        handleBarcode(scanningResult);
+        await handleBarcode(scanningResult);
         break;
       case 256:
         if (qrData) {
@@ -85,7 +87,7 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
     }
   };
 
-  const handleBarcode = (scanningResult: BarCodeScanningResult) => {
+  const handleBarcode = async (scanningResult: BarCodeScanningResult) => {
     if (!verifyBookInventoryBarcode(scanningResult)) {
       Alert.alert(
         "Error escaneando el código de barras",
@@ -95,7 +97,11 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
       return;
     }
 
-    setBarcodeData(parseInt(scanningResult.data));
+    const inventoryNumber = parseInt(scanningResult.data);
+    setInventoryNumberFromBarcode(inventoryNumber);
+    const book = await getBook(inventoryNumber);
+    setScannedBook(book);
+
     setPauseScan(false);
   };
 
@@ -125,7 +131,7 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
 
   const confirmLoan = async () => {
     const result = await assignLoan(
-      barcodeData as number,
+      inventoryNumberFromBarcode as number,
       (qrData as IQrCodeInfo).email,
     );
 
@@ -142,13 +148,13 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
     );
   }
 
-  if (qrData && barcodeData) {
+  if (qrData && inventoryNumberFromBarcode) {
     return (
       <View style={styles.contentContainer}>
         <Text style={styles.title}>Creando Préstamo</Text>
         <View style={styles.dataContainer}>
           <Text style={styles.dataText}>Usuario: {qrData.email}</Text>
-          <Text style={styles.dataText}>Libro: {barcodeData}</Text>
+          <Text style={styles.dataText}>Libro: {scannedBook?.book_data.title}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.confirmButton} onPress={confirmLoan}>
@@ -157,7 +163,7 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
           <TouchableOpacity
             style={styles.cancelButton}
             onPress={() => {
-              setBarcodeData(null);
+              setInventoryNumberFromBarcode(null);
               setQrData(null);
             }}
           >
@@ -194,10 +200,10 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
               <Text style={styles.streakText}>Esperando QR con Carnet...</Text>
             </View>
           )}
-          {barcodeData ? (
+          {inventoryNumberFromBarcode ? (
             <View style={[styles.streak, styles.obtainedStreak]}>
               <Text style={styles.streakText}>
-                Número de Inventario: {barcodeData}
+                {scannedBook?.book_data.title}
               </Text>
             </View>
           ) : (
