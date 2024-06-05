@@ -43,7 +43,7 @@ class BookWithLicenceBrowser(DatabaseUser):
         )
 
         if book_isbn:
-            return self.consult_book_data(book_isbn)
+            return self.consult_book_data(book_isbn[0])
         else:
             return None
 

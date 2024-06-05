@@ -1,5 +1,6 @@
 import { BarCodeScanningResult } from "expo-camera/legacy";
 import { IQrCodeInfo } from "../common/interfaces/User";
+import { LibraryService } from "../services/LibraryService";
 
 const useScanBarcodes = () => {
   const verifyBookInventoryBarcode = (
@@ -29,9 +30,9 @@ const useScanBarcodes = () => {
   };
 
   const getBook = async (inventoryNumber: number) => {
-    // TODO
+    const book = await LibraryService.getBookByInventoryNumber(inventoryNumber);
 
-    return inventoryNumber;
+    return book;
   };
 
   return {
