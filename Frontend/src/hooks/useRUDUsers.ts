@@ -95,10 +95,9 @@ const useRUDUsers = () => {
       ...state,
       user: {
         ...state.user,
-        licenceLevel: result.licenceLevel
+        licenceLevel: result.licenceLevel,
       } as IUser,
     }));
-
   };
 
   return {

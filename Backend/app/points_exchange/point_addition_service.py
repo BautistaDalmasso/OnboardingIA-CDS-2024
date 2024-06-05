@@ -5,6 +5,7 @@ from app.database.database_user import DatabaseUser
 class PointAdditionService(DatabaseUser):
 
     def apply_points(self, user_email: str, points: int):
+        print(self._db_path)
         self.execute_in_database(
             """UPDATE users SET points = points + ? WHERE email = ?""",
             (points, user_email),

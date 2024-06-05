@@ -21,7 +21,14 @@ class LibrarianService(DatabaseUser):
         for isbn in isbns:
             self.add_exemplar(isbn)
 
-    def add_exemplar(self, isbn: str):
+    def add_exemplar(self, isbn: str, inventory_number: int | None = None):
+        if inventory_number:
+            self.execute_in_database(
+                """INSERT INTO bookInventory (inventoryNumber, isbn, status)
+                VALUES (?, ?, ?)""",
+                (inventory_number, isbn, "available"),
+            )
+
         self.execute_in_database(
             """INSERT INTO bookInventory (isbn, status)
             VALUES (?, ?)""",

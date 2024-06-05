@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { RequestedLoansService } from "../../services/requestedLoansService";
 import { ILoanInformation } from "../../common/interfaces/LoanReqResponse";
 import SearchBarComponent from "../common/SearchBar";
 import { useContextState } from "../../ContexState";
-import { NavigationProp , useFocusEffect} from "@react-navigation/native";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -15,7 +22,9 @@ const LibrarianLoans = ({ navigation }: Props) => {
   const [loans, setLoans] = useState<ILoanInformation[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("user_email");
-  const [pickerItems, setPickerItems] = useState<{ label: string; value: string }[]>([]);
+  const [pickerItems, setPickerItems] = useState<
+    { label: string; value: string }[]
+  >([]);
   const [showAlert, setShowAlert] = useState(false);
 
   const fetchLoans = async () => {
@@ -41,15 +50,14 @@ const LibrarianLoans = ({ navigation }: Props) => {
       fetchLoans();
       setPickerItems([]);
       fetchLoans();
-      setShowAlert(false)
-      return() =>{};
-    }, [])
+      setShowAlert(false);
+      return () => {};
+    }, []),
   );
 
-
-   useEffect (() => {
+  useEffect(() => {
     setLoans([]);
-  }, [])
+  }, []);
 
   const clearLoans = () => {
     fetchLoans();
@@ -87,18 +95,18 @@ const LibrarianLoans = ({ navigation }: Props) => {
 
   function checkStatus(status: string) {
     switch (status) {
-      case 'reserved':
-        return 'Reservado';
-      case 'loaned':
-        return 'Prestado';
-     case 'reservation_canceled':
-        return 'Reservación cancelada';
-     case 'loan_return_overdue':
-        return 'Devolución retrasada';
-     case 'returned':
-        return 'Devuelto';
-     default:
-        return ('Unknown status');
+      case "reserved":
+        return "Reservado";
+      case "loaned":
+        return "Prestado";
+      case "reservation_canceled":
+        return "Reservación cancelada";
+      case "loan_return_overdue":
+        return "Devolución demorada";
+      case "returned":
+        return "Devuelto";
+      default:
+        return "Unknown status";
     }
   }
 
@@ -114,36 +122,43 @@ const LibrarianLoans = ({ navigation }: Props) => {
         onSearch={conductSearch}
         onClear={clearLoans}
       />
-      <Text style={styles.indications}>Seleccione el préstamo que desea gestionar: </Text>
+      <Text style={styles.indications}>
+        Seleccione el préstamo que desea gestionar:{" "}
+      </Text>
       {showAlert && (
         <View style={styles.alertContainer}>
           <Text style={styles.alertText}>
             No se encontraron préstamos para la búsqueda realizada.
           </Text>
         </View>
-
       )}
       <View style={styles.containerScroll}>
-      <ScrollView >
+        <ScrollView>
+          {loans.map((Loan) => (
+            <TouchableOpacity
+              key={Loan.inventory_number}
+              onPress={() =>
+                navigation.navigate("Gestion de prestamos", { loan: Loan })
+              }
+            >
+              <View style={styles.bookContainer} key={Loan.inventory_number}>
+                <Text style={styles.bookTitle}>Préstamo id: {Loan.id}</Text>
+                <Text style={styles.bookTitle}>Usuario: {Loan.user_email}</Text>
+                <Text style={styles.cardLevel}>
+                  Libro: {Loan.catalogue_data.title}
+                </Text>
+                <Text style={styles.cardLevel}>
+                  Estado: {checkStatus(Loan.loan_status)}
+                </Text>
 
-        {loans.map((Loan) => (
-          <TouchableOpacity
-          key={Loan.inventory_number}
-            onPress={() => navigation.navigate("Gestion de prestamos",{ loan: Loan })}
-        >
-          <View style={styles.bookContainer} key={Loan.inventory_number}>
-            <Text style={styles.bookTitle}>Préstamo id: {Loan.id}</Text>
-            <Text style={styles.bookTitle}>Usuario: {Loan.user_email}</Text>
-            <Text style={styles.cardLevel}>Libro: {Loan.catalogue_data.title}</Text>
-            <Text style={styles.cardLevel}>Estado: {checkStatus(Loan.loan_status)}</Text>
-
-            <Text style={styles.cardLevel}>
-              Vencimiento: {new Date(Loan.expiration_date).toLocaleDateString()}
-            </Text>
-          </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+                <Text style={styles.cardLevel}>
+                  Vencimiento:{" "}
+                  {new Date(Loan.expiration_date).toLocaleDateString()}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
     </View>
   );
@@ -162,10 +177,10 @@ const styles = StyleSheet.create({
   containerScroll: {
     flexGrow: 1,
     overflow: "hidden",
-    height:400,
+    height: 400,
   },
-  indications:{
-    textAlign:"center",
+  indications: {
+    textAlign: "center",
     fontWeight: "bold",
     margin: 20,
     fontSize: 15,
@@ -205,7 +220,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     flexGrow: 1,
     flexShrink: 1,
-  },cardLevel: {
+  },
+  cardLevel: {
     fontSize: 16,
     marginBottom: 10,
     flexGrow: 1,
@@ -219,7 +235,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 260,
   },
-
 });
 
 export default LibrarianLoans;

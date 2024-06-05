@@ -18,7 +18,7 @@ class LoanParser(DatabaseUser):
         self._loans_service = LoanService(db_path, catalogue_path)
         self._user_service = UserService(db_path)
 
-    def parse_non_historic_loans(self, today=datetime.today()):
+    def parse_non_historic_loans(self, today=datetime.now()):
         non_historic_loans = self._get_all_loans()
 
         for loan in non_historic_loans:

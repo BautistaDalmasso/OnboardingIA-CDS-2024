@@ -3,6 +3,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from app.loan_management.book_loans_service import BookNotFound
 from app.loan_management.book_loans_dtos import BookStatusDTO
 from app.catalogue.book_models import MarcBookData, TotalBooksDTO
 from app.catalogue.browse_catalogue_service import BrowseCatalogueService
@@ -32,6 +33,19 @@ class BookWithLicenceBrowser(DatabaseUser):
     def __init__(self, db_path: Path, catalogue_db: Path) -> None:
         super().__init__(db_path)
         self._catalogue_service = BrowseCatalogueService(catalogue_db)
+
+    def consult_book_data_by_inventory_number(
+        self, inventory_number: int
+    ) -> BookDataWithLicence | None:
+        book_isbn = self.query_database(
+            """SELECT isbn FROM bookInventory WHERE inventoryNumber = ?""",
+            (inventory_number,),
+        )
+
+        if book_isbn:
+            return self.consult_book_data(book_isbn)
+        else:
+            return None
 
     def consult_book_data(self, isbn: str) -> BookDataWithLicence | None:
         book = self._catalogue_service.browse_by_isbn(isbn)

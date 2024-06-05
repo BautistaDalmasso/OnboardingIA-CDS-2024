@@ -8,7 +8,7 @@ from app.loan_management.book_loans_dtos import LoanInformationDTO
 
 
 def calculate_points_for_returned_book(
-    loan: LoanInformationDTO, today: datetime = datetime.today()
+    loan: LoanInformationDTO, today: datetime = datetime.now()
 ) -> int:
     if _is_reservation_canceled(loan, today=today):
         return RESERVATION_CANCELED_POINTS
@@ -19,6 +19,7 @@ def calculate_points_for_returned_book(
 
 
 def _is_reservation_canceled(loan: LoanInformationDTO, today: datetime) -> bool:
+
     days_before_expiry = (loan.expiration_date - today).days
 
     return (

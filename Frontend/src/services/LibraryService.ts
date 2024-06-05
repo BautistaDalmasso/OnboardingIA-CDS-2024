@@ -53,6 +53,22 @@ export class LibraryService {
     }
   }
 
+  static async getBookByInventoryNumber(
+    inventoryNumber: string,
+  ): Promise<IBookWithLicence> {
+    try {
+      const books = await baseFetch<void, IBookWithLicence>({
+        url: `${this.booksRoute}/show_books/isbn?inventory_number=${inventoryNumber}`,
+        method: "GET",
+      });
+
+      return books;
+    } catch (error) {
+      console.error("Error fetching books:", error);
+      throw error;
+    }
+  }
+
   static async getCountOfBooks(): Promise<ITotalBooks> {
     try {
       const books = await baseFetch<void, ITotalBooks>({
