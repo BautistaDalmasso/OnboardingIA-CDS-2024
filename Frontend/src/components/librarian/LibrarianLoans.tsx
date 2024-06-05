@@ -94,7 +94,7 @@ const LibrarianLoans = ({ navigation }: Props) => {
      case 'reservation_canceled':
         return 'Reservación cancelada';
      case 'loan_return_overdue':
-        return 'Devolución demorada';
+        return 'Devolución retrasada';
      case 'returned':
         return 'Devuelto';
      default:

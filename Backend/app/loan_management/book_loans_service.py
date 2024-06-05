@@ -117,6 +117,16 @@ class LoanService(DatabaseUser):
             cursor.close()
             connection.close()
 
+    def consult_book_loans_by_id(self, id: int) -> LoanInformationDTO:
+        loan = self.query_database(
+            """SELECT loan.*, bookInventory.isbn
+            FROM loan
+            INNER JOIN bookInventory ON loan.inventoryNumber = bookInventory.inventoryNumber
+            WHERE loan.id = ?""",
+            (id,),
+        )
+        return self.create_loan_data(loan)
+
     def consult_book_loans_by_user_email(self, email: str) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(
             """SELECT loan.*, bookInventory.isbn
@@ -127,6 +137,7 @@ class LoanService(DatabaseUser):
         )
         return [self.create_loan_data(entry) for entry in loans]
 
+    def consult_book_loans_by_title(self, title: str) -> List[LoanInformationDTO]:
         loans = self.query_multiple_rows(
             """SELECT loan.*, bookInventory.isbn
             FROM loan
@@ -298,7 +309,6 @@ class LoanService(DatabaseUser):
                     date_not_aviable,
                     loan_id,
                 ),
-
             )
             cursor.execute("""COMMIT""")
 

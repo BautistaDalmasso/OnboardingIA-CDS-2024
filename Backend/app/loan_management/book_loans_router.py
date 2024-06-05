@@ -88,6 +88,20 @@ async def book_loans_by_user_email(user_email: str, token=Depends(HTTPBearer()))
     )
 
 
+@router.get("/loan_by_id", response_model=LoanInformationDTO)
+async def book_loans_by_id(id: int, token=Depends(HTTPBearer())):
+    token_data = await verify_token(token.credentials)
+
+    if token_data.role == "librarian":
+        result = loan_service.consult_book_loans_by_id(id)
+        return result
+
+    raise HTTPException(
+        status_code=403,
+        detail="No puedes acceder a prestamos de otro usario sin ser bibliotecario.",
+    )
+
+
 @router.patch("/set_status_loaned")
 async def set_status_loaned(loan_id: int, due_date: str, token=Depends(HTTPBearer())):
     expiration_date = datetime.strptime(due_date, "%Y-%m-%d")
