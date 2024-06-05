@@ -5,13 +5,11 @@ import {
   CameraType,
   FlashMode,
 } from "expo-camera/legacy";
-import Constants from "expo-constants";
 import { useEffect, useRef, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
 import { View, StyleSheet, Text, Alert, AlertButton } from "react-native";
 import React from "react";
 import useScanBarcodes from "../../../hooks/useScanBarcodes";
-import useManageLoans from "../../../hooks/useManageLoans";
 import { IQrCodeInfo } from "../../../common/interfaces/User";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import useLoanCreation from "../../../hooks/useLoanCreation";

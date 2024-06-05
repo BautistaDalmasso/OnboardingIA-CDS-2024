@@ -89,14 +89,3 @@ def initialize_database(db_path: Path) -> None:
         tuple(),
         db_path,
     )
-
-    execute_in_database(
-        """CREATE TABLE IF NOT EXISTS requested_books
-                (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                inventoryNumber INTEGER,
-                userEmail TEXT,
-                FOREIGN KEY (inventoryNumber) REFERENCES bookInventory(inventoryNumber),
-                FOREIGN KEY (userEmail) REFERENCES users(Email))""",
-        tuple(),
-        db_path,
-    )
