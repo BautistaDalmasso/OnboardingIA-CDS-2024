@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -5,6 +6,7 @@ from app.database.database_actions import (
     execute_in_database,
     query_database,
     query_multiple_rows,
+    transaction,
 )
 
 
@@ -20,3 +22,8 @@ class DatabaseUser:
 
     def query_multiple_rows(self, query: str, args: tuple[Any]) -> list[Any]:
         return query_multiple_rows(query, args, self._db_path)
+
+    @contextmanager
+    def transaction(self):
+        with transaction(self._db_path) as cursor:
+            yield cursor

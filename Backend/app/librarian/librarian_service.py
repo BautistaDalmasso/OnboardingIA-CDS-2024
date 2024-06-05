@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import jwt
 from app.user.user_service import UserService
 from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO, UserDTO
 from app.database.database_user import DatabaseUser

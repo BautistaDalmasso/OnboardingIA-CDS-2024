@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from enum import auto
-import json
 import sqlite3
 from app.points_exchange.point_addition_service import PointAdditionService
 from app.points_exchange.points_calculator import calculate_points_for_returned_book
@@ -81,11 +80,7 @@ class LoanService(DatabaseUser):
 
     def _find_available_copy_data(self, isbn) -> PhysicalCopyDTO:
 
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-
-            connection.execute("BEGIN")
+        with self.transaction() as cursor:
             cursor.execute(
                 """SELECT * FROM bookInventory
                 WHERE isbn = ? AND status = ?""",
@@ -109,17 +104,8 @@ class LoanService(DatabaseUser):
                 ("borrowed", copy_data.inventoryNumber),
             )
 
-            connection.commit()
-
             copy_data.status = "borrowed"
             return copy_data
-        except Exception as e:
-            connection.rollback()
-            print("Transaction rolled back due to error:", e)
-            raise e
-        finally:
-            cursor.close()
-            connection.close()
 
     def consult_book_loans_by_id(self, id: int) -> LoanInformationDTO:
         loan = self.query_database(

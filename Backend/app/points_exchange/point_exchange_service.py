@@ -1,5 +1,4 @@
 from pathlib import Path
-import sqlite3
 from app.user.user_dtos import LOGIN_RESPONSE, TokenDataDTO
 from app.licence_levels.licence_level import LicenceLevel
 from app.licence_levels.modify_licence_service import ModifyLicenceService
@@ -28,12 +27,7 @@ class PointExchangeService(DatabaseUser):
         )
 
     def _remove_points_if_theres_enough(self, user_email: str, point_cost: int):
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-
-            cursor.execute("BEGIN")
-
+        with self.transaction() as cursor:
             cursor.execute("SELECT points FROM users WHERE email = ?", (user_email,))
 
             points_tuple = cursor.fetchone()
@@ -49,11 +43,6 @@ class PointExchangeService(DatabaseUser):
                 )
 
             apply_minus_points_in_transaction(user_email, point_cost, cursor)
-
-            cursor.execute("COMMIT")
-        finally:
-            cursor.close()
-            connection.close()
 
 
 class InsufficientPoints(Exception): ...

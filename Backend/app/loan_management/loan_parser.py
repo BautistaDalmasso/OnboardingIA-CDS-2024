@@ -1,6 +1,5 @@
 from datetime import datetime
 from pathlib import Path
-import sqlite3
 from app.points_exchange.point_addition_service import apply_minus_points_in_transaction
 from app.points_exchange.points import (
     LOAN_OVERDUE_PER_DAY_PENALITY,
@@ -50,12 +49,7 @@ class LoanParser(DatabaseUser):
         self._cancel_reservation(loan)
 
     def _cancel_reservation(self, loan: LoanInformationDTO):
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-
-            cursor.execute("BEGIN")
-
+        with self.transaction() as cursor:
             apply_minus_points_in_transaction(
                 loan.user_email, RESERVATION_OVERDUE_PENALITY, cursor
             )
@@ -72,11 +66,6 @@ class LoanParser(DatabaseUser):
                 ("available", loan.inventory_number),
             )
 
-            cursor.execute("COMMIT")
-        finally:
-            cursor.close()
-            connection.close()
-
     def _ensure_loan_not_overdue(self, loan: LoanInformationDTO, today: datetime):
         if loan.expiration_date >= today:
             return
@@ -84,12 +73,7 @@ class LoanParser(DatabaseUser):
         self._mark_loan_as_overdue(loan)
 
     def _mark_loan_as_overdue(self, loan: LoanInformationDTO):
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-
-            cursor.execute("BEGIN")
-
+        with self.transaction() as cursor:
             apply_minus_points_in_transaction(
                 loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor
             )
@@ -100,23 +84,8 @@ class LoanParser(DatabaseUser):
                 ("loan_return_overdue", loan.id),
             )
 
-            cursor.execute("""COMMIT""")
-        finally:
-            cursor.close()
-            connection.close()
-
     def _apply_overdue_point_penalty(self, loan: LoanInformationDTO):
-        try:
-            connection = sqlite3.connect(self._db_path)
-            cursor = connection.cursor()
-
-            cursor.execute("BEGIN")
-
+        with self.transaction() as cursor:
             apply_minus_points_in_transaction(
                 loan.user_email, LOAN_OVERDUE_PER_DAY_PENALITY, cursor
             )
-
-            cursor.execute("""COMMIT""")
-        finally:
-            cursor.close()
-            connection.close()
