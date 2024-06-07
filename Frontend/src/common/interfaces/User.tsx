@@ -98,3 +98,15 @@ export interface IQrCodeInfo {
   dni: string;
   licence_level: number;
 }
+
+export interface IDniData {
+
+    lastName: string;
+    firstName: string;
+    gender: string;
+    dni: string;
+    exemplar: string;
+    birthDay: string;
+    expirationDay: string;
+    number: string;
+}

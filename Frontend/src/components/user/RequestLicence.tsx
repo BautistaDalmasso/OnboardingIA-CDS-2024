@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Routes } from "../../common/enums/routes";
 import {
@@ -12,8 +12,9 @@ import {
 } from "react-native";
 import { useContextState } from "../../ContexState";
 import { UserService } from "../../services/userService";
-import { IUser } from "../../common/interfaces/User";
+import { IDniData, IUser } from "../../common/interfaces/User";
 import useQr from "../../hooks/useQr";
+import ScanDni from "./ScanDni";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -22,28 +23,20 @@ interface Props {
 const RequestLicence = ({ navigation }: Props) => {
   const [dni, setDni] = useState("");
   const [showDniInput, setShowDniInput] = useState(false);
-  const [inputFocused, setInputFocused] = useState(false);
   const { contextState, setContextState } = useContextState();
   const { forceUpdateQr } = useQr();
+  const [licenceAcquired, setLicenceAcquired] = useState(false);
 
   const handleLicenceNavigation = () => {
     navigation.navigate(Routes.Carnet);
   };
 
-  const handleDniInput = (text: string) => {
-    setDni(text);
-
-    const input = text.replace(/[^0-9]/g, "");
-    if (input.length > 11) {
-      setDni(input.substring(0, 11));
-    } else {
-      setDni(input);
+  useEffect(() => {
+    if (licenceAcquired && contextState) {
+      handleLicenceNavigation();
+      setLicenceAcquired(false);
     }
-  };
-
-  const handleInputFocus = () => {
-    setInputFocused(true);
-  };
+  }, [licenceAcquired, contextState.user?.dni]);
 
   const handleSendPress = async () => {
     try {
@@ -65,17 +58,55 @@ const RequestLicence = ({ navigation }: Props) => {
       await forceUpdateQr(result.access_token, contextState.user);
 
       setShowDniInput(false);
-      Keyboard.dismiss();
+
       Alert.alert("¡Felicidades!", "A solicitado su carnet con exito");
-      handleLicenceNavigation();
+      setLicenceAcquired(true);
+
     } catch (error) {
       Alert.alert("Error", "No se pudo solicitar su carnet");
     }
   };
 
-  const handleInputBlur = () => {
-    setInputFocused(false);
-  };
+  if (showDniInput) {
+    return (
+        <>
+            <ScanDni
+                onDniScanned={(dni: IDniData) => {setDni(dni.dni); setShowDniInput(false); }}
+                onCancel={() => setShowDniInput(false)}
+            />
+        </>
+    )
+  }
+
+  if (dni !== "") {
+    return (
+        <View style={styles.container}>
+          <Text style={styles.saludo}>Solicitando Carnet...</Text>
+
+        <View style={styles.inputContainer}>
+            <TextInput
+            style={styles.input}
+            value={dni}
+            editable={false}
+            maxLength={11}
+            />
+            <TouchableOpacity
+            onPress={handleSendPress}
+            >
+            <Text style={{ color: "#007AFF", fontSize: 26 }}>✔</Text>
+            </TouchableOpacity>
+        </View>
+        <View>
+            <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={() => handleSendPress()}
+            >
+                <Text style={styles.buttonTextContainer}>Confirmar DNI</Text>
+            </TouchableOpacity>
+            </View>
+        </View>
+      );
+  }
 
   return (
     <View style={styles.container}>
@@ -83,6 +114,7 @@ const RequestLicence = ({ navigation }: Props) => {
       {!contextState.user?.dni && (
         <>
           <Text style={styles.instruction}>Aún no tienes un carnet</Text>
+          <Text style={styles.instruction}>Escanea tu DNI para obtener uno</Text>
           <View>
             <TouchableOpacity
               style={styles.buttonContainer}
@@ -92,27 +124,6 @@ const RequestLicence = ({ navigation }: Props) => {
             </TouchableOpacity>
           </View>
         </>
-      )}
-
-      {showDniInput && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={dni}
-            onChangeText={handleDniInput}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            placeholder="Ingrese su DNI para obtener su carnet"
-            keyboardType="numeric"
-            maxLength={11}
-          />
-          <TouchableOpacity
-            disabled={!dni || !inputFocused}
-            onPress={handleSendPress}
-          >
-            <Text style={{ color: "#007AFF", fontSize: 26 }}>✔</Text>
-          </TouchableOpacity>
-        </View>
       )}
     </View>
   );
