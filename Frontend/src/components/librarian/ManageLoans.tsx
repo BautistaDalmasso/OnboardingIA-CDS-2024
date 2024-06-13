@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Constants from "expo-constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import ScanReturnedBook from "./BarcodeScanningScreens/ScanReturnedBook";
-import { useFocusEffect } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import ScanForLoan from "./BarcodeScanningScreens/ScanForLoan";
 
-const ManageLoans = () => {
+import { Routes } from "../../common/enums/routes";
+
+interface Props {
+  navigation: NavigationProp<any, any>;
+}
+
+const ManageLoans = ({ navigation: navigator }: Props) => {
   const [scanningReturnedBook, setScanningReturnedBook] = useState(false);
   const [scanningForLoan, setScanningForLoan] = useState(false);
 
@@ -15,8 +20,8 @@ const ManageLoans = () => {
       setScanningReturnedBook(false);
       setScanningForLoan(false);
 
-      return () => {};
-    }, []),
+      return () => { };
+    }, [])
   );
 
   if (scanningReturnedBook) {
@@ -51,6 +56,16 @@ const ManageLoans = () => {
             Escanear QR y Libro para Préstamo
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigator.navigate(Routes.AssignLoanManually)}
+        >
+          <Text style={styles.buttonText}>Asignar Préstamo manualmente</Text>
+          <Text style={styles.buttonSubText}>
+            (Ingresando email y Nro. de Inventario)
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -82,6 +97,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
+    textAlign: "center",
+  },
+  buttonSubText: {
+    color: "#fff",
+    fontSize: 10,
     textAlign: "center",
   },
 });

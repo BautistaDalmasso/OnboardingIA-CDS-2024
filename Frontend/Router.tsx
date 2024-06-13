@@ -1,7 +1,7 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { DrawerContent, createDrawerNavigator } from "@react-navigation/drawer";
 import Home from "./src/components/Home";
 import Chat from "./src/components/help-chat/Chat";
 import Login from "./src/components/auth/Login";
@@ -26,6 +26,7 @@ import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrar
 import RUDUser from "./src/components/librarian/RUDUser";
 import PointsExchange from "./src/components/points/PointsExchange";
 import ManageLoans from "./src/components/librarian/ManageLoans";
+import AssignLoanManually from "./src/components/librarian/AssignLoanManually";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -113,6 +114,11 @@ const Router = () => {
                       name={Routes.ManageLoans}
                       component={ManageLoans}
                     />
+                    <Drawer.Screen
+                    name={Routes.AssignLoanManually}
+                    component={AssignLoanManually}
+                    options={{drawerItemStyle: { display: 'none' }}}
+                    />
                   </>
                 )}
 
@@ -150,6 +156,7 @@ const Router = () => {
           </>
         )}
       </Drawer.Navigator>
+
     </NavigationContainer>
   );
 };
