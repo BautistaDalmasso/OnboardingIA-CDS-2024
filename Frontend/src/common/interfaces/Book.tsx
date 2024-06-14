@@ -62,4 +62,6 @@ export interface ILoanValid {
   expiration_date: Date;
   user_email: string;
   licence_level: number;
+  type: string;
+  detail?: "new" | "reservation";
 }
