@@ -20,7 +20,8 @@ interface ScanForLoanProps {
 }
 
 const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
-  const { verifyBookInventoryBarcode, getQrCodeInfo, getBook } = useScanBarcodes();
+  const { verifyBookInventoryBarcode, getQrCodeInfo, getBook } =
+    useScanBarcodes();
   const { assignLoan } = useLoanCreation();
   const [hasCameraPermission, setHasCameraPermission] = useState<
     boolean | null
@@ -33,7 +34,9 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
   const [scanPaused, setPauseScan] = useState(false);
 
   const [qrData, setQrData] = useState<IQrCodeInfo | null>(null);
-  const [inventoryNumberFromBarcode, setInventoryNumberFromBarcode] = useState<number | null>(null);
+  const [inventoryNumberFromBarcode, setInventoryNumberFromBarcode] = useState<
+    number | null
+  >(null);
   const [scannedBook, setScannedBook] = useState<IBookWithLicence | null>(null);
 
   useFocusEffect(
@@ -96,11 +99,18 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
     }
 
     const inventoryNumber = parseInt(scanningResult.data);
-    setInventoryNumberFromBarcode(inventoryNumber);
     const book = await getBook(inventoryNumber);
-    setScannedBook(book);
 
-    setPauseScan(false);
+    if (book !== null) {
+      setInventoryNumberFromBarcode(inventoryNumber);
+      setScannedBook(book);
+    } else {
+      Alert.alert(
+        "Error Escaneando Número de Inventario",
+        `Libro con código de inventario "${inventoryNumber}" desconocido.`,
+        alertButton,
+      );
+    }
   };
 
   const handleQr = (scanningResult: BarCodeScanningResult) => {
@@ -152,7 +162,9 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
         <Text style={styles.title}>Creando Préstamo</Text>
         <View style={styles.dataContainer}>
           <Text style={styles.dataText}>Usuario: {qrData.email}</Text>
-          <Text style={styles.dataText}>Libro: {scannedBook?.book_data.title}</Text>
+          <Text style={styles.dataText}>
+            Libro: {scannedBook?.book_data.title}
+          </Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.confirmButton} onPress={confirmLoan}>
@@ -163,6 +175,7 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
             onPress={() => {
               setInventoryNumberFromBarcode(null);
               setQrData(null);
+              setPauseScan(false);
             }}
           >
             <Text style={styles.buttonText}>Cancelar</Text>

@@ -122,8 +122,10 @@ const RequestLoans = () => {
         onSearch={conductSearch}
         onClear={fetchBooks}
       />
-      <ScrollView contentContainerStyle={styles.scrollContent}
-      ref={scrollViewRef}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        ref={scrollViewRef}
+      >
         {books.map((book) => (
           <View style={styles.bookContainer} key={book.book_data.isbn}>
             <BookListItem

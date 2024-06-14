@@ -138,10 +138,10 @@ class LoanService(DatabaseUser):
         points = calculate_points_for_returned_book(loan, today=today)
         self._point_addition_service.apply_points(loan.user_email, points)
 
-    def set_status_loaned(self, loan_id: int, due_date: datetime):
-        loan_status = "loaned"
+    def set_status_loaned(self, inventory_number: int):
+        reserved_status: LOAN_STATUS = "reserved"
+        new_loan_status: LOAN_STATUS = "loaned"
         checkout_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        date_not_aviable = None
         try:
             connection = sqlite3.connect(self._db_path)
             cursor = connection.cursor()
@@ -149,9 +149,9 @@ class LoanService(DatabaseUser):
 
             cursor.execute(
                 """UPDATE loan
-                SET loanStatus = ?, expirationDate = ? , checkoutDate = ?, returnDate = ?
-                WHERE id = ? """,
-                (loan_status, due_date, checkout_date, date_not_aviable, loan_id),
+                SET loanStatus = ?, checkoutDate = ?
+                WHERE inventoryNumber = ? AND loanStatus = ?""",
+                (new_loan_status, checkout_date, inventory_number, reserved_status),
             )
             cursor.execute("""COMMIT""")
 
@@ -176,7 +176,7 @@ class LoanService(DatabaseUser):
         )
 
         self.execute_in_database(
-            """INSERT INTO loan (inventoryNumber,expirationDate, userEmail, loanStatus, reservationDate ,checkoutDate)
+            """INSERT INTO loan (inventoryNumber, expirationDate, userEmail, loanStatus, reservationDate, checkoutDate)
                             VALUES (?, ?, ?, ?, ?, ?)""",
             (
                 book.inventory_number,
@@ -216,9 +216,39 @@ class LoanService(DatabaseUser):
                 isbn=book[1],
                 licence_level=1,
                 expiration_date=None,
+                type="new",
             )
-        else:
-            return None
+
+        return self._check_reserved_book(inventory_number, user_email)
+
+    def _check_reserved_book(
+        self, inventory_number: int, user_email: str
+    ) -> LoanValidDTO | None:
+        reserved_status: LOAN_STATUS = "reserved"
+        reserved_book = self.query_database(
+            """SELECT *
+            FROM loan
+            WHERE inventoryNumber=? AND userEmail=? AND loanStatus=?""",
+            (inventory_number, user_email, reserved_status),
+        )
+
+        if bool(reserved_book):
+            book = self.query_database(
+                """SELECT inventoryNumber, isbn
+                    FROM bookInventory
+                    WHERE inventoryNumber = ?""",
+                (inventory_number,),
+            )
+
+            return LoanValidDTO(
+                inventory_number=inventory_number,
+                user_email=user_email,
+                isbn=book[1],
+                licence_level=1,
+                expiration_date=None,
+                type="reservation",
+            )
+        return None
 
     def consult_limit_by_user_email(self, email: str) -> bool:
         cant_reserved_loans = self.query_database(

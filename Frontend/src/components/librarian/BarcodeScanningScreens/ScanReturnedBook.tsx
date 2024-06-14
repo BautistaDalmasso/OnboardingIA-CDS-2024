@@ -37,7 +37,9 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
   const cameraRef = useRef<Camera>(null);
 
   const [scanPaused, setPauseScan] = useState(false);
-  const [inventoryNumberFromBarcode, setInventoryNumberFromBarcode] = useState<number | null>(null);
+  const [inventoryNumberFromBarcode, setInventoryNumberFromBarcode] = useState<
+    number | null
+  >(null);
   const [scannedBook, setScannedBook] = useState<IBookWithLicence | null>(null);
 
   useFocusEffect(
@@ -73,13 +75,25 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
     }
 
     const inventoryNumber = parseInt(scanningResult.data);
-    setInventoryNumberFromBarcode(inventoryNumber);
     const book = await getBook(inventoryNumber);
+
+    if (book === null) {
+      Alert.alert(
+        "Error Escaneando Número de Inventario",
+        `Libro con código de inventario "${inventoryNumber}" desconocido.`,
+        alertButton,
+      );
+      return;
+    }
+    setInventoryNumberFromBarcode(inventoryNumber);
     setScannedBook(book);
   };
 
   const confirmReturn = async () => {
-    const result = await markBookAsReturned(inventoryNumberFromBarcode as number, alertButton);
+    const result = await markBookAsReturned(
+      inventoryNumberFromBarcode as number,
+      alertButton,
+    );
 
     if (result) {
       onBookReturnFinished();
@@ -114,6 +128,7 @@ const ScanReturnedBook = ({ onBookReturnFinished }: ScanReturnedBookProps) => {
             style={styles.cancelButton}
             onPress={() => {
               setInventoryNumberFromBarcode(null);
+              setPauseScan(false);
             }}
           >
             <Text style={styles.buttonText}>Cancelar</Text>

@@ -29,31 +29,58 @@ const useLoanCreation = () => {
         return false;
       }
 
-      const loanValid = await LoanService.check_loan_valid(
+      const loanValid = await LoanService.checkLoanValid(
         inventoryNumber,
         userEmail,
       );
 
+      if (loanValid.detail) {
+        Alert.alert("Error", loanValid.detail);
+        return false;
+      }
+
       if (loanValid?.inventory_number == null) {
         Alert.alert("Error", "Numero de Inventario innexistente.");
         return false;
-      } else {
-        const loanRequest = createLoanData(loanValid);
-        await LoanService.assignLoan(
-          loanRequest,
-          contextState.accessToken as string,
-        );
+      }
 
-        Alert.alert(
-          "¡Creación de prestamo exitosa!",
-          "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente.",
-        );
-        return true;
+      if (loanValid.type === "new") {
+        return await assignNewLoan(loanValid);
+      } else {
+        return await markReservationCheckout(loanValid);
       }
     } catch (error) {
       console.error("Error en creación de prestamo:", error);
       return false;
     }
+  };
+
+  const assignNewLoan = async (loanData: ILoanValid) => {
+    const loanRequest = createLoanData(loanData);
+    await LoanService.assignLoan(
+      loanRequest,
+      contextState.accessToken as string,
+    );
+
+    Alert.alert(
+      "¡Creación de prestamo exitosa!",
+      "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente.",
+    );
+    return true;
+  };
+
+  const markReservationCheckout = async (loanData: ILoanValid) => {
+    await LoanService.setLoanStatusLoaned(
+      loanData.inventory_number,
+      contextState.accessToken as string,
+    );
+
+    Alert.alert(
+      "¡Retiro de Reserva Exitoso!",
+      "El retiro del libro reservado fue realizado exitosamente.",
+    );
+
+    return true;
   };
 
   const checkUser = async (userEmail: string): Promise<IUserDTO | null> => {
@@ -82,14 +109,9 @@ const useLoanCreation = () => {
     const futureDate: Date = new Date(new Date());
     futureDate.setDate(futureDate.getDate() + 7);
 
-    const loanRequest: ILoanValid = {
-      isbn: book.isbn,
-      expiration_date: futureDate,
-      user_email: book.user_email,
-      inventory_number: book.inventory_number,
-      licence_level: 0,
-    };
-    return loanRequest;
+    book.expiration_date = futureDate;
+
+    return book;
   };
 
   return {
