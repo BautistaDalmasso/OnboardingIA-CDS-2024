@@ -26,6 +26,7 @@ export interface IBookWithLicence {
   book_data: IMarcBook;
   licence_required: number;
   availability: IBookStatus;
+  detail?: string;
 }
 
 export interface IBook {

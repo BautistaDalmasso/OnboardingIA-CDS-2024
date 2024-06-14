@@ -14,8 +14,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { IDniData } from "../../common/interfaces/User";
 
 interface ScanForDniProps {
-    onDniScanned: (dni: IDniData) => void;
-    onCancel: () => void;
+  onDniScanned: (dni: IDniData) => void;
+  onCancel: () => void;
 }
 
 const ScanDni = ({ onDniScanned, onCancel }: ScanForDniProps) => {
@@ -31,7 +31,6 @@ const ScanDni = ({ onDniScanned, onCancel }: ScanForDniProps) => {
   const [scanPaused, setPauseScan] = useState(false);
 
   const [dni, setDni] = useState("");
-
 
   useFocusEffect(
     React.useCallback(() => {
@@ -58,22 +57,21 @@ const ScanDni = ({ onDniScanned, onCancel }: ScanForDniProps) => {
 
     const scanningResultType = scanningResult.type as unknown as number;
     if (scanningResultType === 2048) {
-        handleDniScan(scanningResult)
-    }
-    else {
-        console.log(typeof scanningResult.type);
-        console.log(scanningResult.type);
-        Alert.alert(
-          "Error",
-          "Tipo de código de barras desconocido.",
-          alertButton,
-        );
+      handleDniScan(scanningResult);
+    } else {
+      console.log(typeof scanningResult.type);
+      console.log(scanningResult.type);
+      Alert.alert(
+        "Error",
+        "Tipo de código de barras desconocido.",
+        alertButton,
+      );
     }
   };
 
   const handleDniScan = async (scanningResult: BarCodeScanningResult) => {
     onDniScanned(await getDniData(scanningResult.data));
-  }
+  };
 
   const alertButton: AlertButton[] = [
     {
@@ -82,7 +80,6 @@ const ScanDni = ({ onDniScanned, onCancel }: ScanForDniProps) => {
       style: "cancel",
     },
   ];
-
 
   if (!hasCameraPermission) {
     return (
@@ -108,13 +105,12 @@ const ScanDni = ({ onDniScanned, onCancel }: ScanForDniProps) => {
       <View style={styles.overlay}>
         <View style={styles.streakContainer}>
           <View style={[styles.streak, styles.waitingStreak]}>
-              <Text style={styles.streakText}>Escanee el código de barras frontal de su DNI...</Text>
+            <Text style={styles.streakText}>
+              Escanee el código de barras frontal de su DNI...
+            </Text>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.largeButton}
-          onPress={onCancel}
-        >
+        <TouchableOpacity style={styles.largeButton} onPress={onCancel}>
           <Text style={styles.buttonText}>Volver</Text>
         </TouchableOpacity>
       </View>

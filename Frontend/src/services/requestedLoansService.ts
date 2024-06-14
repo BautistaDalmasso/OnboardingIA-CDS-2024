@@ -42,7 +42,7 @@ export class RequestedLoansService {
         url: `${this.loansRoute}/loan_by_id?id=${id}`,
         method: "GET",
       });
-//////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////
       return loans;
     } catch (error) {
       console.error("Error fetching loans:", error);

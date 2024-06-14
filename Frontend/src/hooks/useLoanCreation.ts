@@ -49,8 +49,6 @@ const useLoanCreation = () => {
       } else {
         return await markReservationCheckout(loanValid);
       }
-
-
     } catch (error) {
       console.error("Error en creación de prestamo:", error);
       return false;
@@ -69,21 +67,21 @@ const useLoanCreation = () => {
       "La realización del prestamo del libro solicitado por el usuario fue registrado exitosamente.",
     );
     return true;
-  }
+  };
 
   const markReservationCheckout = async (loanData: ILoanValid) => {
     await LoanService.setLoanStatusLoaned(
-        loanData.inventory_number,
-        contextState.accessToken as string,
+      loanData.inventory_number,
+      contextState.accessToken as string,
     );
 
     Alert.alert(
-        "¡Retiro de Reserva Exitoso!",
-        "El retiro del libro reservado fue realizado exitosamente.",
+      "¡Retiro de Reserva Exitoso!",
+      "El retiro del libro reservado fue realizado exitosamente.",
     );
 
     return true;
-  }
+  };
 
   const checkUser = async (userEmail: string): Promise<IUserDTO | null> => {
     try {

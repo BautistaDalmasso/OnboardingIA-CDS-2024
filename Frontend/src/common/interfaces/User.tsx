@@ -100,13 +100,12 @@ export interface IQrCodeInfo {
 }
 
 export interface IDniData {
-
-    lastName: string;
-    firstName: string;
-    gender: string;
-    dni: string;
-    exemplar: string;
-    birthDay: string;
-    expirationDay: string;
-    number: string;
+  lastName: string;
+  firstName: string;
+  gender: string;
+  dni: string;
+  exemplar: string;
+  birthDay: string;
+  expirationDay: string;
+  number: string;
 }

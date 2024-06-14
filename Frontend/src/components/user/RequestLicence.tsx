@@ -61,7 +61,6 @@ const RequestLicence = ({ navigation }: Props) => {
 
       Alert.alert("¡Felicidades!", "A solicitado su carnet con exito");
       setLicenceAcquired(true);
-
     } catch (error) {
       Alert.alert("Error", "No se pudo solicitar su carnet");
     }
@@ -69,43 +68,44 @@ const RequestLicence = ({ navigation }: Props) => {
 
   if (showDniInput) {
     return (
-        <>
-            <ScanDni
-                onDniScanned={(dni: IDniData) => {setDni(dni.dni); setShowDniInput(false); }}
-                onCancel={() => setShowDniInput(false)}
-            />
-        </>
-    )
+      <>
+        <ScanDni
+          onDniScanned={(dni: IDniData) => {
+            setDni(dni.dni);
+            setShowDniInput(false);
+          }}
+          onCancel={() => setShowDniInput(false)}
+        />
+      </>
+    );
   }
 
   if (dni !== "") {
     return (
-        <View style={styles.container}>
-          <Text style={styles.saludo}>Solicitando Carnet...</Text>
+      <View style={styles.container}>
+        <Text style={styles.saludo}>Solicitando Carnet...</Text>
 
         <View style={styles.inputContainer}>
-            <TextInput
+          <TextInput
             style={styles.input}
             value={dni}
             editable={false}
             maxLength={11}
-            />
-            <TouchableOpacity
-            onPress={handleSendPress}
-            >
+          />
+          <TouchableOpacity onPress={handleSendPress}>
             <Text style={{ color: "#007AFF", fontSize: 26 }}>✔</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
         <View>
-            <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={() => handleSendPress()}
-            >
-                <Text style={styles.buttonTextContainer}>Confirmar DNI</Text>
-            </TouchableOpacity>
-            </View>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => handleSendPress()}
+          >
+            <Text style={styles.buttonTextContainer}>Confirmar DNI</Text>
+          </TouchableOpacity>
         </View>
-      );
+      </View>
+    );
   }
 
   return (
@@ -114,7 +114,9 @@ const RequestLicence = ({ navigation }: Props) => {
       {!contextState.user?.dni && (
         <>
           <Text style={styles.instruction}>Aún no tienes un carnet</Text>
-          <Text style={styles.instruction}>Escanea tu DNI para obtener uno</Text>
+          <Text style={styles.instruction}>
+            Escanea tu DNI para obtener uno
+          </Text>
           <View>
             <TouchableOpacity
               style={styles.buttonContainer}
