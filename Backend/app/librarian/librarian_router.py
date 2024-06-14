@@ -148,3 +148,8 @@ async def get_users_by_role(
 async def get_users_length(role: str = Query(...)):
     result = user_service.get_users_length(role)
     return result
+
+
+@router.get("/delete_user")
+def delete_user_by_email(user_email: str):
+    return librarian_service.delete_user(user_email)

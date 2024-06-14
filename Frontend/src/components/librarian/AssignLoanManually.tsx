@@ -89,6 +89,7 @@ const AssignLoanManually = ({ navigation: navigator }: Props) => {
       }
       setShowUser(true);
       handleChangePage(pages.ENTER_INVENTORY_NUMBER);
+      setInventoryNumber(0);
     } catch (error) {
       console.error("Error in:", error);
     } finally {

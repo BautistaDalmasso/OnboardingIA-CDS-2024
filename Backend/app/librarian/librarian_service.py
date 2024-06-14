@@ -5,6 +5,7 @@ from app.user.user_dtos import TokenDataDTO, UpdateUserRoleDTO, UserDTO
 from app.database.database_user import DatabaseUser
 from pathlib import Path
 import sqlite3
+from ..models import User
 
 user_service = UserService(DatabaseUser)
 
@@ -131,3 +132,23 @@ class LibrarianService(DatabaseUser):
             }
         except sqlite3.IntegrityError:
             return {"error": "No se pudo agregar bibliotecario"}
+
+    def delete_user(self, user_email: str) -> User:
+        try:
+            books_no_returned = self.query_database(
+                """SELECT * FROM loan WHERE userEmail = ? AND expirationDate >= date('now')""",
+                (user_email,),
+            )
+            queries = [
+                f"DELETE FROM users WHERE email = ?",
+                f"DELETE FROM deviceRSAS WHERE email = ?",
+                f"DELETE FROM requested_books WHERE userEmail = ?",
+            ]
+            if not books_no_returned:
+                for query in queries:
+                    self.execute_in_database(query, (user_email,))
+                return self.get_user_by_email(user_email)
+        except sqlite3.IntegrityError:
+            return {
+                "error": "No se pudo dar de baja el usuario, tiene que devolver libros prestados."
+            }
