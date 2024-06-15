@@ -26,6 +26,7 @@ export interface IBookWithLicence {
   book_data: IMarcBook;
   licence_required: number;
   availability: IBookStatus;
+  detail?: string;
 }
 
 export interface IBook {
@@ -62,4 +63,6 @@ export interface ILoanValid {
   expiration_date: Date;
   user_email: string;
   licence_level: number;
+  type: string;
+  detail?: "new" | "reservation";
 }

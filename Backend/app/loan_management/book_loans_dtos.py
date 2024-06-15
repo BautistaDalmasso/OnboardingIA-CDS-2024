@@ -58,3 +58,4 @@ class LoanValidDTO(BaseModel):
     expiration_date: datetime | None
     user_email: str
     licence_level: int
+    type: Literal["new"] | Literal["reservation"]

@@ -31,15 +31,14 @@ export class LoanService {
   }
 
   static async setLoanStatusLoaned(
-    loan_id: number,
-    due_date: string,
+    inventory_number: number,
     token: string,
   ): Promise<ILoanInformation> {
-    return baseFetch<{ loan_id: number; due_date: string }, ILoanInformation>({
+    return baseFetch<{ inventory_number: number }, ILoanInformation>({
       token,
-      url: `${this.baseRoute}/set_status_loaned?loan_id=${loan_id}&due_date=${due_date}`,
+      url: `${this.baseRoute}/set_status_loaned?inventory_number=${inventory_number}`,
       method: "PATCH",
-      data: { loan_id, due_date },
+      data: { inventory_number },
     });
   }
 
@@ -70,7 +69,7 @@ export class LoanService {
     }
   }
 
-  static async check_loan_valid(inventory_number: number, user_email: string) {
+  static async checkLoanValid(inventory_number: number, user_email: string) {
     try {
       const book = await baseFetch<void, ILoanValid>({
         url: `${this.baseRoute}/check_loan_valid?inventory_number=${inventory_number}&user_email=${user_email}`,

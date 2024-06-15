@@ -32,23 +32,25 @@ const useScanBarcodes = () => {
   const getBook = async (inventoryNumber: number) => {
     const book = await LibraryService.getBookByInventoryNumber(inventoryNumber);
 
+    if (book.detail) {
+      return null;
+    }
     return book;
   };
 
   const getDniData = async (barcodeData: string): Promise<IDniData> => {
-    const splitData = barcodeData.split("@")
+    const splitData = barcodeData.split("@");
     return {
-
-        lastName: splitData[1],
-        firstName: splitData[2],
-        gender: splitData[3],
-        dni: splitData[4],
-        exemplar: splitData[5],
-        birthDay: splitData[6],
-        expirationDay: splitData[7],
-        number: splitData[8],
+      lastName: splitData[1],
+      firstName: splitData[2],
+      gender: splitData[3],
+      dni: splitData[4],
+      exemplar: splitData[5],
+      birthDay: splitData[6],
+      expirationDay: splitData[7],
+      number: splitData[8],
     };
-  }
+  };
 
   return {
     verifyBookInventoryBarcode,

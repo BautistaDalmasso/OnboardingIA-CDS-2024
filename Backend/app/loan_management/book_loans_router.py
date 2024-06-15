@@ -106,13 +106,13 @@ async def book_loans_by_id(id: int, token=Depends(HTTPBearer())):
 
 
 @router.patch("/set_status_loaned")
-async def set_status_loaned(loan_id: int, due_date: str, token=Depends(HTTPBearer())):
-    expiration_date = datetime.strptime(due_date, "%Y-%m-%d")
+async def set_status_loaned(inventory_number: int, token=Depends(HTTPBearer())):
+
     try:
         token_data = await verify_token(token.credentials)
 
         if token_data.role == "librarian":
-            loan_service.set_status_loaned(loan_id, expiration_date)
+            loan_service.set_status_loaned(inventory_number)
 
     except LoanNotFound as e:
         raise HTTPException(
