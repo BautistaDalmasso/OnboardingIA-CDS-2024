@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CustomTextInput from "../../common/CustomTextInput";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface SelectUserProps {
   inputValue: string;
@@ -10,6 +11,14 @@ interface SelectUserProps {
 
 const SelectUser = ({ onPressSearch, onPressScanQr }: SelectUserProps) => {
   const [userEmail, setUserEmail] = useState("");
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setUserEmail("")
+      };
+    }, []),
+  );
 
   return (
     <>

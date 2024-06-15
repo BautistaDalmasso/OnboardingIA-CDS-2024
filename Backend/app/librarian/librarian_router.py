@@ -148,3 +148,20 @@ async def get_users_by_role(
 async def get_users_length(role: str = Query(...)):
     result = user_service.get_users_length(role)
     return result
+
+
+@router.get("/delete_user")
+async def delete_user_by_email(user_email: str, token=Depends(HTTPBearer())):
+    await librarian_permissions_verification(token.credentials)
+    return librarian_service.delete_user(user_email)
+
+
+@router.get("/check_delete_user")
+async def is_valid_user_to_delete(user_email: str, token=Depends(HTTPBearer())):
+    token_data = await librarian_permissions_verification(token.credentials)
+    print(token_data.email)
+    print(user_email)
+    if token_data.email == user_email:
+        return False
+    else:
+        return True

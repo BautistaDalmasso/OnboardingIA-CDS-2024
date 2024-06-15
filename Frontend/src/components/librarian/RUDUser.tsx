@@ -25,7 +25,7 @@ enum pages {
 }
 
 const RUDUser = () => {
-  const { consultUser } = useRUDUsers();
+  const { consultUser,deleteUser } = useRUDUsers();
   const [inputValue, setInputValue] = useState("");
   const [_, setLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -54,6 +54,19 @@ const RUDUser = () => {
 
     handleLoadingData(parsedResult.email);
     setScanningQr(false);
+  };
+
+  const unsubscribeUser = async () => {
+    try {
+      setLoading(true);
+      deleteUser((user as IUserDTO).email)
+      handleChangePage(pages.USER_SELECT)
+    } catch (error) {
+      console.error("Error in:", error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const gotoUpgradeLicenceLevel = async () => {
@@ -134,6 +147,7 @@ const RUDUser = () => {
             onPressSearchAnotherUser={() => (
               handleChangePage(pages.USER_SELECT), setInputValue("")
             )}
+            onPressDeleteUser={unsubscribeUser}
           />
         </View>
 

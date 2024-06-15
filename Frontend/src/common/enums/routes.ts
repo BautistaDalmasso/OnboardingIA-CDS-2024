@@ -21,4 +21,5 @@ export enum Routes {
   LibrarianLoans = "Prestamos",
   LoanCreation = "Alta de prestamo",
   ManageLoans = "Gestión de Préstamos",
+  AssignLoanManually= "Asignación de prestamo manual",
 }
