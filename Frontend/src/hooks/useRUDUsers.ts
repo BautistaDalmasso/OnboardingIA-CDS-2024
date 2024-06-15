@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import { LibrarianService } from "../services/librarianService";
 import { useContextState } from "../ContexState";
-import { IUser, IUserDTO } from "../common/interfaces/User";
+import { IUser, IUserDTO, IDowngradeUserRole } from "../common/interfaces/User";
 import { LicenceLevel } from "../common/enums/licenceLevels";
 import { isValidDni, isValidEmail } from "../common/utils/inputCheck";
 
@@ -100,12 +100,27 @@ const useRUDUsers = () => {
     }));
   };
 
+  const deleteUser = async   (userEmail: string) => {
+    const isValidRequestDeletion= await LibrarianService.checkUnsubscribeRequest(userEmail,  contextState.accessToken as string,)
+    if(isValidRequestDeletion==false){
+      Alert.alert("ERROR","Autoeliminación denegada.");
+      return;
+    }
+    const response = await LibrarianService.deleteUser(userEmail,  contextState.accessToken as string,);
+
+    if (!response) {
+      Alert.alert("", "¡Usuario dado de baja exitosamente!");
+    }
+  }
+
+
   return {
     consultUser,
     updateUsersName,
     updateUsersLastName,
     updateUsersDni,
     updateUsersLicence,
+    deleteUser,
   };
 };
 

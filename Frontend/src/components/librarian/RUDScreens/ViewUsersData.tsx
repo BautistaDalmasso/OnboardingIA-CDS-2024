@@ -13,6 +13,7 @@ interface ViewUsersDataProps {
   onPressUpdateData: () => void;
   onPressUpdateLicence: () => void;
   onPressSearchAnotherUser: () => void;
+  onPressDeleteUser:() => void;
 }
 
 const ViewUsersData = ({
@@ -20,6 +21,7 @@ const ViewUsersData = ({
   onPressUpdateData,
   onPressUpdateLicence,
   onPressSearchAnotherUser,
+  onPressDeleteUser,
 }: ViewUsersDataProps) => {
   if (user === null) {
     return <></>;
@@ -44,6 +46,10 @@ const ViewUsersData = ({
           <Text style={styles.buttonText}>Mejorar nivel de carnet</Text>
         </TouchableOpacity>
       )}
+
+        <TouchableOpacity style={styles.button} onPress={onPressDeleteUser}>
+          <Text style={styles.buttonText}>Dar de baja al usuario</Text>
+        </TouchableOpacity>
 
       <LinkButton
         text="Buscar otro usuario"

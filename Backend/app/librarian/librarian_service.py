@@ -134,15 +134,16 @@ class LibrarianService(DatabaseUser):
             return {"error": "No se pudo agregar bibliotecario"}
 
     def delete_user(self, user_email: str) -> User:
+        statusloaned = "loaned"
+        statusdebt = "loan_return_overdue"
         try:
             books_no_returned = self.query_database(
-                """SELECT * FROM loan WHERE userEmail = ? AND expirationDate >= date('now')""",
-                (user_email,),
+                """SELECT * FROM loan WHERE userEmail = ? AND  (loanStatus= ? OR loanStatus= ?) """,
+                (user_email, statusloaned, statusdebt),
             )
             queries = [
                 f"DELETE FROM users WHERE email = ?",
                 f"DELETE FROM deviceRSAS WHERE email = ?",
-                f"DELETE FROM requested_books WHERE userEmail = ?",
             ]
             if not books_no_returned:
                 for query in queries:
