@@ -21,7 +21,8 @@ def initialize_database(db_path: Path) -> None:
                     licenceLevel INTEGER,
                     role TEXT,
                     lastPermissionUpdate DATE,
-                    points INTEGER)""",
+                    points INTEGER,
+                    loanLimit INTEGER )""",
         tuple(),
         db_path,
     )

@@ -14,4 +14,13 @@ export class PointsExchangeService {
       token: accessToken,
     });
   }
+
+  static async updateToIncreaseLimit(accessToken: string) {
+    return await baseFetch<void, void>({
+      url: `${this.baseRoute}/increase_limit`,
+      method: "POST",
+      token: accessToken,
+    });
+  }
+
 }

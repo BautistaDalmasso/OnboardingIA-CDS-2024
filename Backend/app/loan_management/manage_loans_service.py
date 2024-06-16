@@ -250,6 +250,12 @@ class LoanService(DatabaseUser):
             )
         return None
 
+    def limit_of_user(self, email: str) -> int:
+        data_of_limit = self.query_database(
+            """SELECT loanLimit FROM users WHERE email= ?""", (email,)
+        )
+        return data_of_limit[0]
+
     def consult_limit_by_user_email(self, email: str) -> bool:
         cant_reserved_loans = self.query_database(
             """SELECT COUNT(*)
@@ -266,8 +272,18 @@ class LoanService(DatabaseUser):
             (email, "loaned"),
         )
 
-        # TODO: fix
-        if cant_reserved_loans[0] >= 3 or cant_loaned_books[0] >= 3:
+        limit_of_user = self.limit_of_user(email)
+        if (
+            cant_reserved_loans[0] >= limit_of_user
+            or cant_loaned_books[0] >= limit_of_user
+        ):
             return False
         else:
             return True
+
+    def increase_limit_by_user_email(self, email: str):
+        limit_of_user = self.limit_of_user(email)
+        self.execute_in_database(
+            """UPDATE users SET loanLimit = ? WHERE email = ?""",
+            (limit_of_user + 3, email),
+        )

@@ -6,7 +6,7 @@ import PointExchangeOption from "./PointExchangeOption";
 
 const PointsExchange = () => {
   const { contextState } = useContextState();
-  const { exchangeForTrustedLicence } = usePointsExchange();
+  const { exchangeForTrustedLicence, exchangeForIncreaseLimit } = usePointsExchange();
 
   if (contextState.user === null) {
     return (
@@ -30,6 +30,14 @@ const PointsExchange = () => {
           pointsCost={1000}
           onExchange={async () => {
             await exchangeForTrustedLicence();
+          }}
+          disabled={(contextState.user.licenceLevel as number) >= 2}
+        />
+        <PointExchangeOption
+          optionName={"Solicitar más Libros"}
+          pointsCost={100}
+          onExchange={async () => {
+            await exchangeForIncreaseLimit();
           }}
           disabled={(contextState.user.licenceLevel as number) >= 2}
         />

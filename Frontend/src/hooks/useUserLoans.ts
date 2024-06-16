@@ -17,7 +17,7 @@ const useUserLoans = () => {
     if (!checkLimite) {
       Alert.alert(
         "¡Atención, ha solicitado demasiados libros!",
-        "Para poder solicitar otro libro debera acercarse a la Biblioteca.",
+        "Para poder solicitar otro libro debera canjear puntos.",
       );
       return;
     } else {
