@@ -32,6 +32,7 @@ const usePointsExchange = () => {
     await PointsExchangeService.updateToIncreaseLimit(
       contextState.accessToken as string,
     )
+    Alert.alert("¡¡Felicitaciones!!","Ve a Solicitar préstamos. Ya puedes solicitar más libros.")
   }
 
   return {
