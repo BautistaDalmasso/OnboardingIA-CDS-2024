@@ -40,8 +40,8 @@ class UserService(DatabaseUser):
 
         try:
             self.execute_in_database(
-                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel, lastPermissionUpdate, points)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO users (firstName, lastName, email, password, role, licenceLevel, lastPermissionUpdate, points, loanLimit)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     register_information.firstName,
                     register_information.lastName,
@@ -50,6 +50,7 @@ class UserService(DatabaseUser):
                     "basic",
                     LicenceLevel.NONE,
                     time,
+                    0,
                     0,
                 ),
             )
