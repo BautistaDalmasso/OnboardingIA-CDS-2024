@@ -28,10 +28,19 @@ const usePointsExchange = () => {
     return await finalizeLogin(response);
   };
 
+  const exchangeForIncreaseLimit= async () => {
+    await PointsExchangeService.updateToIncreaseLimit(
+      contextState.accessToken as string,
+    )
+  }
+
   return {
     hasEnoughPoints,
     exchangeForTrustedLicence,
+    exchangeForIncreaseLimit,
   };
+
+
 };
 
 export default usePointsExchange;

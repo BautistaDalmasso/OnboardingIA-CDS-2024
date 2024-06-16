@@ -28,3 +28,15 @@ async def exchange_points_for_trusted_licence(token=Depends(HTTPBearer())):
         )
 
     return result
+
+
+@router.post("/increase_limit")
+async def exchange_points_for_increase_limit(token=Depends(HTTPBearer())):
+    token_data: TokenDataDTO = await verify_token(token.credentials)
+    try:
+        point_exchange_service.exchange_for_increase_limit(token_data)
+    except InsufficientPoints as e:
+        raise HTTPException(
+            status_code=400,
+            detail="El usuario no tiene puntos suficientes para esta acción",
+        )

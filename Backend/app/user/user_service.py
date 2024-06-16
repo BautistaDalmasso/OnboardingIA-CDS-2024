@@ -51,7 +51,7 @@ class UserService(DatabaseUser):
                     LicenceLevel.NONE,
                     time,
                     0,
-                    0,
+                    3,
                 ),
             )
 

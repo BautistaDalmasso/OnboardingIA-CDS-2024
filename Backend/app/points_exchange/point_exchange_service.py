@@ -4,8 +4,13 @@ from app.licence_levels.licence_level import LicenceLevel
 from app.licence_levels.modify_licence_service import ModifyLicenceService
 from app.points_exchange.point_addition_service import apply_minus_points_in_transaction
 from app.user.user_errors import UserNotFound
-from app.points_exchange.points import TRUSTED_LICENCE_UPGRADE_COST
+from app.points_exchange.points import (
+    TRUSTED_LICENCE_UPGRADE_COST,
+    POINTS_PER_EARLY_DAY,
+)
 from app.database.database_user import DatabaseUser
+from app.loan_management.manage_loans_service import LoanService
+from app.file_paths import CATALOGUE_PATH
 
 
 class PointExchangeService(DatabaseUser):
@@ -13,6 +18,7 @@ class PointExchangeService(DatabaseUser):
     def __init__(self, db_path: Path) -> None:
         super().__init__(db_path)
         self._modify_licence_service = ModifyLicenceService(db_path)
+        self._loan_service = LoanService(db_path, CATALOGUE_PATH)
 
     def exchange_for_trusted_licence(self, token_data: TokenDataDTO) -> LOGIN_RESPONSE:
 
@@ -43,6 +49,10 @@ class PointExchangeService(DatabaseUser):
                 )
 
             apply_minus_points_in_transaction(user_email, point_cost, cursor)
+
+    def exchange_for_increase_limit(self, token_data: TokenDataDTO):
+        self._remove_points_if_theres_enough(token_data.email, POINTS_PER_EARLY_DAY)
+        self._loan_service.increase_limit_by_user_email(token_data.email)
 
 
 class InsufficientPoints(Exception): ...

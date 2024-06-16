@@ -250,7 +250,13 @@ class LoanService(DatabaseUser):
             )
         return None
 
-    def cant_reserved_loans(self, email: str) -> int:
+    def limit_of_user(self, email: str) -> int:
+        data_of_limit = self.query_database(
+            """SELECT loanLimit FROM users WHERE email= ?""", (email,)
+        )
+        return data_of_limit[0]
+
+    def consult_limit_by_user_email(self, email: str) -> bool:
         cant_reserved_loans = self.query_database(
             """SELECT COUNT(*)
                 FROM loan
@@ -258,9 +264,6 @@ class LoanService(DatabaseUser):
                 AND loanStatus = ? AND returnDate IS NULL""",
             (email, "reserved"),
         )
-        return cant_reserved_loans[0]
-
-    def cant_loaned_books(self, email: str) -> int:
         cant_loaned_books = self.query_database(
             """SELECT COUNT(*)
                 FROM loan
@@ -268,57 +271,19 @@ class LoanService(DatabaseUser):
                 AND loanStatus = ? AND returnDate IS NULL""",
             (email, "loaned"),
         )
-        return cant_loaned_books[0]
 
-    def cant_points_user(self, email: str) -> int:
-        points_user = self.query_database(
-            """SELECT points FROM users WHERE email= ?""", (email,)
-        )
-        return points_user[0]
-
-    def limit_amount_of_loans(
-        self,
-        email: str,
-        points_user: int,
-        cant_reserved_loans: int,
-        cant_loaned_books: int,
-    ):
-
-        is_limit_default: bool = cant_reserved_loans == 3 or cant_loaned_books == 3
-
-        if points_user < 100 and is_limit_default:
-            self.execute_in_database(
-                """UPDATE users SET loanLimit = ? WHERE email = ?""",
-                (3, email),
-            )
-        if points_user >= 100:
-            self.execute_in_database(
-                """UPDATE users SET loanLimit = ? WHERE email = ?""",
-                (5, email),
-            )
-
-    def consult_limit_by_user_email(self, email: str) -> bool:
-
-        points_user = self.cant_points_user(email)
-        cant_reserved_loans = self.cant_reserved_loans(email)
-        cant_loaned_books = self.cant_loaned_books(email)
-
-        self.limit_amount_of_loans(
-            email, points_user, cant_reserved_loans, cant_loaned_books
-        )
-
-        limit_user = self.query_database(
-            """SELECT loanLimit FROM users WHERE email= ?""", (email,)
-        )
-        loan_limit = limit_user[0]
-
-        is_limit_reached = (
-            cant_reserved_loans >= loan_limit or cant_loaned_books >= loan_limit
-        )
-
-        if loan_limit == 3 and is_limit_reached and points_user < 100:
-            return False
-        if loan_limit == 5 and is_limit_reached and points_user >= 100:
+        limit_of_user = self.limit_of_user(email)
+        if (
+            cant_reserved_loans[0] >= limit_of_user
+            or cant_loaned_books[0] >= limit_of_user
+        ):
             return False
         else:
             return True
+
+    def increase_limit_by_user_email(self, email: str):
+        limit_of_user = self.limit_of_user(email)
+        self.execute_in_database(
+            """UPDATE users SET loanLimit = ? WHERE email = ?""",
+            (limit_of_user + 3, email),
+        )
