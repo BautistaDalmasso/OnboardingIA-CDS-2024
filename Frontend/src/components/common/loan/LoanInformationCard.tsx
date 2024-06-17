@@ -53,7 +53,6 @@ const LoanInformationCard: React.FC<LoanInformationCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: hp('30%'),
     width: wp('95%'),
     borderRadius: 15,
     shadowColor: "#000",
@@ -68,6 +67,7 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
   },
   titleContainer: {
+    marginVertical: hp('1%'),
     flex: 1,
     justifyContent:"center",
   },
@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     flex: 1,
+    marginVertical: hp('1%'),
     justifyContent: "flex-end",
     alignItems: "flex-end",
   },

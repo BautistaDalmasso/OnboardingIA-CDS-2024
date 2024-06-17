@@ -38,8 +38,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: hp('25%'),
-    width: wp('100%'),
+    flex: 0.3,
+   // height: hp('25%'),
+    //width: wp('100%'),
   },
   image: {
     flex: 1,

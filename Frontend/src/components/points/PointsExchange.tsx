@@ -34,7 +34,7 @@ const PointsExchange = () => {
           disabled={(contextState.user.licenceLevel as number) >= 2}
         />
         <PointExchangeOption
-          optionName={"Solicitar más Libros"}
+          optionName={"Aumentar limite de reservas"}
           pointsCost={100}
           onExchange={async () => {
             await exchangeForIncreaseLimit();
