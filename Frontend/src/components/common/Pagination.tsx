@@ -14,6 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
   goToNextPage,
   lastPage,
 }) => {
+  console.log(currentPage)
   return (
     <View style={styles.pageContainer}>
       <TouchableOpacity

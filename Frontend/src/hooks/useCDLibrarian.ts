@@ -10,10 +10,9 @@ import { ShowUserPage } from "../common/enums/Page";
 const useCDLibrarian = () => {
   const { contextState } = useContextState();
   const [userStatus, setUserStatus] = useState<string[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
   const [selectedRole, setSelectedRole] = useState(UserRole.BASIC);
   const [users, setUsers] = useState<IUser[]>([]);
-  const { goToNextPage, goToPreviousPage, setCurrentPage, currentPage } =
+  const { goToNextPage, goToPreviousPage, setCurrentPage, currentPage, totalPages, setTotalPages } =
     usePagination();
 
   const CDLibrarianConst = { userStatus, selectedRole, users, setUserStatus };
@@ -33,10 +32,9 @@ const useCDLibrarian = () => {
         selectedRole,
         currentPage,
       );
-
+      calculateTotalPages();
       if (data.length > 0) {
         setUsers(data);
-        calculateTotalPages();
         const librarianEmails = data
           .filter((user) => user.role !== UserRole.BASIC)
           .map((user) => user.email);
