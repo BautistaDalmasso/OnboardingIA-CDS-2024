@@ -1,9 +1,0 @@
-{
-  "platforms": ["ios", "tvos", "android", "web"],
-  "ios": {
-    "modules": ["FacialLoginModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.faciallogin.FacialLoginModule"]
-  }
-}

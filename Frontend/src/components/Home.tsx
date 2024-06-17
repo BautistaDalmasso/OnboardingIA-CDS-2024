@@ -12,7 +12,6 @@ import { Routes } from "../common/enums/routes";
 import { useContextState } from "../ContexState";
 import { ConnectionService } from "../services/connectionService";
 import { ConnectionType } from "../common/enums/connectionType";
-import useOfflineAuth from "../hooks/useOfflineAuth";
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -20,7 +19,6 @@ interface Props {
 
 const Home = ({ navigation }: Props) => {
   const { contextState, setContextState } = useContextState();
-  const { offlineAuthenticate } = useOfflineAuth();
   const [showSignup, setShowSignup] = useState(true);
   const [showUnlock, setShowUnlock] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,7 +43,7 @@ const Home = ({ navigation }: Props) => {
     setConnection();
     setLoading(false);
 
-    return () => {};
+    return () => { };
   }, []);
 
   const handleLoginFinger = async () => {
@@ -87,19 +85,6 @@ const Home = ({ navigation }: Props) => {
     ) {
       navigation.navigate(Routes.Logout);
     }
-    setLoading(false);
-  };
-
-  const handleOfflineAuth = async () => {
-    setLoading(true);
-
-    const successOfflineAuth = await offlineAuthenticate();
-
-    if (successOfflineAuth) {
-      // TODO: make a nicer offline home screen instead.
-      navigation.navigate(Routes.MyLoans);
-    }
-
     setLoading(false);
   };
 
@@ -203,18 +188,12 @@ const Home = ({ navigation }: Props) => {
               <>
                 <TouchableOpacity
                   style={styles.noConnButton}
-                  onPress={handleOfflineAuth}
+                  onPress={handleLoginFace}
                   disabled={loading}
                 >
                   <Text style={styles.noConnButtonText}>
                     Ingresar sin conexion
                   </Text>
-
-                  <Image
-                    source={require("../assets/fingerprint.png")}
-                    style={styles.fingerprintIconLogin}
-                    resizeMode="contain"
-                  />
                 </TouchableOpacity>
               </>
             )}

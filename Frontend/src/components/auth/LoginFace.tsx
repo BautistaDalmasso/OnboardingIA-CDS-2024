@@ -1,7 +1,6 @@
 import { NavigationProp } from "@react-navigation/native";
 import { FacialRecognitionService } from "../../services/facialRecognitionService";
-import Capture from "../common/Capture";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes } from "../../common/enums/routes";
 import {
   View,
@@ -12,21 +11,49 @@ import {
   Alert,
 } from "react-native";
 import useFinalizeLogin from "../../hooks/useFinalizeLogin";
+import FaceRecognition from "./FaceRecognition/FaceRecognition";
+import { useContextState } from "../../ContexState";
+import useOfflineStorage from "../../hooks/useOfflineStorage";
+import useOfflineAuth from "../../hooks/useOfflineAuth";
+import { isSameFace } from "../../common/utils/face-recognition";
+import { IUser } from "../../common/interfaces/User";
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
 
 const LoginFace = ({ navigation }: Props) => {
+  const { contextState } = useContextState();
   const [email, setEmail] = useState("");
+  const [user, setUser] = useState<IUser | null>(null);
   const [capturing, setCapturing] = useState(false);
   const { finalizeLogin } = useFinalizeLogin();
+  const { offlineAuthenticate } = useOfflineAuth();
+  const { getLastUser } = useOfflineStorage();
 
-  const sendRegister = async (imageURI: string) => {
+  const setLastUser = async () => {
+    if (!contextState.isConnected) {
+      const user = await getLastUser()
+      if (!user) return Alert.alert("No hay ningún usuario guardado en este dispositivo.");
+      setUser(user)
+      setEmail(user?.email)
+    }
+  }
+
+  useEffect(() => {
+    setLastUser();
+  }, [])
+
+  const handleError = (error: unknown) => {
+    console.error("Error logging in:", error);
+    Alert.alert("No pudimos verificar tu identidad.");
+  }
+
+  const handleFaceLogin = async (embedding: number[]) => {
     try {
       const response = await FacialRecognitionService.compareFace(
         email,
-        imageURI,
+        embedding,
       );
 
       const loginSuccess = await finalizeLogin(response);
@@ -37,12 +64,33 @@ const LoginFace = ({ navigation }: Props) => {
         setEmail("");
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      handleError(error)
+    } finally {
+      setCapturing(false);
     }
-  };
+  }
+
+  const handleFaceLoginOffline = (embedding: number[]) => {
+    try {
+      if (!user) {
+        Alert.alert("No hay ningún usuario guardado en este dispositivo.");
+        setCapturing(false);
+        return;
+      }
+      const sameFace = isSameFace(user?.embedding, embedding);
+      if (!sameFace) throw new Error("Faces dont match");
+      offlineAuthenticate();
+      navigation.navigate(Routes.Home);
+    } catch (error) {
+      handleError(error)
+    } finally {
+      setCapturing(false);
+    }
+  }
 
   return (
     <>
+      {capturing && <FaceRecognition onSubmit={contextState.isConnected ? handleFaceLogin : handleFaceLoginOffline} />}
       {!capturing && (
         <View style={styles.container}>
           <Text style={styles.title}>Ingresa a tu cuenta</Text>
@@ -50,7 +98,9 @@ const LoginFace = ({ navigation }: Props) => {
             placeholder="Email"
             style={styles.input}
             value={email}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={(text) => {
+              if (contextState.isConnected) setEmail(text)
+            }}
           />
           <TouchableOpacity
             style={styles.button}
@@ -62,7 +112,6 @@ const LoginFace = ({ navigation }: Props) => {
           </TouchableOpacity>
         </View>
       )}
-      {capturing && <Capture onAccept={sendRegister}></Capture>}
     </>
   );
 };

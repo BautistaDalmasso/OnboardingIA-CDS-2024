@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "expo-facial-recognition": ["../src/index"],
+      "expo-facial-recognition/*": ["../src/*"]
+    }
+  }
+}

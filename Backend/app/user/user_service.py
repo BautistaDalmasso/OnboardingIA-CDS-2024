@@ -100,6 +100,7 @@ class UserService(DatabaseUser):
                 role=user_data[9],
                 lastPermissionUpdate=user_data[10],
                 points=user_data[11],
+                embedding=user_data[13],
             )
             return user
         return None
@@ -271,6 +272,12 @@ class UserService(DatabaseUser):
             loans=user_loans,
         )
 
+    def update_embedding(self, email: str, embedding: list[float]):
+        self.execute_in_database(
+            """UPDATE users SET embedding = ? WHERE email = ?""",
+            (json.dumps(embedding), email),
+        )
+
 
 def create_UserDTO_from_registration(
     register_info: CreateUserDTO, time: datetime
@@ -297,4 +304,5 @@ def create_UserDTO_from_login(user: User) -> UserDTO:
         licenceLevel=user.licenceLevel,
         lastPermissionUpdate=user.lastPermissionUpdate,
         points=user.points,
+        embedding=json.loads(user.embedding) if user.embedding else None
     )

@@ -1,60 +1,54 @@
+import json
 from pathlib import Path
 import requests
 from fastapi import HTTPException
+import numpy as np
 
 from app.database.database_user import DatabaseUser
 from app.database.database_actions import execute_in_database
 from app.user.user_service import UserService
 from app.server_config import ServerConfig
+from app.file_paths import DATABASE_PATH
+from app.user.user_dtos import UserDTO
 
 
 BASE_URL = ServerConfig().get_facial_recognition_server()
 
+user_service = UserService(DATABASE_PATH)
+
 
 class FacialRecognitionService(DatabaseUser):
 
-    async def upload_facial_profile(self, user_email: str, user_face: bytes) -> None:
-        r = requests.post(f"{BASE_URL}/facial_profile", files={"file": user_face})
+    def upload_facial_profile(self, user_email: str, embedding: list[float]) -> None:
+        user_service.update_embedding(user_email, embedding)
 
-        try:
-            if r.status_code == 200:
-                face_id = r.json()["id"]
-
-                execute_in_database(
-                    """UPDATE users SET faceID = ? WHERE email = ?""",
-                    (face_id, user_email),
-                    self._db_path,
-                )
-            else:
-                print(r.json())
-                raise HTTPException(
-                    status_code=500,
-                    detail={"error": "Failed to upload facial profile."},
-                )
-
-        except Exception as e:
-            print(e)
-            raise HTTPException(
-                status_code=500, detail={"error": "Failed to upload facial profile."}
-            )
-
-    async def compare_facial_profile(
-        self, user_email: str, user_face: bytes
-    ) -> bool | None:
-        user_service = UserService(self._db_path)
+    def facial_login(
+        self, user_email: str, embedding: list[float]
+    ) -> UserDTO | None:
         user = user_service.get_user_by_email(user_email)
 
-        r = requests.post(
-            f"{BASE_URL}/facial_profile/{user.faceId}/compare",
-            files={"file": (user_face)},
+        same_face = is_same_face(embedding, json.loads(user.embedding))
+
+        if (same_face == False):
+            return {"error": "Failed to compare facial profile."}
+        
+        user_dto = UserDTO(
+            email=user.email,
+            firstName=user.firstName,
+            lastName=user.lastName,
+            dni=user.dni,
+            role=user.role,
+            licenceLevel=user.licenceLevel,
+            lastPermissionUpdate=user.lastPermissionUpdate,
+            points=user.points,
+            embedding=json.loads(user.embedding)
         )
 
-        try:
-            if r.status_code == 200:
-                return r.json()
-            else:
-                print(r.json())
-                return {"error": "Failed to compare facial profile."}
-        except Exception as e:
-            print(e)
-            return {"error": "Failed to compare facial profile."}
+        return user_service.finish_login_data(user_dto)
+
+def euclidean_distance(embedding1: list[float], embedding2: list[float]):
+    return np.linalg.norm(np.array(embedding1) - np.array(embedding2))
+
+def is_same_face(embedding1: list[float], embedding2: list[float], threshold=3.5):
+    distance = euclidean_distance(embedding1, embedding2)
+    return distance < threshold

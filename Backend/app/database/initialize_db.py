@@ -22,7 +22,8 @@ def initialize_database(db_path: Path) -> None:
                     role TEXT,
                     lastPermissionUpdate DATE,
                     points INTEGER,
-                    loanLimit INTEGER )""",
+                    loanLimit INTEGER,
+                    embedding TEXT)""",
         tuple(),
         db_path,
     )
