@@ -24,7 +24,7 @@ const RegisterFace = ({ navigation }: Props) => {
         embedding,
       );
   
-      alert(result.message);
+      Alert.alert("Añadido correctamente.");
   
       navigation.navigate(Routes.Home);
     } catch (error) {
