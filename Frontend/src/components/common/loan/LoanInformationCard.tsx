@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 import convertLoanStatusToString from "../../../common/enums/loanStatus";
 import { ILoanInformation } from "../../../common/interfaces/LoanReqResponse";
 import LinkButton from "../LinkButton";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 interface LoanInformationCardProps {
   loan: ILoanInformation;
@@ -13,6 +14,7 @@ const LoanInformationCard: React.FC<LoanInformationCardProps> = ({
 }: LoanInformationCardProps) => {
   return (
     <View style={styles.container}>
+
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{loan.catalogue_data.title}</Text>
       </View>
@@ -22,7 +24,7 @@ const LoanInformationCard: React.FC<LoanInformationCardProps> = ({
         <Text style={styles.isbn}> {loan.catalogue_data.isbn} </Text>
       </View>
 
-      <View style={styles.mixedTextContainer}>
+     <View style={styles.mixedTextContainer}>
         <Text style={styles.label}>Clasificación CDD:</Text>
         <Text style={styles.ddcClass}> {loan.catalogue_data.ddc_class} </Text>
         <LinkButton
@@ -51,10 +53,7 @@ const LoanInformationCard: React.FC<LoanInformationCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 2,
-    width: 350,
-    height: 170,
-    backgroundColor: "white",
+    width: wp('95%'),
     borderRadius: 15,
     shadowColor: "#000",
     shadowOffset: {
@@ -64,44 +63,43 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
     elevation: 10,
-    padding: 16,
-    marginVertical: 8,
+    padding:hp('3%'),
+    marginVertical: hp('1%'),
   },
   titleContainer: {
-    marginBottom: 8,
+    marginVertical: hp('1%'),
+    flex: 1,
+    justifyContent:"center",
   },
   title: {
-    marginStart: 10,
-    fontSize: 20,
+    fontSize: hp('2.2%'),
     fontWeight: "bold",
     color: "#006691",
   },
   detailsContainer: {
     flex: 1,
+    marginVertical: hp('1%'),
     justifyContent: "flex-end",
     alignItems: "flex-end",
   },
   detail: {
-    fontSize: 17,
+    fontSize: hp('2%'),
     color: "#006695",
   },
   mixedTextContainer: {
+    flex: 1,
     flexDirection: "row",
-    flexWrap: "wrap",
     alignItems: "center",
-    marginTop: 10,
   },
   label: {
-    fontSize: 16,
+    fontSize: hp('2%'),
     fontWeight: "bold",
   },
   isbn: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
   },
   ddcClass: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
   },
 });
 
