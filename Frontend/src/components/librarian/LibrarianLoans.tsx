@@ -135,12 +135,7 @@ const LibrarianLoans = ({ navigation }: Props) => {
       <View style={styles.containerScroll}>
         <ScrollView>
           {loans.map((Loan) => (
-            <TouchableOpacity
-              key={Loan.inventory_number}
-              onPress={() =>
-                navigation.navigate("Gestion de prestamos", { loan: Loan })
-              }
-            >
+
               <View style={styles.bookContainer} key={Loan.inventory_number}>
                 <Text style={styles.bookTitle}>Préstamo id: {Loan.id}</Text>
                 <Text style={styles.bookTitle}>Usuario: {Loan.user_email}</Text>
@@ -156,7 +151,7 @@ const LibrarianLoans = ({ navigation }: Props) => {
                   {new Date(Loan.expiration_date).toLocaleDateString()}
                 </Text>
               </View>
-            </TouchableOpacity>
+
           ))}
         </ScrollView>
       </View>

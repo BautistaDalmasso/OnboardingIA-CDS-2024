@@ -1,4 +1,5 @@
 import React from "react";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   View,
   Text,
@@ -9,61 +10,62 @@ import {
 import LoanInformationCard from "../common/loan/LoanInformationCard";
 import { useContextState } from "../../ContexState";
 
-const image = require("../../assets/background.png");
+const image = require("../../assets/header.png");
 
 const MyLoans = () => {
   const { contextState } = useContextState();
 
   return (
-    <View style={styles.container1}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <Text style={styles.title}>Prestamos solicitadados</Text>
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-            {contextState.loans.map((loan) => (
-              <LoanInformationCard key={loan.inventory_number} loan={loan} />
-            ))}
-          </ScrollView>
-        </View>
-      </ImageBackground>
+    <View style={styles.screenContainer}>
+      <View style={styles.header}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <Text style={styles.titleHeader}>Prestamos solicitadados</Text>
+        </ImageBackground>
+      </View>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+          {contextState.loans.map((loan) => (
+          <LoanInformationCard key={loan.inventory_number} loan={loan} />
+          ))}
+        </ScrollView>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container1: {
+  screenContainer: {
     flex: 1,
   },
-  container: {
-    flex: 1,
-    marginTop: 50,
-    justifyContent: "space-between",
-    alignItems: "center",
-
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-  },
-  scrollViewContainer: {
-    width: "100%",
-    alignItems: "center",
-  },
-
-  title: {
-    height: 70,
-    fontSize: 22,
-    textAlign: "center",
-    color: "#006694",
-    textShadowRadius: 30,
-    textShadowColor: "#42FFD3",
-    textAlignVertical: "center",
-    marginVertical: 20,
-    marginStart: 30,
-    fontWeight: "bold",
+  header: {
+    height: hp('25%'),
+    width: wp('100%'),
   },
   image: {
     flex: 1,
     justifyContent: "center",
   },
+  titleHeader: {
+    height: hp('15%'),
+    width: wp('100%'),
+    fontSize: hp('3%'),
+    textAlign: "center",
+    color: "#006694",
+    textShadowRadius: 30,
+    textShadowColor: "#42FFD3",
+    textAlignVertical: "top",
+    fontWeight: "bold",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  scrollViewContainer: {
+    width: wp('100%'),
+    alignItems: "center",
+  },
+
 });
 
 export default MyLoans;
