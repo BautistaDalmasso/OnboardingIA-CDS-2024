@@ -17,13 +17,7 @@ const RequestLoans = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filterCategory, setFilterCategory] = useState("title");
   const [totalPages, setTotalPages] = useState(0);
-  const {
-    setIsAtLastPage,
-    goToNextPage,
-    goToPreviousPage,
-    currentPage,
-    isAtLastPage,
-  } = usePagination();
+  const { goToNextPage, goToPreviousPage, currentPage } = usePagination();
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -36,10 +30,7 @@ const RequestLoans = () => {
       const books = await LibraryService.getBooks(currentPage);
 
       if (books.length > 0) {
-        setIsAtLastPage(false);
         setBooks(books);
-      } else {
-        setIsAtLastPage(true);
       }
       if (scrollViewRef.current) {
         scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -101,8 +92,6 @@ const RequestLoans = () => {
 
       if (result != null) {
         setTotalPages(result.total_books / BookPage.PAGE_SIZE);
-      } else {
-        setIsAtLastPage(true);
       }
     } catch (error) {
       console.error("Error al obtener libros:", error);
@@ -140,7 +129,6 @@ const RequestLoans = () => {
       </ScrollView>
       <Pagination
         currentPage={currentPage}
-        isAtLastPage={isAtLastPage}
         goToPreviousPage={() => {
           goToPreviousPage();
           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
