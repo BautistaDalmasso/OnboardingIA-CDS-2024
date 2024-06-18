@@ -44,7 +44,7 @@ const CustomTextInput = ({ placeholder, value, onChangeText }: Props) => {
 
 const styles = StyleSheet.create({
   input: {
-    height: 50,
+    height: 65,
     width: "100%",
     borderColor: "#E6E6E6",
     borderWidth: 1,

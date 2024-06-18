@@ -5,6 +5,8 @@ import CustomTextInput from "../../common/CustomTextInput";
 import LinkButton from "../../common/LinkButton";
 import { IUserDTO } from "../../../common/interfaces/User";
 import useRUDUsers from "../../../hooks/useRUDUsers";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { Ionicons } from '@expo/vector-icons';
 
 enum fieldOptions {
   FIRST_NAME = "Nombre",
@@ -116,10 +118,10 @@ const UpdateUser = ({
         </TouchableOpacity>
       </View>
 
-      <LinkButton
-        text="Volver a datos del usuario >>"
-        onPress={onPressReturn}
-      />
+      <TouchableOpacity style={styles.buttonBack} onPress={onPressReturn}>
+          <Ionicons name="arrow-back-sharp" size={wp('6.5%')} color="white"/>
+          <Text style={styles.buttonText}>Volver a datos del usuario </Text>
+        </TouchableOpacity>
     </>
   );
 };
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   buttonUpdateData: {
-    backgroundColor: "#3369FF",
+    backgroundColor: "#056D8D",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 100,
@@ -156,6 +158,30 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  buttonText: {
+    color: "white",
+    fontSize: wp('3.5%'),
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  buttonBack: {
+      flexDirection:"row",
+      width: wp('68%'),
+      marginTop: wp('3%'),
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#056D8D",
+      borderRadius: 30,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 2,
+      elevation: 10,
+      padding: 10,
+    },
 });
 
 export default UpdateUser;

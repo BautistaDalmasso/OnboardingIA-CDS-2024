@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 type Props = {
   name: string;
@@ -36,21 +37,22 @@ const App: React.FC<Props> = ({ name, lastName, email, dni, licence }) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
+    margin: hp('0.5%'),
     justifyContent: "center",
+    backgroundColor: "red",
   },
   head: {
-    height: 40,
+    height: hp('4.5%'),
     backgroundColor: "#48bce4",
   },
   textHead: {
     color: "white",
-    fontSize: 18,
+    fontSize: hp('2.5%'),
     fontWeight: "bold",
     textAlign: "center",
   },
   row: {
-    height: 40,
+    height: hp('6%'),
     backgroundColor: "#F5FCFF",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -62,7 +64,7 @@ const styles = StyleSheet.create({
     margin: 6,
     borderRightWidth: 4,
     borderRightColor: "white",
-    fontSize: 10,
+    fontSize: hp('2%'),
   },
 });
 
