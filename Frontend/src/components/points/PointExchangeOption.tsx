@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import usePointsExchange from "../../hooks/usePointsExchange";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 interface PointExchangeOptionProps {
   optionName: string;
@@ -60,8 +61,8 @@ const PointExchangeOption = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 2,
-    width: "90%",
+    marginHorizontal: hp('13%'),
+    width: wp('90%'),
     backgroundColor: "white",
     borderRadius: 10,
     shadowColor: "#000",
@@ -73,54 +74,56 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     padding: 16,
-    marginVertical: 8,
+    marginVertical: hp('3%'),
     alignSelf: "center",
   },
   titleContainer: {
-    marginBottom: 8,
+    marginBottom:  hp('3%'),
   },
   title: {
-    fontSize: 20,
+    fontSize:  hp('2.5%'),
     fontWeight: "bold",
-    color: "#006691",
+    color: "#006694"
   },
   detail: {
-    fontSize: 16,
+    fontSize: hp('2.5%'),
     color: "#000",
   },
   mixedTextContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: hp('1%') ,
   },
   label: {
-    fontSize: 16,
+    fontSize: hp('2.5%'),
     fontWeight: "bold",
     color: "#000",
   },
   button: {
-    marginTop: 16,
+    marginTop: hp('2%'),
     backgroundColor: "#006691",
-    paddingVertical: 10,
+    fontSize: hp('2.5%'),
+    paddingVertical: hp('1.5%'),
     borderRadius: 5,
     alignItems: "center",
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: hp('2.5%'),
     fontWeight: "bold",
   },
   buttonDisabled: {
-    marginTop: 16,
+    marginTop: hp('2%'),
     backgroundColor: "#a1a1a1",
-    paddingVertical: 10,
+    fontSize: hp('2.5%'),
+    paddingVertical: hp('1.5%'),
     borderRadius: 5,
     alignItems: "center",
   },
   buttonDisabledText: {
     color: "#d3d3d3",
-    fontSize: 16,
+    fontSize: hp('2.5%'),
     fontWeight: "bold",
   },
 });
