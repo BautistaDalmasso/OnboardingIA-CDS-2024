@@ -14,6 +14,7 @@ import useBiometrics from "../../hooks/useBiometrics";
 import { generateKeyPair } from "../../common/utils/crypto";
 import React, { useState } from "react";
 import { Routes } from "../../common/enums/routes";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -76,10 +77,16 @@ const UserConfiguration = ({ navigation }: Props) => {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={handleRegisterFace}
+        onPress={handleFingerprintRegistration}
         disabled={loading}
       >
         <Text style={styles.buttonText}>Registrar Rostro</Text>
+        <Image
+          source={require("../../assets/face.png")}
+          style={styles.fingerprintIcon}
+          tintColor={"white"}
+          resizeMode="contain"
+        />
       </TouchableOpacity>
     </View>
   );
@@ -94,27 +101,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   button: {
-    backgroundColor: "#3369FF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: "#006694",
+    paddingVertical: wp('3%'),
     borderRadius: 100,
-    width: "100%",
-    marginTop: 20,
-    maxWidth: 330,
+    width: wp('80%'),
+    marginTop: wp('10%'),
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
   buttonText: {
     color: "white",
-    fontSize: 18,
+    fontSize: hp('2%'),
     fontWeight: "bold",
-    textAlign: "center",
+    marginRight: wp('8%'),
   },
   fingerprintIcon: {
-    width: 20,
-    height: 20,
-    marginLeft: 5,
+    height:hp('4%'),
+    width:wp('8%'),
   },
 });
 

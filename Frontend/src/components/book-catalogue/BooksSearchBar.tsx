@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { SearchBar } from "@rneui/themed";
 import { Picker } from "@react-native-picker/picker";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 interface SearchBarComponentProps {
   searchValue: string;
@@ -73,40 +74,41 @@ const SearchBarComponent: React.FC<SearchBarComponentProps> = ({
 
 const styles = StyleSheet.create({
   view: {
-    margin: 10,
+    marginVertical: hp('1%'),
+    marginHorizontal:  wp('2.8%'),
   },
   picker: {
-    height: 50,
-    width: "100%",
+   height: hp('7%'),
+    width: wp('94%'),
+    backgroundColor: "#F3FFFF"
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: hp('0.5%'),
   },
   searchBarContainer: {
     flex: 1,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    height: 50,
-    minHeight: 50,
+    height: hp('6%'),
   },
   searchBarInputContainer: {
-    height: "100%",
+    height: hp('3.5%'),
   },
   searchButton: {
-    backgroundColor: "#007bff",
+    backgroundColor:"#006694",
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
-    marginLeft: 10,
-    height: 50,
+    marginLeft: wp('2%'),
+    height: hp('6%'),
     justifyContent: "center",
     alignItems: "center",
   },
   searchButtonText: {
-    color: "#fff",
+    color: "white",
     fontWeight: "bold",
   },
 });

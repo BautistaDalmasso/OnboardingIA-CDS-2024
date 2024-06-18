@@ -1,9 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { useContextState } from "../../ContexState";
 import usePointsExchange from "../../hooks/usePointsExchange";
 import PointExchangeOption from "./PointExchangeOption";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
+const image = require("../../assets/header.png");
 const PointsExchange = () => {
   const { contextState } = useContextState();
   const { exchangeForTrustedLicence, exchangeForIncreaseLimit } = usePointsExchange();
@@ -17,9 +19,15 @@ const PointsExchange = () => {
   }
 
   return (
+
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Intercambio de Puntos</Text>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <Text style={styles.titleHeader}>Intercambio de Puntos</Text>
+        </ImageBackground>
+      </View>
+      <View style={styles.containerPoints}>
+
         <Text style={styles.pointsText}>
           Tus Puntos: {contextState.user.points}
         </Text>
@@ -49,28 +57,34 @@ const PointsExchange = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 16,
   },
   header: {
-    flexDirection: "column",
-    alignItems: "center",
-    marginTop: 30,
-    marginBottom: 16,
+    flex: 0.4,
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  titleHeader: {
+    height: hp('18%'),
+    width: wp('100%'),
+    fontSize: hp('3.4%'),
+    textAlign: "center",
+    color: "#006694",
+    textShadowRadius: 30,
+    textShadowColor: "#42FFD3",
+    fontWeight: "bold",
+  },
+  containerPoints: {
+    flex:0.1,
   },
   pointsText: {
-    fontSize: 18,
+    fontSize: hp('3%'),
     fontWeight: "bold",
-    alignSelf: "flex-start",
-    paddingLeft: 16,
-    paddingTop: 16,
+    alignSelf: "center",
+    color: "#006694",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 16,
-  },
+
   optionsContainer: {
     flex: 1,
     justifyContent: "flex-start",

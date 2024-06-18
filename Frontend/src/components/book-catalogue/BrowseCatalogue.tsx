@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Alert, ImageBackground } from "react-native";
 import { LibraryService } from "../../services/LibraryService";
 import { IBookWithLicence } from "../../common/interfaces/Book";
 import { useContextState } from "../../ContexState";
@@ -9,6 +9,9 @@ import useUserLoans from "../../hooks/useUserLoans";
 import Pagination from "../common/Pagination";
 import usePagination from "../../hooks/usePagination";
 import { BookPage } from "../../common/enums/Page";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
+const image = require("../../assets/headerBookList.png");
 
 const RequestLoans = () => {
   const { reserveBook } = useUserLoans();
@@ -112,8 +115,12 @@ const RequestLoans = () => {
   totalBooks();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Lista de Libros</Text>
+    <View style={styles.screenContainer}>
+      <View style={styles.header}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <Text style={styles.titleHeader}>Lista de Libros</Text>
+        </ImageBackground>
+        </View>
       <SearchBarComponent
         searchValue={searchValue}
         setSearchValue={setSearchValue}
@@ -156,21 +163,31 @@ const RequestLoans = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  screenContainer: {
     flexGrow: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 10,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
     overflow: "hidden",
   },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    marginTop: 30,
+    height: hp('16%'),
+    width: wp('100%'),
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  titleHeader: {
+    height: hp('7%'),
+    width: wp('100%'),
+    fontSize: hp('3.5%'),
     textAlign: "center",
+    color: "#006694",
+    textShadowRadius: 30,
+    textShadowColor: "#42FFD3",
+    textAlignVertical: "top",
+    fontWeight: "bold",
   },
   bookContainer: {
     backgroundColor: "#fff",
@@ -182,33 +199,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
-    width: "100%",
-  },
-  bookTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-  cardLevel: {
-    fontSize: 16,
-    marginBottom: 10,
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignSelf: "flex-end",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
   },
   scrollContent: {
-    paddingBottom: 200,
+    marginHorizontal: wp('2.8%'),
   },
 });
 
