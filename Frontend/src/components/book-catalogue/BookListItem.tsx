@@ -192,14 +192,14 @@ const BookListItem = ({
             styles.button,
             {
               backgroundColor: isBookRequested(book.book_data.isbn)
-                ? "#ccc"
-                : "#007bff",
+                ? "#969696"
+                : "#006694",
             },
           ]}
           onPress={() => handleLoanRequest(book)}
           disabled={isBookRequested(book.book_data.isbn)}
         >
-          <Text style={styles.buttonText}>
+          <Text style={styles.buttonTextWhite}>
             {isBookRequested(book.book_data.isbn) ? "Solicitado" : "Solicitar"}
           </Text>
         </TouchableOpacity>
@@ -207,19 +207,19 @@ const BookListItem = ({
         <>
           {!isUserLicenceSufficient(user) ? (
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#FF0000" }]}
+              style={[styles.button, { backgroundColor: "#42FFD3" }]}
               disabled={true}
             >
-              <Text style={styles.buttonText}>
+              <Text style={styles.buttonTextLevel}>
                 {"Nivel de carnet insuficiente"}
               </Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#ccc" }]}
+              style={[styles.button, { backgroundColor: "#969696" }]}
               disabled={true}
             >
-              <Text style={styles.buttonText}>{"Fuera de stock"}</Text>
+              <Text style={styles.buttonTextWhite}>{"Fuera de stock"}</Text>
             </TouchableOpacity>
           )}
         </>
@@ -262,6 +262,14 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   buttonText: {
+    color:"grey",
+    fontWeight: "bold",
+  },
+  buttonTextWhite: {
+    color:"white",
+    fontWeight: "bold",
+  },
+  buttonTextLevel: {
     color:"#006694",
     fontWeight: "bold",
   },
