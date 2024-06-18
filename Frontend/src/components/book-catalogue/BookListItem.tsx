@@ -5,6 +5,7 @@ import { licenceLevelToStr } from "../../common/enums/licenceLevels";
 import LinkButton from "../common/LinkButton";
 import { useContextState } from "../../ContexState";
 import { IUser } from "../../common/interfaces/User";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 interface BookListItemProps {
   book: IBookWithLicence;
@@ -232,25 +233,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 20,
-    marginBottom: 15,
+    marginBottom: hp('1,5%'),
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
-    width: "100%",
   },
   bookTitle: {
-    fontSize: 18,
+    fontSize: hp('2%'),
+    color:"#006694",
     fontWeight: "bold",
     marginBottom: 5,
     flexGrow: 1,
     flexShrink: 1,
   },
   licenceLevel: {
-    fontSize: 16,
-    marginTop: 10,
-    marginBottom: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
+    marginBottom: hp('1%'),
     flexGrow: 1,
     flexShrink: 1,
   },
@@ -261,54 +262,54 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   buttonText: {
-    color: "#fff",
+    color:"#006694",
     fontWeight: "bold",
   },
   mixedTextContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
-    marginTop: 10,
   },
   label: {
-    fontSize: 16,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
     fontWeight: "bold",
   },
   publisher: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   edition: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   description: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   isbn: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   topics: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   ddcClass: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   abstract: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   separator: {
-    fontSize: 16,
-    marginHorizontal: 5,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
   availability: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
   },
 });
 
