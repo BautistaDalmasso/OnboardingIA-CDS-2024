@@ -100,6 +100,14 @@ def test_generate_new_uid_with_a_previous_uid(
     assert user_service.generate_new_uid(user_1.email) == {"deviceUID": 1}
 
 
+def test_limit_user(user_service, user_1):
+    user_service.create_user(user_1)
+
+    user_in_db =user_service.query_database("""SELECT loanLimit FROM users WHERE email= ?""", (user_1.email,)
+        )
+    assert user_in_db[0]==3
+
+
 @pytest.fixture
 def user_1():
     """Creates CreateUserDTO of User "Joaquin Enriquez"."""

@@ -2,7 +2,7 @@ import pytest
 
 from app.licence_levels.licence_level import LicenceLevel
 from app.points_exchange.point_addition_service import PointAdditionService
-from app.points_exchange.points import TRUSTED_LICENCE_UPGRADE_COST
+from app.points_exchange.points import TRUSTED_LICENCE_UPGRADE_COST, POINTS_PER_EARLY_DAY
 from app.user.user_dtos import CreateUserDTO, TokenDataDTO
 from app.user.user_errors import UserNotFound
 from app.database.initialize_db import initialize_database
@@ -65,6 +65,40 @@ def create_user_with_points(points: int):
     )
 
 
+def test_nonexistent_user_to_increase_limit(point_exchange_service):
+    user_dto = TokenDataDTO(
+        email="doesntexist@email.com",
+        licenceLevel=LicenceLevel.REGULAR,
+    )
+    with pytest.raises(UserNotFound):
+        point_exchange_service.exchange_for_increase_limit(user_dto)
+
+
+def test_user_without_enough_points_to_increase_limit(point_exchange_service):
+    user_token = create_user_with_points(0)
+
+    with pytest.raises(InsufficientPoints):
+        point_exchange_service.exchange_for_increase_limit(user_token)
+
+
+def test_points_are_removed_to_increase_limit(point_exchange_service, user_service):
+    user_token = create_user_with_points(POINTS_PER_EARLY_DAY)
+
+    point_exchange_service.exchange_for_increase_limit(user_token)
+
+    user = user_service.get_user_by_email("user@email.com")
+
+    assert user.points == 0
+    
+    
+def test_increase_limit(point_exchange_service, user_service):
+    user_token = create_user_with_points(POINTS_PER_EARLY_DAY)
+    point_exchange_service.exchange_for_increase_limit(user_token)
+    user = user_service.get_user_by_email("user@email.com")
+    user_in_db =user_service.query_database("""SELECT loanLimit FROM users WHERE email= ?""", (user.email,))
+    assert user_in_db[0]==6
+ 
+    
 @pytest.fixture
 def point_exchange_service():
     initialize_database(TEST_DB_PATH)
