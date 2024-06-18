@@ -6,16 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ImageBackground,
 } from "react-native";
 import { RequestedLoansService } from "../../services/requestedLoansService";
 import { ILoanInformation } from "../../common/interfaces/LoanReqResponse";
 import SearchBarComponent from "../common/SearchBar";
 import { useContextState } from "../../ContexState";
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 
 interface Props {
   navigation: NavigationProp<any, any>;
 }
+const image = require("../../assets/header.png");
 
 const LibrarianLoans = ({ navigation }: Props) => {
   const { contextState } = useContextState();
@@ -111,8 +115,14 @@ const LibrarianLoans = ({ navigation }: Props) => {
   }
 
   return (
+    <View style={styles.screenContainer}>
+      <View style={styles.header}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <Text style={styles.titleHeader}>Lista de Prestamos</Text>
+        </ImageBackground>
+      </View>
     <View style={styles.container}>
-      <Text style={styles.header}>Lista de Prestamos</Text>
+
       <SearchBarComponent
         pickerItems={pickerItems}
         searchValue={searchValue}
@@ -122,9 +132,6 @@ const LibrarianLoans = ({ navigation }: Props) => {
         onSearch={conductSearch}
         onClear={clearLoans}
       />
-      <Text style={styles.indications}>
-        Seleccione el préstamo que desea gestionar:{" "}
-      </Text>
       {showAlert && (
         <View style={styles.alertContainer}>
           <Text style={styles.alertText}>
@@ -156,29 +163,45 @@ const LibrarianLoans = ({ navigation }: Props) => {
         </ScrollView>
       </View>
     </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenContainer:{
+    flexGrow: 1,
+  },
   container: {
     flexGrow: 1,
     backgroundColor: "#f5f5f5",
-    padding: 10,
+    padding: wp('3%'),
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
     overflow: "hidden",
+  },  header: {
+    height: hp('25%'),
+    width: wp('100%'),
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  titleHeader: {
+    height: hp('15%'),
+    width: wp('100%'),
+    fontSize: hp('3%'),
+    textAlign: "center",
+    color: "#006694",
+    textShadowRadius: 30,
+    textShadowColor: "#42FFD3",
+    textAlignVertical: "top",
+    fontWeight: "bold",
   },
   containerScroll: {
     flexGrow: 1,
     overflow: "hidden",
-    height: 400,
-  },
-  indications: {
-    textAlign: "center",
-    fontWeight: "bold",
-    margin: 20,
-    fontSize: 15,
+    height: hp('60%'),
   },
   alertContainer: {
     backgroundColor: "red",
@@ -190,35 +213,29 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    marginTop: 30,
-    textAlign: "center",
-  },
   bookContainer: {
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 20,
-    marginBottom: 15,
+    marginBottom: hp('2%'),
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
-    width: "100%",
   },
   bookTitle: {
-    fontSize: 18,
+    fontSize: hp('2%'),
+    color: "#006694",
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: hp('0.5%'),
     flexGrow: 1,
     flexShrink: 1,
   },
   cardLevel: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: hp('1.8%'),
+    fontWeight: "500",
+    marginBottom: hp('0.5%'),
     flexGrow: 1,
     flexShrink: 1,
   },
@@ -228,7 +245,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   scrollContent: {
-    paddingBottom: 260,
+    paddingBottom: hp('60%'),
   },
 });
 
