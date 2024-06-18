@@ -3,7 +3,6 @@ import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 
 interface PaginationProps {
   currentPage: number;
-  isAtLastPage: boolean;
   goToPreviousPage: () => void;
   goToNextPage: () => void;
   lastPage: number;
@@ -11,11 +10,11 @@ interface PaginationProps {
 
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
-  isAtLastPage,
   goToPreviousPage,
   goToNextPage,
   lastPage,
 }) => {
+  console.log(currentPage)
   return (
     <View style={styles.pageContainer}>
       <TouchableOpacity

@@ -22,7 +22,7 @@ import Licence from "./src/components/user/Licence";
 import UserConfiguration from "./src/components/user/UserConfiguration";
 
 import ViewQR from "./src/components/user/ViewQR";
-import CreateDeleteLibrarian from "./src/components/librarian/CreateDeleteLibrarian";
+import CreateDeleteLibrarian from "./src/components/librarian/CDLibrarian/CreateDeleteLibrarian";
 import RUDUser from "./src/components/librarian/RUDUser";
 import PointsExchange from "./src/components/points/PointsExchange";
 import ManageLoans from "./src/components/librarian/ManageLoans";

@@ -20,7 +20,7 @@ async def get_qr(token=Depends(HTTPBearer())):
     image = qr_service.make_qr(user_data.email)
 
     img_bytes_io = BytesIO()
-    image.save(img_bytes_io, format="PNG")
+    image.save(img_bytes_io)
     img_bytes_io.seek(0)
 
     return Response(content=img_bytes_io.getvalue(), media_type="image/png")

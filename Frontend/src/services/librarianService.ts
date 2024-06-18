@@ -63,10 +63,7 @@ export class LibrarianService {
     });
   }
 
-  static async deleteUser(
-    email: string,
-    token: string
-  ): Promise<IUserDTO> {
+  static async deleteUser(email: string, token: string): Promise<IUserDTO> {
     return baseFetch<void, IUserDTO>({
       token: token,
       url: `${this.baseRoute}/delete_user?user_email=${email}`,
@@ -74,14 +71,15 @@ export class LibrarianService {
     });
   }
 
-  static async checkUnsubscribeRequest( email: string, token: string,): Promise<boolean> {
+  static async checkUnsubscribeRequest(
+    email: string,
+    token: string,
+  ): Promise<boolean> {
     const value = await baseFetch<void, boolean>({
       url: `${this.baseRoute}/check_delete_user?user_email=${email}`,
       method: "GET",
-      token:token,
+      token: token,
     });
     return value;
   }
-
-
 }

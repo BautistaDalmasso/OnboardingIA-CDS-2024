@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 const usePagination = () => {
-  const [isAtLastPage, setIsAtLastPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -12,17 +11,16 @@ const usePagination = () => {
   };
 
   const goToNextPage = () => {
-    if (!isAtLastPage && totalPages == currentPage) {
+    console.log(totalPages +" "+currentPage)
+    if (totalPages != currentPage) {
       setCurrentPage(currentPage + 1);
     }
   };
   return {
     goToPreviousPage,
     goToNextPage,
-    setIsAtLastPage,
     setCurrentPage,
     currentPage,
-    isAtLastPage,
     totalPages,
     setTotalPages,
   };
