@@ -1,4 +1,4 @@
-package com.maxidemichielitest.Frontend
+package com.grupo1.skynet
 
 import android.os.Build
 import android.os.Bundle

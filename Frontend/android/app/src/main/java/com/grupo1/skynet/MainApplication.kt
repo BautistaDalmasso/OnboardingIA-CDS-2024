@@ -1,4 +1,4 @@
-package com.maxidemichielitest.Frontend
+package com.grupo1.skynet
 
 import android.app.Application
 import android.content.res.Configuration

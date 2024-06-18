@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.maxidemichielitest.Frontend"
+      "bundleIdentifier": "com.grupo1.skynet"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +27,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.maxidemichielitest.Frontend"
+      "package": "com.grupo1.skynet"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,7 +38,10 @@
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
+          "recordAudioAndroid": true,
+          "android": {
+            "usesCleartextTraffic": true
+          }
         }
       ],
       "expo-secure-store"
