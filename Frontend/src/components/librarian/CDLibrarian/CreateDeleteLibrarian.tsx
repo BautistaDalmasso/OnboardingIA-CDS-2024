@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -15,12 +15,15 @@ import UserListItem from "./UserListItem";
 
 const CDLibrarian = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const scrollViewRef = useRef<ScrollView>(null);
   const {
     handleAddLibrarian,
     handleDeleteLibrarian,
     CDLibrarianConst,
     paginationConst,
   } = useCDLibrarian();
+
+  scrollViewRef.current?.scrollTo({ y: 0, animated: true });
 
   const filteredUsers = () => {
     return CDLibrarianConst.users.filter((user) =>
@@ -48,7 +51,10 @@ const CDLibrarian = () => {
         containerStyle={styles.searchBarContainer}
         inputContainerStyle={styles.searchBarInputContainer}
       />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        ref={scrollViewRef}
+      >
         {filteredUsers().map((user) => (
           <View key={user.email} style={styles.bookContainer}>
             <UserListItem
@@ -62,8 +68,14 @@ const CDLibrarian = () => {
       </ScrollView>
       <Pagination
         currentPage={paginationConst.currentPage}
-        goToPreviousPage={paginationConst.goToPreviousPage}
-        goToNextPage={paginationConst.goToNextPage}
+        goToPreviousPage={() => {
+          paginationConst.goToPreviousPage();
+          scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+        }}
+        goToNextPage={() => {
+          paginationConst.goToNextPage();
+          scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+        }}
         lastPage={paginationConst.totalPages}
       />
     </View>
