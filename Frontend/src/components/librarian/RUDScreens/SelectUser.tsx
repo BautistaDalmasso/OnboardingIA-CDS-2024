@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import CustomTextInput from "../../common/CustomTextInput";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, Image } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { AntDesign } from '@expo/vector-icons';
 
 interface SelectUserProps {
   inputValue: string;
@@ -29,6 +31,7 @@ const SelectUser = ({ onPressSearch, onPressScanQr }: SelectUserProps) => {
         placeholder={"email"}
         value={userEmail}
         onChangeText={(text) => setUserEmail(text)}
+
       />
 
       <TouchableOpacity
@@ -36,10 +39,12 @@ const SelectUser = ({ onPressSearch, onPressScanQr }: SelectUserProps) => {
         onPress={() => onPressSearch(userEmail)}
       >
         <Text style={styles.buttonText}>Buscar Usuario</Text>
+        <AntDesign name="user" size={wp('8%')} color="white" />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.buttonQR} onPress={onPressScanQr}>
         <Text style={styles.buttonText}>Escanear QR</Text>
+        <AntDesign name="qrcode" size={wp('8%')} color="white" />
       </TouchableOpacity>
     </>
   );
@@ -47,31 +52,36 @@ const SelectUser = ({ onPressSearch, onPressScanQr }: SelectUserProps) => {
 
 const styles = StyleSheet.create({
   instruction: {
-    bottom: 15,
+    bottom: wp('5%'),
     marginBottom: 5,
-    marginTop: 20,
+    marginTop: hp('7%'),
+    fontSize: wp('4.5%'),
   },
   button: {
-    backgroundColor: "#3369FF",
-    paddingVertical: 5,
-    paddingHorizontal: 20,
+    backgroundColor: "#006694",
+    paddingVertical: wp('3%'),
     borderRadius: 100,
-    maxWidth: 300,
-    margin: 10,
-  },
-  buttonQR: {
-    backgroundColor: "#48bce4",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 100,
-    maxWidth: 300,
-    margin: 10,
+    width: wp('80%'),
+    marginTop: wp('10%'),
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: hp('2%'),
     fontWeight: "bold",
-    textAlign: "center",
+    marginRight: wp('8%'),
+  },
+  buttonQR: {
+    backgroundColor: "#48bce4",
+    paddingVertical: wp('3%'),
+    borderRadius: 100,
+    width: wp('80%'),
+    marginTop: wp('10%'),
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Alert,
+  ImageBackground,
 } from "react-native";
 import { useContextState } from "../../ContexState";
 import { IUser } from "../../common/interfaces/User";
@@ -16,6 +17,7 @@ import { librarianServiceCD } from "../../services/librarianCDService";
 import Pagination from "../common/Pagination";
 import usePagination from "../../hooks/usePagination";
 import { ShowUserPage } from "../../common/enums/Page";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 //TODO: update the search bar and adapt it to the one currently being used if it's necessary.
 const CDLibrarian = () => {
@@ -33,6 +35,7 @@ const CDLibrarian = () => {
     currentPage,
     isAtLastPage,
   } = usePagination();
+  const image = require("../../assets/headerBookList.png");
 
   const fetchUsers = async () => {
     try {
@@ -123,7 +126,11 @@ const CDLibrarian = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Usuarios</Text>
+      <View style={styles.header}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <Text style={styles.titleHeader}>Usuarios</Text>
+        </ImageBackground>
+      </View>
       <Picker
         selectedValue={selectedRole}
         style={styles.picker}
@@ -152,8 +159,8 @@ const CDLibrarian = () => {
                 styles.button,
                 {
                   backgroundColor: userStatus.includes(user.email)
-                    ? "#0047ab"
-                    : "#007bff",
+                    ? "#006694"
+                    : "#006694",
                 },
               ]}
               onPress={() =>
@@ -186,7 +193,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#f0f0f0",
-    padding: 10,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
@@ -194,6 +200,25 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   header: {
+    height: hp('20%'),
+    width: wp('100%'),
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  titleHeader: {
+    height: hp('12%'),
+    width: wp('100%'),
+    fontSize: hp('3.5%'),
+    textAlign: "center",
+    color: "#006694",
+    textShadowRadius: 30,
+    textShadowColor: "#42FFD3",
+    textAlignVertical: "top",
+    fontWeight: "bold",
+  },
+  header2: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
@@ -232,18 +257,23 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 50,
+    marginTop: hp('4%'),
   },
   picker: {
     backgroundColor: "#fff",
-    height: 50,
-    width: "auto",
-    alignSelf: "stretch",
+    height: hp('7%'),
+    marginTop: hp('4%'),
+    width: wp('93%'),
+    alignSelf: "center",
     marginBottom: 0,
   },
   searchBarContainer: {
     backgroundColor: "transparent",
     borderBottomColor: "transparent",
     borderTopColor: "transparent",
+    width: wp('93%'),
+    height: hp('7%'),
+    alignSelf: "center",
     paddingHorizontal: 0,
     marginBottom: 0,
   },

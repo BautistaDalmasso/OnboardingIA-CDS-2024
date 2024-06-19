@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import useRUDUsers from "../../hooks/useRUDUsers";
@@ -16,6 +17,7 @@ import SelectUser from "./RUDScreens/SelectUser";
 import UpdateUser from "./RUDScreens/UpdateUser";
 import ViewUsersData from "./RUDScreens/ViewUsersData";
 import UpgradeUsersLicence from "./RUDScreens/UpgradeUsersLicence";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 enum pages {
   USER_SELECT = 0,
@@ -23,6 +25,7 @@ enum pages {
   UPDATE_DATA = 2,
   UPGRADE_LICENCE = 3,
 }
+const image = require("../../assets/headerLicence.png");
 
 const RUDUser = () => {
   const { consultUser,deleteUser } = useRUDUsers();
@@ -120,9 +123,13 @@ const RUDUser = () => {
   }
 
   return (
+    <View style={styles.screenContainer}>
+      <View style={styles.header}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+        <Text style={styles.titleHeader}>Actualización de usuario</Text>
+        </ImageBackground>
+      </View>
     <View style={styles.container}>
-      <Text style={styles.title}>Actualización de usuario</Text>
-
       <ScrollView
         ref={scrollViewRef}
         pagingEnabled={false}
@@ -172,10 +179,33 @@ const RUDUser = () => {
         </View>
       </ScrollView>
     </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+  },
+  header: {
+    height: hp('25%'),
+    width: wp('100%'),
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  titleHeader: {
+    height: hp('15%'),
+    width: wp('100%'),
+    fontSize: hp('3%'),
+    textAlign: "center",
+    color: "#006694",
+    textShadowRadius: 30,
+    textShadowColor: "#42FFD3",
+    textAlignVertical: "top",
+    fontWeight: "bold",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
