@@ -90,3 +90,14 @@ def initialize_database(db_path: Path) -> None:
         tuple(),
         db_path,
     )
+
+    execute_in_database(
+        """CREATE TABLE IF NOT EXISTS loginLog
+            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userEmail TEXT,
+            userLicence INTEGER,
+            userRole TEXT,
+            time TEXT)""",
+        tuple(),
+        db_path,
+    )

@@ -265,6 +265,12 @@ class UserService(DatabaseUser):
             )
         )
 
+        self.execute_in_database(
+            """INSERT INTO loginLog (userEmail, userLicence, userRole, time)
+            VALUES (?, ?, ?, ?)""",
+            (user.email, user.licenceLevel, user.role, str(datetime.now())),
+        )
+
         return LoginSuccessfulResponseDTO(
             access_token=access_token,
             user=user,
