@@ -6,7 +6,7 @@ function euclideanDistance(embedding1: number[], embedding2: number[]): number {
     return Math.sqrt(sum);
 }
 
-export function isSameFace(embedding1: number[], embedding2: number[], threshold: number = 3.5): boolean {
+export function isSameFace(embedding1: number[], embedding2: number[], threshold: number = 5): boolean {
     const distance = euclideanDistance(embedding1, embedding2);
     return distance < threshold;
 }

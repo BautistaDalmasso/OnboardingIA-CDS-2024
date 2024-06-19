@@ -49,6 +49,6 @@ class FacialRecognitionService(DatabaseUser):
 def euclidean_distance(embedding1: list[float], embedding2: list[float]):
     return np.linalg.norm(np.array(embedding1) - np.array(embedding2))
 
-def is_same_face(embedding1: list[float], embedding2: list[float], threshold=3.5):
+def is_same_face(embedding1: list[float], embedding2: list[float], threshold=5):
     distance = euclidean_distance(embedding1, embedding2)
     return distance < threshold

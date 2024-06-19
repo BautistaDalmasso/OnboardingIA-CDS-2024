@@ -104,10 +104,15 @@ class FrameAnalyzer(
             }
 
             if (faces.size == 1) {
-                val face = faces[0]
-                val croppedBitmap = BitmapUtils.cropRectFromBitmap( cameraFrameBitmap , face.boundingBox )
-                val subject = faceNetModel.getFaceEmbedding( croppedBitmap )
-                onChange(subject, "")
+                try {
+                    val face = faces[0]
+                    val croppedBitmap = BitmapUtils.cropRectFromBitmap( cameraFrameBitmap , face.boundingBox )
+                    val subject = faceNetModel.getFaceEmbedding( croppedBitmap )
+                    onChange(subject, "")
+                }
+                catch(e: Exception) {
+                    Log.e("FACE EMBEDDING ERROR", e.toString())
+                }
             }
 
             withContext( Dispatchers.Main ) {
