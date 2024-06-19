@@ -47,3 +47,15 @@ def loan_librarian_service():
         )
     finally:
         TEST_DB_PATH.unlink()
+        
+@pytest.fixture()
+def librarian_service():
+    initialize_db.initialize_database(TEST_DB_PATH)
+
+    try:
+        yield (
+            UserService(TEST_DB_PATH),
+            LibrarianService(TEST_DB_PATH),
+        )
+    finally:
+        TEST_DB_PATH.unlink()

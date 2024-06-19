@@ -66,3 +66,25 @@ def test_consult_multiple_loans(loan_librarian_service):
 
     assert loans[1].catalogue_data.title == "Exámen de residencia"
     assert loans[0].catalogue_data.title == "Prólogos con un prólogo de prólogos"
+
+
+def test_lend_book_manually (loan_librarian_service):
+    isbn = "9500420457"
+    nro_inventory= "1"
+    user_email = "test@test.com"
+    loan_librarian_service[LIBRARIAN].add_exemplar(isbn, nro_inventory )
+    valid_loan=loan_librarian_service[MANAGE].check_valid_loan(nro_inventory,user_email)
+    loaned_book=loan_librarian_service[MANAGE].lend_book(valid_loan)
+    loans = loan_librarian_service[CONSULT].consult_book_loans_by_user_email(user_email)
+    
+    assert loans[0].user_email==loaned_book.user_email
+    assert loans[0].inventory_number==loaned_book.inventory_number
+    assert loans[0].loan_status==loaned_book.loan_status
+    assert loans[0].reservation_date==loaned_book.reservation_date
+    assert loans[0].checkout_date==loaned_book.checkout_date
+    
+    
+    
+
+    
+    
