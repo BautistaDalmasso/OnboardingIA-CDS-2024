@@ -159,8 +159,8 @@ const CDLibrarian = () => {
                 styles.button,
                 {
                   backgroundColor: userStatus.includes(user.email)
-                    ? "#0047ab"
-                    : "#007bff",
+                    ? "#006694"
+                    : "#006694",
                 },
               ]}
               onPress={() =>
