@@ -111,6 +111,8 @@ const ScanForLoan = ({ onBookLoanFinished }: ScanForLoanProps) => {
         alertButton,
       );
     }
+
+    setPauseScan(false);
   };
 
   const handleQr = (scanningResult: BarCodeScanningResult) => {

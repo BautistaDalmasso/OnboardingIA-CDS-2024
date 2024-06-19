@@ -2,9 +2,10 @@ import { Alert } from "react-native";
 import { useContextState } from "../ContexState";
 import { PointsExchangeService } from "../services/pointsExchangeService";
 import useFinalizeLogin from "./useFinalizeLogin";
+import { IUser } from "../common/interfaces/User";
 
 const usePointsExchange = () => {
-  const { contextState } = useContextState();
+  const { contextState, setContextState } = useContextState();
   const { finalizeLogin } = useFinalizeLogin();
 
   const hasEnoughPoints = (requiredPoints: number) => {
@@ -28,6 +29,16 @@ const usePointsExchange = () => {
     return await finalizeLogin(response);
   };
 
+  const substractPoints = async (points: number) => {
+    setContextState((state) => ({
+        ...state,
+        user: {
+            ...(state.user as IUser),
+            points: (state.user as IUser).points - points,
+        },
+    }))
+  }
+
   const exchangeForIncreaseLimit= async () => {
     await PointsExchangeService.updateToIncreaseLimit(
       contextState.accessToken as string,
@@ -39,6 +50,7 @@ const usePointsExchange = () => {
     hasEnoughPoints,
     exchangeForTrustedLicence,
     exchangeForIncreaseLimit,
+    substractPoints,
   };
 
 

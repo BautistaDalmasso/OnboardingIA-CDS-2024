@@ -1,13 +1,11 @@
 import * as FileSystem from "expo-file-system";
 
-import { useContextState } from "../ContexState";
 import { DownloadQrService } from "../services/downloadQrService";
 import useOfflineStorage from "./useOfflineStorage";
 import { IUser } from "../common/interfaces/User";
 import { QrToggle } from "../common/interfaces/QrCodeInfo";
 
 const useQr = () => {
-  const { contextState, setContextState } = useContextState();
   const { getLastQrCodeInfo, saveLastQrCodeInfo, getLastUser } =
     useOfflineStorage();
 
