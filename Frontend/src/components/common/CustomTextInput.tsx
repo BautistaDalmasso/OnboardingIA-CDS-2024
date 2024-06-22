@@ -18,7 +18,7 @@ const CustomTextInput = ({ placeholder, value, onChangeText }: Props) => {
   const handleInputChange = (text: string) => {
     if (
       (placeholder === "Nombre" || placeholder === "Apellido") &&
-      !/^[a-zA-Z\s]*$/.test(text)
+      !/^[\p{L}\s]*$/u.test(text)
     ) {
       setError("Solo se permiten letras.");
       return;
