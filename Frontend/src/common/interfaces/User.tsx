@@ -16,6 +16,7 @@ export interface IUser {
   role: null | string;
   lastPermissionUpdate: Date;
   points: number;
+  embedding: number[];
 }
 
 export interface ILoginResponse {
@@ -28,6 +29,15 @@ export interface ILoginResponse {
 export interface ILogin {
   email: string;
   password: string;
+}
+
+export interface ILoginFace {
+  email: string;
+  embedding: number[];
+}
+
+export interface IRegisterFace {
+  embedding: number[];
 }
 
 export interface IUpdateKey {

@@ -1,26 +1,17 @@
 import { ServerAddress } from "../common/consts/serverAddress";
 import { IFacialRegistrationResponse } from "../common/interfaces/FacialRecog";
-import { ILoginResponse } from "../common/interfaces/User";
-import { formDataFetch } from "./fetch";
+import { ILoginFace, ILoginResponse, IRegisterFace } from "../common/interfaces/User";
+import { baseFetch, } from "./fetch";
 
 export class FacialRecognitionService {
   private static baseRoute: string = `${ServerAddress}facial_recog`;
 
-  static async registerFace(token: string, imageURI: string) {
+  static async registerFace(token: string, embedding: number[]) {
     try {
-      const image = {
-        uri: imageURI,
-        name: "image.jpg",
-        type: "image/jpg",
-      };
-
-      const formData = new FormData();
-      formData.append("face", image as any);
-
-      return formDataFetch<IFacialRegistrationResponse>({
+      return baseFetch<IRegisterFace, IFacialRegistrationResponse>({
         url: `${this.baseRoute}/register_face`,
         method: "POST",
-        data: formData,
+        data: { embedding },
         token: token,
       });
     } catch (error) {
@@ -29,20 +20,11 @@ export class FacialRecognitionService {
     }
   }
 
-  static async compareFace(email: string, imageURI: string) {
-    const image = {
-      uri: imageURI,
-      name: "image.jpg",
-      type: "image/jpg",
-    };
-
-    const formData = new FormData();
-    formData.append("face", image as any);
-
-    return formDataFetch<ILoginResponse>({
-      url: `${this.baseRoute}/login_face_recognition?user_email=${email}`,
+  static async compareFace(email: string, embedding: number[]) {
+    return baseFetch<ILoginFace, ILoginResponse>({
+      url: `${this.baseRoute}/login_face_recognition`,
       method: "POST",
-      data: formData,
+      data: { email, embedding },
     });
   }
 }

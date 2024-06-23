@@ -1,13 +1,11 @@
 import { Alert } from "react-native";
 import { useContextState } from "../ContexState";
 import { ConnectionType } from "../common/enums/connectionType";
-import useBiometrics from "./useBiometrics";
 import useOfflineStorage from "./useOfflineStorage";
 
 const useOfflineAuth = () => {
   const { setContextState } = useContextState();
   const { getLastUser, getLastUsersLoans } = useOfflineStorage();
-  const { authenticate } = useBiometrics();
 
   const offlineAuthenticate = async () => {
     const user = await getLastUser();
@@ -21,21 +19,15 @@ const useOfflineAuth = () => {
       return false;
     }
 
-    const successBiometric = await authenticate();
+    const loans = await getLastUsersLoans();
 
-    if (successBiometric) {
-      const loans = await getLastUsersLoans();
-
-      setContextState((state) => ({
-        ...state,
-        user: user,
-        connectionType: ConnectionType.OFFLINE,
-        userOffline: true,
-        loans: loans,
-      }));
-
-      return true;
-    }
+    setContextState((state) => ({
+      ...state,
+      user: user,
+      connectionType: ConnectionType.OFFLINE,
+      userOffline: true,
+      loans: loans,
+    }));
 
     return false;
   };

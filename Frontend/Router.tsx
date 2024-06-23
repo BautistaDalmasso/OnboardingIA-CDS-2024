@@ -1,7 +1,7 @@
 import React from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { DrawerContent, createDrawerNavigator } from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from "./src/components/Home";
 import Chat from "./src/components/help-chat/Chat";
 import Login from "./src/components/auth/Login";
@@ -40,6 +40,11 @@ const Router = () => {
         screenOptions={{ headerTitle: "", headerTransparent: true }}
       >
         <Drawer.Screen name={Routes.Home} component={Home} />
+        <Drawer.Screen
+          name={Routes.LoginFace}
+          component={LoginFace}
+          options={{ drawerItemStyle: { display: "none" } }}
+        />
 
         {contextState.isConnected ? (
           <>
@@ -56,11 +61,6 @@ const Router = () => {
                 <Drawer.Screen
                   name={Routes.LoginFingerprint}
                   component={LoginFingerPrint}
-                  options={{ drawerItemStyle: { display: "none" } }}
-                />
-                <Drawer.Screen
-                  name={Routes.LoginFace}
-                  component={LoginFace}
                   options={{ drawerItemStyle: { display: "none" } }}
                 />
                 <Drawer.Screen name={Routes.Login} component={Login} />
@@ -115,9 +115,9 @@ const Router = () => {
                       component={ManageLoans}
                     />
                     <Drawer.Screen
-                    name={Routes.AssignLoanManually}
-                    component={AssignLoanManually}
-                    options={{drawerItemStyle: { display: 'none' }}}
+                      name={Routes.AssignLoanManually}
+                      component={AssignLoanManually}
+                      options={{ drawerItemStyle: { display: 'none' } }}
                     />
                   </>
                 )}

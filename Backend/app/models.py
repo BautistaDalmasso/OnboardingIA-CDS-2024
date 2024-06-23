@@ -17,6 +17,7 @@ class User(BaseModel):
     role: Optional[str] = None
     lastPermissionUpdate: datetime
     points: int
+    embedding: Optional[str] = None
 
 
 class auto_index(Enum):

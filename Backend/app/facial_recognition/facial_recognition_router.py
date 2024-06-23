@@ -8,6 +8,8 @@ from app.middlewares import verify_token
 
 from app.file_paths import DATABASE_PATH
 
+from .facial_recognition_dtos import RegisterFaceDTO, LoginFaceDTO
+
 
 router = APIRouter(prefix="/facial_recog", tags=["Facial Recognition"])
 
@@ -16,24 +18,19 @@ user_service = UserService(DATABASE_PATH)
 
 
 @router.post("/register_face")
-async def handle_facial_register(face: UploadFile, token=Depends(HTTPBearer())):
-    face_file = await face.read()
+async def handle_facial_register(register_face_data: RegisterFaceDTO, token=Depends(HTTPBearer())):
     user_data: TokenDataDTO = await verify_token(token.credentials)
 
-    await fr_service.upload_facial_profile(user_data.email, face_file)
+    fr_service.upload_facial_profile(user_data.email, register_face_data.embedding)
 
     return {"message": "Facial profile uploaded successfully"}
 
 
 @router.post("/login_face_recognition", response_model=LOGIN_RESPONSE)
-async def login_face_recognition(user_email: str, face: UploadFile):
-    bytes_image = await face.read()
-    result = await fr_service.compare_facial_profile(user_email, bytes_image)
+async def login_face_recognition(login_face_data: LoginFaceDTO):
+    result = fr_service.facial_login(login_face_data.email, login_face_data.embedding)
 
     if "error" in result:
         raise HTTPException(status_code=401, detail="Inicio de sesión fallido.")
 
-    if result["success"]:
-        user = user_service.get_user_by_email(user_email)
-
-        return user_service.finish_login_data(create_UserDTO_from_login(user))
+    return result

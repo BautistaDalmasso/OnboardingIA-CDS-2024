@@ -21,6 +21,7 @@ class UserDTO(BaseModel):
     role: Optional[str] = "basic"
     lastPermissionUpdate: datetime
     points: int
+    embedding: Optional[list[float]] = None
 
 
 class LoginDTO(BaseModel):
