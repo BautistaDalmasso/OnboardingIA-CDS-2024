@@ -8,7 +8,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 const image = require("../../assets/header.png");
 const PointsExchange = () => {
   const { contextState } = useContextState();
-  const { exchangeForTrustedLicence, exchangeForIncreaseLimit } = usePointsExchange();
+  const { exchangeForTrustedLicence, exchangeForIncreaseLimit, substractPoints } = usePointsExchange();
 
   if (contextState.user === null) {
     return (
@@ -46,8 +46,9 @@ const PointsExchange = () => {
           pointsCost={100}
           onExchange={async () => {
             await exchangeForIncreaseLimit();
+            await substractPoints(100);
           }}
-          disabled={(contextState.user.licenceLevel as number) >= 2}
+          disabled={false}
         />
       </View>
     </View>
