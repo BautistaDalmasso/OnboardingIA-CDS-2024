@@ -77,7 +77,7 @@ const UserConfiguration = ({ navigation }: Props) => {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={handleFingerprintRegistration}
+        onPress={handleRegisterFace}
         disabled={loading}
       >
         <Text style={styles.buttonText}>Registrar Rostro</Text>
